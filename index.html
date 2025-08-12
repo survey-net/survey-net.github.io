@@ -1,0 +1,3993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SURVEY</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;700&display=swap');
+        :root {
+            --primary-color: #ffffff;
+            --secondary-color: #333333;
+            --accent-color: #ff6600;
+            --selection-blue: #007bff;
+            --font-stack: 'Montserrat', sans-serif;
+            --title-font-stack: 'Poppins', sans-serif;
+        }
+        html {
+            font-size: 1.33vw;
+            font-size: clamp(12px, 1.33vw, 16px);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .main-header {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo-text {
+           display: none;
+        }
+        .logo-icon {
+            width: 80px;
+            height: auto;
+            border-radius: 0;
+        }
+        .background-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background-image: url('https://t3.ftcdn.net/jpg/06/48/43/62/360_F_648436265_aTw8qng7ViOMKkUBm1Pkvz5xaST4W2W1.jpg');
+            background-size: cover;
+            background-position: center;
+            animation: fadeIn 2s ease-out;
+        }
+        .background-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--overlay-color);
+            z-index: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            animation: slideIn 0.8s ease-out;
+        }
+        .welcome-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: -5rem;
+        }
+        .welcome-logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .welcome-logo-icon {
+            width: 300px;
+            margin-bottom: 0;
+        }
+        .welcome-logo-title {
+            font-family: var(--title-font-stack);
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: var(--welcome-logo-title-color);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: absolute;
+            top: 62%;
+            left: 67%;
+            transform: translateX(-50%);
+        }
+        .welcome-text {
+            font-size: 1.5rem;
+            max-width: 600px;
+            margin-bottom: 1rem;
+            color: var(--welcome-text-color);
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            align-items: flex-end;
+}
+        .form-row .input-group {
+            margin-bottom: 0;
+}
+        .name-group {
+            flex: 4;
+}
+        .age-group {
+            flex: 1;
+}         
+        .survey-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 400px;
+        }
+        .input-group {
+            width: 100%;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #333;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        .proceed-btn, .anonymous-btn, .next-btn, .submit-btn, .final-button, .skip-btn {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            text-decoration: none;
+            text-align: center;
+        }
+        .anonymous-btn {
+            background-color: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+        .proceed-btn:hover, .anonymous-btn:hover, .next-btn:hover, .skip-btn:hover {
+            background-color: var(--accent-hover-color);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .question-card {
+            background: var(--question-card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 550px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+	        align-items: center;
+        }
+        .survey-title {
+            font-size: 1.2rem;
+	    color: var(--question-title-color);
+        }
+        .question-options {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .question-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: var(--question-option-text-color);
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            border: 2px solid transparent;
+            font-size: 0.9rem;
+        }
+        .question-option:hover {
+            background-color: #fff;
+            border-color: var(--selection-blue);
+        }
+        .question-option.selected {
+            border: 2px solid var(--selection-blue);
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        }
+        .other-input-inline {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            border-bottom: 1px solid #999;
+            padding: 2px;
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            outline: none;
+            width: auto;
+        }
+	    .textarea-input {
+    	    width: 100%;
+            height: 60px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        .navigation-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 280px;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        .back-text {
+            color: var(--back-text-color);
+            text-decoration: none;
+            font-weight: 300;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .back-text:hover {
+            color: var(--accent-color);
+        }
+        .final-page {
+            text-align: center;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(245, 245, 245, 0.8));
+            padding: 2rem 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 550px;
+        }
+        .final-page h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+            word-break: break-word;
+        }
+        .final-page p {
+            font-size: 1.1rem;
+            color: #444;
+        }
+        .suggested-surveys {
+            margin-top: 2rem;
+            width: 100%;
+        }
+        .suggested-surveys h3 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+	    color: var(--final-page-subtitle-color);
+        }
+        .survey-links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .survey-link {
+            background-color: var(--suggested-link-bg);
+            color: #ffffff;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 95, 126, 0.3);
+            text-align: center;
+        }
+	.dark-button-text-theme .anonymous-btn:hover {
+    	color: #333;
+    }
+        .survey-link:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 95, 126, 0.4);
+            background: var(--suggested-link-hover-bg);
+        }
+        .final-button {
+            margin-top: 1rem;
+            max-width: 300px;
+            align-self: center;
+        }
+
+        .spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(14, 42, 71, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 3000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.spinner-overlay.visible {
+    opacity: 1;
+}
+
+.custom-spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+	.alert-modal p {
+    	    color: #333;
+    }
+	.eb-theme-layout .welcome-section {
+            margin-top: -15rem;
+    }
+	.eb-theme-layout .welcome-logo-title {
+	    top: 83%;
+            left: 50%;
+    }
+	.eb-theme-layout .welcome-logo-icon {
+    	    transform: translateY(65px);
+    }
+	.eb-theme-layout .survey-form {
+    	    margin-top: 0px;
+    }
+	.eb-theme-layout .welcome-text {
+   	    font-size: 1.50rem;
+    }
+	.smj-theme-layout .welcome-logo-title {
+            top: 75%;
+            left: 50%;
+    }
+	.smj-theme-layout .survey-form {
+    	    margin-top: 0px;
+    }
+	.smj-theme-layout .welcome-section {
+    	    margin-top: -2rem;	
+    }
+	.smj-theme-layout .welcome-logo-icon {
+    	    transform: translateY(-40px);
+    }
+	.smj-theme-layout .question-option:hover {
+ 	    border-color: #d93025;
+    }
+	.smj-theme-layout .question-option.selected {
+    	    border-color: #d93025;
+    	    box-shadow: 0 0 10px rgba(217, 48, 37, 0.5);
+    }
+    .alert-modal {
+    position: fixed; /* cite: 1 */
+    top: 50%; /* cite: 1 */
+    left: 50%; /* cite: 1 */
+    transform: translate(-50%, -50%); /* cite: 1 */
+    background-color: #fff; /* cite: 1 */
+    color: var(--secondary-color); /* cite: 1 */
+    padding: 20px 30px; /* cite: 1 */
+    border-radius: 10px; /* cite: 1 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* cite: 1 */
+    z-index: 2100;
+    text-align: center; /* cite: 1 */
+    animation: popIn 0.3s ease-out; /* cite: 1 */
+    border: 1px solid #ccc; /* cite: 1 */
+}
+        .alert-modal button {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes popIn { from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+	    @keyframes loading-dots {
+    	    0% {
+            content: '.';
+        }
+    	    33% {
+            content: '..';
+        }
+    	    66%, 100% {
+            content: '...';
+        }
+    }
+	   .loading-animation::after {
+ 	    content: '';
+     	    display: inline-block;
+    	    width: 20px;
+   	    text-align: left;
+    	    animation: loading-dots 1.5s infinite;
+    }
+	@keyframes slide-in-question {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+	@keyframes slide-out-question {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+    }
+	.slide-in-question {
+        animation: slide-in-question 0.4s ease-out;
+    }
+	.slide-out-question {
+        animation: slide-out-question 0.4s ease-out forwards;
+    }
+        @media (max-width: 767px) {
+            .main-header {
+                top: 15px;
+                left: 15px;
+            }
+            .logo-icon {
+                width: 80px;
+                border-radius: 0;
+            }
+            .welcome-logo-icon {
+                width: 220px;
+            }
+            .welcome-logo-title {
+                font-size: 1.5rem;
+                top: 60%;
+                left: 58%;
+            }
+            .welcome-text {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+            .question-card, .final-page {
+                padding: 1.5rem;
+            }
+            .final-page {
+                max-width: 90vw;
+                padding: 1.5rem 1rem;
+            }
+            
+            .survey-title {
+                font-size: 1.2rem;
+            }
+            
+            .final-page h2 {
+                font-size: 1.8rem;
+            }
+            .welcome-section {
+                gap: 2rem;
+                justify-content: flex-start;
+                padding-top: 0;
+                margin-top: -6rem;
+            }
+	        .light-accent-theme .proceed-btn,
+	        .light-accent-theme .next-btn,
+	        .light-accent-theme .submit-btn,
+            .light-accent-theme .final-button,
+            .light-accent-theme .skip-btn {
+                color: #333;
+            }
+	        .light-accent-theme .proceed-btn:hover,
+            .light-accent-theme .next-btn:hover,
+	        .light-accent-theme .skip-btn:hover {
+    		    color: #333;
+            }
+ 	        .light-accent-theme .anonymous-btn {
+   	            background-color: transparent;
+    	        border-color: #fff;
+    	        color: #fff;
+            }
+	        .light-accent-theme .anonymous-btn:hover {
+    	        background-color: #fff;
+    	        color: #333;
+            }
+	        .smj-theme-layout .welcome-logo-title {
+    	        top: 68%;   
+    	        left: 50%;
+            }
+	        .eb-theme-layout .welcome-logo-title {
+    	        top: 92%;   
+    	        left: 50%;
+            }
+	        .eb-theme-layout .welcome-text {
+    		    font-size: 1.3rem !important; 
+            }
+        }
+        #admin-panel-container {
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        #admin-panel-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://t3.ftcdn.net/jpg/06/48/43/62/360_F_648436265_aTw8qng7ViOMKkUBm1Pkvz5xaST4W2W1.jpg');
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px);
+            z-index: -2;
+        }
+        #admin-panel-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(14, 42, 71, 0.85);
+            z-index: -1;
+        }
+
+        .admin-panel-title {
+    position: absolute;
+    top: 45px;
+    left: 45px;
+    color: #fff;
+    font-size: 1.8rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+        .admin-main-menu {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .admin-card {
+    background: rgba(0, 123, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    width: 250px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 1px solid rgba(0, 123, 255, 0.5);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+}
+
+.admin-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    background: rgba(0, 123, 255, 0.3);
+    box-shadow: 0 0 30px rgba(0, 123, 255, 0.8);
+}
+
+.admin-card svg {
+    width: 80px;
+    height: 80px;
+    fill: #fff;
+}
+
+.admin-card h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    color: #fff;
+}
+.admin-page-content:has(.stats-dashboard) {
+    max-width: 1200px;
+    height: 92vh;
+}
+.admin-page-content {
+    background: rgba(0, 80, 150, 0.25);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 123, 255, 0.3);
+    padding: 25px 40px;
+    border-radius: 15px;
+    width: 95%;
+    max-width: 1200px;
+    height: 88vh;
+    color: #fff;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-page-content h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2.1rem;
+    flex-shrink: 0;
+}
+        .admin-back-button {
+           background: none;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #ccc;
+            position: absolute;
+            top: 23px;
+            left: 20px;
+            transition: color 0.2s ease;
+            text-decoration: none;
+            z-index: 2001;
+}
+        .admin-back-button:hover {
+	    color: #ccc;
+}
+        .admin-form-group {
+            margin-bottom: 25px;
+        }
+        .admin-form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .admin-input, .admin-select {
+            width: 94%;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: #fff;
+        }
+        .admin-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1em;
+            padding-right: 2.5rem;
+        }
+        .admin-select option {
+    background: white;
+    color: black;
+}
+
+        .admin-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .admin-input:focus, .admin-select:focus {
+            outline: none;
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .admin-question-block {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            flex-grow: 1;
+        }
+        #admin-panel-container ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+}
+        #admin-panel-container ::-webkit-scrollbar-track {
+            background: transparent;
+}
+        #admin-panel-container ::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 123, 255, 0.5);
+            border-radius: 10px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+}
+        #admin-panel-container ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 123, 255, 0.7);
+}
+        .question-block-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .delete-question-btn-wrapper {
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+            cursor: pointer;
+            color: #ccc;
+            transition: all 0.2s ease-in-out;
+        }
+        .delete-question-btn-wrapper:hover {
+            color: #ff4d4d;
+            transform: scale(1.1);
+        }
+        .question-answers .admin-input {
+            padding: 8px 12px;
+            font-size: 0.95rem;
+        }
+        .add-question-btn-main {
+            background: none;
+            border: 1px dashed rgba(255, 255, 255, 0.5);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .add-question-btn-main:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-style: solid;
+        }
+        .admin-answer-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .toggle-answers-btn {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.2s;
+}
+.toggle-answers-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.toggle-answers-btn.collapsed svg {
+    transform: rotate(-90deg);
+}
+.question-answers.collapsed {
+    max-height: 0;
+    overflow: hidden;
+    padding-left: 0;
+    border-left: none;
+    margin-top: 0;
+}
+.question-answers {
+    transition: max-height 0.4s ease-out, margin-top 0.4s ease-out, padding-left 0.4s ease-out;
+    max-height: 1000px; /* Dovoljno velika visina da stanu svi odgovori */
+}
+        
+        .admin-button {
+	    background: #007bff;
+	    color: #fff;
+	    border: none;
+	    padding: 15px 35px;
+	    font-size: 1.1rem;
+	    font-weight: bold;
+	    border-radius: 10px;
+	    cursor: pointer;
+	    transition: all 0.3s ease;
+	    display: inline-flex;
+	    align-items: center;
+	    justify-content: center;
+	    gap: 10px;
+	    text-transform: uppercase;
+	    letter-spacing: 1px;
+	    box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+}
+        .admin-button:hover {
+	    background: #0069d9;
+	    box-shadow: 0 7px 20px rgba(0,123,255,0.4);
+}
+        .admin-button.save-btn {
+            background-image: linear-gradient(to right, #28a745 0%, #218838 100%);
+            box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+        }
+        .admin-button.save-btn:hover {
+            box-shadow: 0 7px 20px rgba(40,167,69,0.4);
+        }
+        .admin-delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .admin-delete-btn:hover {
+            color: #ff4d4d;
+            transform: scale(1.1);
+        }
+        .question-header {
+	    display: flex;
+	    gap: 5px;
+	    justify-content: space-between;
+	    align-items: center;
+	    margin-bottom: 20px;
+}
+        .question-header .admin-form-group {
+            flex-grow: 1;
+            margin-bottom: 0;
+        }
+        .question-answers {
+            padding-left: 25px;
+            border-left: 3px solid #007bff;
+        }
+        .admin-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        .admin-list-item {
+            background: transparent;
+            padding: 8px 10px;
+            margin-bottom: 0;
+            display: grid;
+            grid-template-columns: 1fr 180px 100px;
+            align-items: center;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid rgba(0, 123, 255, 0.3);
+            border-radius: 0;
+        }
+        .admin-list-item:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            transform: none;
+            border-left: none;
+        }
+        .admin-list-item-info .name {
+            font-weight: normal;
+            font-size: 1.05rem;
+            color: #ffffff;
+        }
+        .admin-list-item-info .date {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        .admin-list-item-actions button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            margin-left: 15px;
+            font-size: 1.5rem;
+            transition: transform 0.2s ease;
+        }
+        .admin-list-item-actions button:hover {
+            transform: scale(1.2);
+        }
+        .admin-list-item-actions .edit-btn { color: #007bff; }
+        .admin-list-item-actions .delete-btn { color: #dc3545; }
+        .admin-list-item-actions .stats-btn { color: #28a745; }
+
+        .admin-search-bar {
+            width: 100%;
+            padding: 12px 20px;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        .admin-search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .admin-list-header {
+            display: grid;
+            grid-template-columns: 1fr 180px 100px;
+            padding: 0 10px 10px 10px;
+            border-bottom: 2px solid rgba(0, 123, 255, 0.5);
+            font-weight: bold;
+            color: #fff;
+        }
+        .admin-list-item-date {
+            font-size: 0.9rem;
+            color: #ccc;
+            text-align: left;
+        }
+        .admin-list-item-actions {
+            justify-self: end;
+        }
+        .admin-form-footer {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+        #summary-view-all {
+            max-width: 280px;
+}
+        #summary-view-all .stats-summary-grid {
+           grid-template-columns: 1fr;
+           gap: 15px;
+}
+#survey-form-admin {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+#questions-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding: 10px 10px 80px 10px;
+    margin: 0 -10px;
+}
+        .stats-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex-grow: 1;
+    min-height: 0;
+}
+.stats-filters {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    margin-bottom: 0px;
+    align-items: end;
+}
+.stats-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+.stats-filter-group label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ccc;
+}
+.stats-summary-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+.stats-view-switcher {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 123, 255, 0.3);
+}
+.stats-view-switcher button {
+    background: none;
+    border: none;
+    color: #ccc;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+.stats-view-switcher button:hover {
+    color: #fff;
+}
+.stats-view-switcher button.active {
+    color: #fff;
+    border-bottom-color: #007bff;
+}
+.stats-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+#stats-view-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+#stats-content-area {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+.stats-overall-layout {
+    display: grid;
+    grid-template-columns: 1fr 520px;
+    gap: 25px;
+    flex-grow: 1;
+    min-height: 0;
+    margin-top: -85px;
+}
+
+.stats-question-view {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.stats-question-card {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.stats-answers-container {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 10px;
+}
+.stats-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    justify-content: stretch;
+}
+.stats-timeline-chart-container {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 12px;
+    width: 100%;
+    flex-grow: 1;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+.stats-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+}
+
+.date-range-filter {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+.admin-date-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: 'Montserrat', sans-serif;
+            background: transparent;
+            color: #fff;
+            color-scheme: dark;
+        }        
+.summary-card {
+    background: rgba(0, 80, 150, 0.3); /* cite: 1 */
+    padding: 20px; /* cite: 1 */
+    border-radius: 12px; /* cite: 1 */
+    border: 1px solid rgba(0, 123, 255, 0.4); /* cite: 1 */
+    height: 90px; 
+    text-align: center; 
+}
+.summary-card-title {
+    font-size: 1rem; /* cite: 1 */
+    color: #ccc; /* cite: 1 */
+    margin-bottom: 0px; 
+}
+.summary-card-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #fff;
+}
+.stats-chart-container {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 40px;
+    height: 320px;
+}
+.stats-chart-title {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #fff;
+}
+.stats-question-view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.stats-question-card {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+}
+#question-card-container {
+    flex-grow: 1;
+}
+
+.stats-question-title {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.stats-legend {
+    margin-top: 20px;
+    padding-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    position: relative;
+    flex-wrap: wrap;
+}
+.progress-line-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+.progress-line-fill {
+    width: 0%;
+    height: 100%;
+    background-color: #a2d2ff;
+    transition: width 0.4s ease-out;
+    box-shadow: 0 0 8px rgba(162, 210, 255, 0.9), 0 0 15px rgba(0, 191, 255, 0.7);
+}
+.stats-freetext-answers-container {
+    height: 100%;
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+.stats-freetext-answer-item {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    color: #eee;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border-left: 3px solid #007bff;
+    word-wrap: break-word;
+}
+.stats-freetext-no-answers {
+    color: #ccc;
+    text-align: center;
+    padding-top: 40px;
+    font-style: italic;
+    opacity: 0.7;
+}
+.stats-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+.stats-legend-color-box {
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+}
+
+.stats-answer-item {
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    padding: 12px;
+    color: #fff;
+    font-size: 0.90rem;
+    flex-grow: 1;
+}
+
+.stats-answer-text-container {
+    flex-basis: 35%;
+    flex-shrink: 0;
+}
+
+.stats-bar-wrapper {
+    flex-grow: 1;
+    height: 25px;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.stats-stacked-bar-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.stats-bar-segment {
+    height: 100%;
+    transition: width 0.5s ease-in-out;
+}
+
+.stats-answer-total {
+    flex-basis: 60px;
+    flex-shrink: 0;
+    text-align: right;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #ccc;
+}
+
+.stats-answer-text {
+    position: relative;
+    z-index: 2;
+}
+
+.stats-nav-button {
+    cursor: pointer;
+    color: #fff;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.stats-nav-button:hover {
+    opacity: 1;
+}
+
+.stats-nav-button.disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+}
+.stats-answer-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.stats-answer-text {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.stats-mini-bars-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stats-mini-bar {
+    height: 3px;
+    border-radius: 3px;
+    transition: width 0.5s ease-in-out;
+}
+
+.stats-answer-breakdown-counts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-shrink: 0;
+    min-width: 50px;
+}
+
+.stats-company-count {
+    font-size: 0.85rem;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stats-company-count span:first-child {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.all-surveys-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 25px;
+    height: 100%;
+    min-height: 0;
+    margin-top: -47px;
+}
+.participant-list-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 12px;
+}
+#participant-search {
+    width: 100%;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.95rem;
+}
+.participant-list-header {
+    display: grid;
+    grid-template-columns: 1.2fr 1.5fr 0.5fr 1fr 1.5fr 0.8fr;
+    gap: 10px;
+    padding: 0 10px 10px;
+    font-weight: bold;
+    color: #ccc;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(0, 123, 255, 0.4);
+    flex-shrink: 0;
+}
+.participant-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+.participant-list-item {
+    display: grid;
+    grid-template-columns: 1.2fr 1.5fr 0.5fr 1fr 1.5fr 0.8fr;
+    gap: 10px;
+    padding: 12px 10px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(0, 123, 255, 0.2);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.participant-list-item:hover {
+    background-color: rgba(0, 123, 255, 0.15);
+}
+.participant-list-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.stats-sub-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 5px;
+}
+#single-survey-content .participant-list-container {
+    transform: translate(25px, -88px);
+}
+.view-icon-switcher {
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+}
+.view-icon-btn {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+}
+.view-icon-btn:hover {
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+}
+.view-icon-btn.active {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+.text-summary-stats {
+    color: #ccc;
+    font-size: 0.95rem;
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 15px;
+}
+.text-summary-stats b {
+    color: #fff;
+    font-weight: bold;
+}
+
+#stats-view-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+}
+.all-surveys-layout, #single-survey-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+}
+.all-surveys-layout .text-summary-stats {
+    margin-top: 24px;
+    margin-bottom: -17px;
+}
+.participant-list-container {
+    flex-grow: 1;
+}
+#single-survey-content .participant-list-container {
+    max-width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+#single-survey-content {
+    flex-grow: 1;
+    min-height: 0;
+    margin-top: 10px;
+}
+.participant-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(14, 42, 71, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 3000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+.participant-modal-content {
+    background: rgba(0, 80, 150, 0.35);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 123, 255, 0.4);
+    padding: 25px 40px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 700px;
+    height: 80vh;
+    color: #fff;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+}
+.participant-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 123, 255, 0.5);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+.participant-modal-header h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.6rem;
+    color: #fff;
+    margin: 0;
+}
+.participant-modal-close {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+.participant-modal-close:hover {
+    color: #fff;
+    transform: rotate(90deg);
+}
+.participant-modal-body {
+    overflow-y: auto;
+    padding-right: 15px;
+}
+.participant-modal-details {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #ccc;
+    line-height: 1.4;
+}
+.participant-modal-details b {
+    color: #fff;
+    font-weight: 700;
+}
+.qa-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-left: 4px solid #007bff;
+}
+.qa-card-question {
+    font-weight: 400;
+    color: #ccc;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+.qa-card-answer {
+    font-size: 1.05rem;
+    color: #fff;
+    word-wrap: break-word;
+    font-weight: 700;
+}
+.qa-card-score {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #00aaff;
+    margin-left: 10px;
+}
+.top-answers-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.top-answers-controls {
+    display: flex;
+    margin-bottom: 5px;
+}
+.top-answers-table-wrapper {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+#single-survey-content .participant-list {
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+
+.top-answers-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+    table-layout: fixed;
+}
+
+.top-answers-table th:nth-child(1) {
+    width: 60px;
+}
+.top-answers-table th:nth-child(3) {
+    width: 90px;
+}
+.top-answers-table th:nth-child(4) {
+    width: 110px;
+}
+.top-answers-table th:nth-child(5) {
+    width: 110px;
+}
+
+.top-answers-table th, .top-answers-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 123, 255, 0.2);
+    vertical-align: middle;
+}
+.top-answers-table th {
+    font-size: 0.9rem;
+    color: #ccc;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    background: #1c3a59;
+    z-index: 10;
+    text-align: center;
+}
+.top-answers-table th:nth-child(2) {
+    padding-left: 0;
+}
+.top-answers-table th:nth-child(3),
+.top-answers-table th:nth-child(4),
+.top-answers-table th:nth-child(5) {
+    text-align: right;
+}
+
+.top-answers-row .rank {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+    text-align: left;
+}
+.top-answers-row .answer-details {
+    word-wrap: break-word;
+    padding-left: 0;
+    padding-right: 15px;    
+}
+.top-answers-row .question {
+    font-size: 0.85rem;
+    color: #ccc;
+    display: block;
+    margin-bottom: 5px;
+}
+.top-answers-row .answer {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+.top-answers-row .count,
+.top-answers-row .percentage {
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: right;
+    color: #ccc;
+}
+.top-answers-row .percentage {
+    color: #fff;
+}
+.top-answers-row .answer-details {
+    position: relative;
+}
+
+.top-answers-row .answer-details:hover::after {
+    content: attr(data-survey);
+    position: absolute;
+    bottom: 105%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background-color: #007bff;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    white-space: nowrap;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.top-answers-row .answer-details::after {
+    content: '';
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+}
+.admin-answer-group .answer-text-input {
+    width: auto;
+    flex-grow: 1;
+}
+.admin-answer-group .answer-score-select {
+    width: 80px !important;
+    flex-shrink: 0;
+}
+.top-answers-controls {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 15px;
+    padding-left: 5px;
+}
+.top-answers-limit-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0;
+}
+.top-answers-limit-btn:hover {
+    color: #fff;
+}
+.top-answers-limit-btn.active {
+    color: #007bff;
+    font-weight: 700;
+}
+.clear-filters-wrapper {
+    text-align: right;
+    margin: -12px 0 -10px 0;
+    position: relative;
+    z-index: 10;
+}
+.clear-filters-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 5px;
+}
+.clear-filters-btn:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+.sortable-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+}
+.sortable-header[data-sort-by="survey"]      { padding-left: -10px; }
+.sortable-header[data-sort-by="participant"] { padding-left: -10px; }
+.sortable-header[data-sort-by="age"]         { padding-left: -10px; }
+.sortable-header[data-sort-by="company"]     { padding-left: -7px; }
+.sortable-header[data-sort-by="date"]        { padding-left: 25px; }
+.sortable-header[data-sort-by="rate"]        { padding-left: 85px; }
+.sortable-header:hover {
+    color: #fff;
+}
+.sort-icon {
+    font-size: 1.2em;
+    line-height: 1;
+    color: #888;
+}
+.sortable-header.active .sort-icon {
+    color: #fff;
+}
+.sort-icon.asc::after {
+    content: '↑';
+}
+.sort-icon.desc::after {
+    content: '↓';
+}
+#single-survey-content-wrapper .text-summary-stats {
+    margin-top: -50px;
+    margin-bottom: 50px;
+}
+.admin-list-header,
+.admin-list-item {
+    grid-template-columns: 1fr 80px 180px 100px;
+}
+
+.admin-list-item-url {
+    text-align: center;
+}
+
+.url-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.url-btn svg {
+    fill: #ccc;
+    transition: fill 0.2s;
+}
+
+.url-btn:hover {
+    background-color: rgba(0, 123, 255, 0.2);
+}
+
+.url-btn:hover svg {
+    fill: #fff;
+}
+
+.url-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(14, 42, 71, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 3000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.url-modal-content {
+    background: rgba(0, 80, 150, 0.35);
+    padding: 25px 40px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 700px;
+    color: #fff;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+}
+
+.url-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 123, 255, 0.5);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.url-modal-header h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.url-modal-close {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.url-modal-close:hover {
+    color: #fff;
+    transform: rotate(90deg);
+}
+.url-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.link-entry {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.link-entry .company-name {
+    font-weight: bold;
+    color: #ccc;
+    flex-shrink: 0;
+}
+
+.link-entry .link-text-input {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.link-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.copy-link-btn,
+.go-to-link-btn {
+    background: none;
+    border: 1px solid #aaa;
+    color: #ccc;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.copy-link-btn:hover,
+.go-to-link-btn:hover {
+    background: #ccc;
+    color: #333;
+    border-color: #ccc;
+}
+.progress-bar-container {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+    max-width: 280px;
+    height: 6px;
+    margin-top: 15px;
+}
+
+.progress-bar-segment {
+    flex: 1;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    transition: background-color 0.4s ease;
+}
+
+.progress-bar-segment.active {
+    background-color: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+}
+
+@keyframes slide-in-question-reverse {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slide-out-question-reverse {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+}
+
+.slide-in-question.from-back {
+    animation: slide-in-question-reverse 0.4s ease-out;
+}
+
+.slide-out-question-reverse {
+    animation: slide-out-question-reverse 0.4s ease-out forwards;
+}
+    </style>
+</head>
+<body>
+    <div id="admin-panel-container"></div>
+    <header class="main-header">
+        <div class="logo">
+            <img src="https://i.imgur.com/sn6V6PG.png" alt="Logo" class="logo-icon">
+            <h1 class="logo-text">SURVEY</h1>
+        </div>
+    </header>
+    <div class="background-container"></div>
+    <div class="container" id="main-content">
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz75ZiMeiaQlcUfZS8DqBi8kN1w4QeDUKRChUTRIDsx8p6FpZqAWYqMmR81prj_DyjnPA/exec';
+    const mainContent = document.getElementById('main-content');
+    const mainHeader = document.querySelector('.main-header');
+    const adminPanelContainer = document.getElementById('admin-panel-container');
+    const userAnswers = {};
+    let surveyQuestions = [];
+    let currentQuestionIndex = 0;
+    let surveyId = '';
+    let allSurveys = [];
+    let companyName = '';
+    const themes = {
+    'SMJ': {
+        code: '47kDs45B87ms5y8',
+        logo: 'https://images.squarespace-cdn.com/content/v1/65dcc6ddc23f46020d153086/e0b56a73-e4fc-4812-aaa7-1a2d9b734504/Logo-SMJ.png',
+        color: '#d93025',
+        secondaryColor: '#ffffff',
+        accentColor: '#d93025',
+        accentHoverColor: '#a8241c',
+        selectionBorderColor: '#d93025',
+        suggestedLinkBg: '#d93025',
+        suggestedLinkHoverBg: '#a8241c',
+        overlayColor: 'rgba(181, 154, 106, 0.85)',
+        welcomeTextColor: '#ffffff',
+        welcomeLogoTitleColor: '#ffffff',
+        questionCardBg: 'rgba(181, 154, 106, 0.5)',
+        questionTitleColor: '#ffffff',
+        questionOptionTextColor: '#333333',
+        finalPageSubtitleColor: '#333333',
+        backTextColor: '#f0f0f0'
+    },
+    'EB Infinity': {
+        code: 'mL8754HGyma91sc',
+        logo: 'https://images.squarespace-cdn.com/content/v1/67734e14b025c127a03e5730/2ed49605-95db-4d98-a715-77c77663dd69/Blue+Modern+Infinity+Loop+Business+Consulting+Logo.png',
+        color: '#007bff',
+        secondaryColor: '#ffffff',
+        accentColor: '#007bff',
+        accentHoverColor: '#0056b3',
+        selectionBorderColor: '#007bff',
+        suggestedLinkBg: '#007bff',
+        suggestedLinkHoverBg: '#0056b3',
+        overlayColor: 'rgba(75, 75, 75, 0.85)',
+        welcomeTextColor: '#ffffff',
+        welcomeLogoTitleColor: '#007bff',
+        questionCardBg: 'rgba(0, 0, 0, 0.25)',
+        questionTitleColor: '#ffffff',
+        questionOptionTextColor: '#333333',
+        finalPageSubtitleColor: '#333333',
+        backTextColor: '#f0f0f0'
+    },
+    'AmongUs': {
+        code:'l2BY8igh90mMHg4',
+        logo: 'https://images.squarespace-cdn.com/content/v1/67816277ce6fe832dd037896/dbe69b84-b7dc-4b22-a542-0f4d512178b0/AMONG-US-Logo-Icon-horizontal.png?format=1500w',
+        color: '#ff6600',
+        secondaryColor: '#333333',
+        accentColor: '#ff6600',
+        accentHoverColor: '#e65c00',
+        selectionBorderColor: '#007bff',
+        suggestedLinkBg: '#007bff',
+        suggestedLinkHoverBg: '#0056b3',
+        overlayColor: 'rgba(255, 255, 255, 0.85)',
+        welcomeTextColor: '#555555',
+        welcomeLogoTitleColor: '#0084AE',
+        questionCardBg: 'linear-gradient(145deg, rgba(225, 225, 225, 0.9), rgba(210, 210, 210, 0.85))',
+        questionTitleColor: '#333333',
+        questionOptionTextColor: '#333333',
+        finalPageSubtitleColor: '#333333',
+        backTextColor: '#555'
+    }
+    };
+    let companyConfig = {};
+
+    function applyCompanyTheme(company) {
+        const normalizedCompany = (company || '').toLowerCase();
+        let theme;
+        document.body.className = '';
+        if (normalizedCompany.includes('smj')) {
+            theme = themes['SMJ'];
+            document.body.classList.add('smj-theme-layout');
+        } else if (normalizedCompany.includes('eb infinity')) {
+            theme = themes['EB Infinity'];
+            document.body.classList.add('eb-theme-layout');
+        } else {
+            theme = themes['AmongUs'];
+        }
+        companyConfig = theme;
+        const root = document.documentElement;
+        root.style.setProperty('--secondary-color', theme.secondaryColor);
+        root.style.setProperty('--accent-color', theme.accentColor);
+        root.style.setProperty('--accent-hover-color', theme.accentHoverColor);
+        root.style.setProperty('--overlay-color', theme.overlayColor);
+        root.style.setProperty('--selection-border-color', theme.selectionBorderColor);
+        root.style.setProperty('--suggested-link-bg', theme.suggestedLinkBg);
+        root.style.setProperty('--suggested-link-hover-bg', theme.suggestedLinkHoverBg);
+        root.style.setProperty('--welcome-text-color', theme.welcomeTextColor);
+        root.style.setProperty('--welcome-logo-title-color', theme.welcomeLogoTitleColor);
+        root.style.setProperty('--question-card-bg', theme.questionCardBg);
+        root.style.setProperty('--question-title-color', theme.questionTitleColor);
+        root.style.setProperty('--question-option-text-color', theme.questionOptionTextColor);
+        root.style.setProperty('--final-page-subtitle-color', theme.finalPageSubtitleColor);
+        root.style.setProperty('--back-text-color', theme.backTextColor);
+        const mainLogo = document.querySelector('.logo-icon');
+        if (mainLogo) {
+            mainLogo.src = theme.logo;
+        }
+    }
+    let currentSortKey = 'date';
+    let currentSortDirection = 'desc';
+
+    function initializeSurvey() {
+        document.querySelector('.background-container').style.display = 'block';
+        document.querySelector('.main-header').style.display = 'flex';
+        mainContent.style.display = 'flex';
+        adminPanelContainer.style.display = 'none';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        surveyId = urlParams.get('s');
+        const companyParam = urlParams.get('c');
+        const parts = companyParam ? companyParam.split('-') : [];
+        companyName = parts[0];
+        const companyCode = parts[1];
+        const themeData = themes[companyName];
+
+        if (!themeData || companyCode !== themeData.code) {
+            mainContent.innerHTML = `<p class="welcome-text">ACCESS DENIED.<br>Please use a valid survey link.</p>`;
+            mainHeader.style.display = 'none';
+            document.querySelector('.background-container').style.display = 'none';
+            return;
+        }
+
+        const skipWelcome = urlParams.get('skipWelcome');
+        const userName = urlParams.get('name');
+        applyCompanyTheme(companyName);
+
+        if (surveyId) {
+            mainContent.innerHTML = '<p class="welcome-text loading-animation">Loading survey</p>';
+
+            window.handleSurveyData = (data) => {
+                if (data.questions.error) {
+                    mainContent.innerHTML = `<p class="welcome-text">Error: ${data.questions.error}. Please check the survey ID.</p>`;
+                    return;
+                }
+                if (!data.questions || data.questions.length === 0) {
+                    mainContent.innerHTML = `<p class="welcome-text">This survey currently has no questions.</p>`;
+                    return;
+                }
+                surveyQuestions = data.questions;
+                allSurveys = data.surveyNames;
+
+                if (skipWelcome === 'true' && userName) {
+                    userAnswers.name = decodeURIComponent(userName);
+                    startSurvey();
+                } else {
+                    renderWelcomePage();
+                }
+
+                document.getElementById('jsonp-init-script').remove();
+                delete window.handleSurveyData;
+            };
+
+            const script = document.createElement('script');
+            script.id = 'jsonp-init-script';
+            script.src = `${SCRIPT_URL}?action=getInitialData&sheet=${surveyId}&callback=handleSurveyData`;
+            script.onerror = () => {
+                mainContent.innerHTML = `<p class="welcome-text">Could not load survey. Please try again later.</p>`;
+                delete window.handleSurveyData;
+            };
+            document.body.appendChild(script);
+
+        } else {
+            mainContent.innerHTML = `<p class="welcome-text">No survey specified. Please use a valid survey link.</p>`;
+        }
+    }
+
+    function renderWelcomePage() {
+        mainHeader.style.opacity = '0';
+        mainContent.innerHTML = `
+            <div class="welcome-section">
+                <div class="welcome-logo-container">
+                    <img src="${companyConfig.logo}" alt="Large Logo" class="welcome-logo-icon">
+                    <h1 class="welcome-logo-title">Survey</h1>
+                </div>
+                <p class="welcome-text">
+                    Share your experience and insights about the trucking industry. Your valuable feedback drives positive change and helps improve conditions for everyone on the road.
+                </p>
+                <div class="survey-form">
+                    <div class="form-row">
+                        <div class="input-group name-group">
+                            <label for="name-input">Enter your name (optional)</label>
+                            <input type="text" id="name-input" name="name" autocomplete="name" maxlength="20">
+                        </div>
+                        <div class="input-group age-group">
+                            <label for="age-input">Age</label>
+                            <input type="number" id="age-input" name="age" min="16" max="99">
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" class="proceed-btn">Proceed to Survey</button>
+                        <button type="button" class="anonymous-btn">Proceed Anonymously</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.querySelector('.proceed-btn').addEventListener('click', () => {
+            const nameInput = document.getElementById('name-input');
+            const ageInput = document.getElementById('age-input');
+
+            if (nameInput.value.trim() === '') {
+                showAlert('Please enter your name to proceed.');
+                return;
+            }
+            if (ageInput.value.trim() === '') {
+                showAlert('Please enter your age.');
+                return;
+            }
+            userAnswers.name = nameInput.value.trim();
+            userAnswers.age = ageInput.value.trim();
+            startSurvey();
+        });
+        document.querySelector('.anonymous-btn').addEventListener('click', () => {
+            const ageInput = document.getElementById('age-input');
+            const ageValue = ageInput.value.trim();
+
+            userAnswers.name = 'Anonymous';
+            userAnswers.age = ageValue === '' ? 'N/A' : ageValue;
+            startSurvey();
+        });
+    }
+
+    function startSurvey() {
+        mainHeader.style.opacity = '1';
+        mainContent.innerHTML = '';
+        currentQuestionIndex = 0;
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        if (currentQuestionIndex >= surveyQuestions.length) {
+            endSurvey();
+            return;
+        }
+        const q = surveyQuestions[currentQuestionIndex];
+        const backButtonHtml = currentQuestionIndex > 0 ? `<a href="#" class="back-text">← Back to Previous Question</a>` : '';
+
+        let questionSpecificHtml = '';
+        if (!q.options || q.options.length === 0) {
+            questionSpecificHtml = `<textarea class="textarea-input" placeholder="Type your answer here..."></textarea>`;
+        } else {
+            let optionsHtml = q.options.map(option => {
+                const optionAsString = String(option);
+                let displayValue = optionAsString;
+                if (optionAsString.includes('::score=')) {
+                    displayValue = optionAsString.split('::score=')[0];
+                }
+
+                if (displayValue.toLowerCase().includes('(please explain)')) {
+                    const baseText = displayValue.split('(')[0].trim();
+                    const optionContent = `
+                        <span>${baseText}</span>
+                        <input type="text" class="other-input-inline" placeholder="Please specify...">
+                    `;
+                    return `<div class="question-option" data-value="${optionAsString}">${optionContent}</div>`;
+                } else {
+                    return `<div class="question-option" data-value="${optionAsString}">${displayValue}</div>`;
+                }
+            }).join('');
+            questionSpecificHtml = `<div class="question-options">${optionsHtml}</div>`;
+        }
+        
+        let progressBarHtml = '<div class="progress-bar-container">';
+        for (let i = 0; i < surveyQuestions.length; i++) {
+            const activeClass = i <= currentQuestionIndex ? 'active' : '';
+            progressBarHtml += `<div class="progress-bar-segment ${activeClass}"></div>`;
+        }
+        progressBarHtml += '</div>';
+
+        mainContent.innerHTML = `
+            <div class="question-card slide-in-question">
+                <h3 class="survey-title">${q.question}</h3>
+                ${questionSpecificHtml}
+                <div class="navigation-buttons">
+                   <button class="next-btn">Next Question</button>
+                   ${backButtonHtml}
+                </div>
+                ${progressBarHtml}
+            </div>
+        `;
+        setupQuestionListeners();
+    }
+    function handleBack() {
+        if (currentQuestionIndex > 0) {
+            const currentCard = document.querySelector('.question-card');
+            if (currentCard) {
+                currentCard.classList.add('slide-out-question-reverse');
+                setTimeout(() => {
+                    currentQuestionIndex--;
+                    renderQuestion();
+                    repopulateAnswer();
+                }, 400); 
+            }
+        }
+    }
+
+    function repopulateAnswer() {
+        const previousAnswer = userAnswers[`question-${currentQuestionIndex}`];
+        if (!previousAnswer) return;
+
+        const allAnswers = previousAnswer.split(', ');
+        const options = document.querySelectorAll('.question-option');
+        options.forEach(option => {
+            if (allAnswers.some(ans => ans.startsWith(option.dataset.value))) {
+                option.classList.add('selected');
+                const inlineInput = option.querySelector('.other-input-inline');
+                if (inlineInput) {
+                    const specificAnswer = allAnswers.find(ans => ans.startsWith(option.dataset.value));
+                    if (specificAnswer && specificAnswer.includes(': ')) {
+                        inlineInput.value = specificAnswer.split(': ')[1];
+                    }
+                }
+            }
+        });
+
+        const textarea = document.querySelector('.textarea-input');
+        if (textarea && allAnswers.length > 0) {
+            textarea.value = allAnswers[0];
+        }
+    }
+
+function setupQuestionListeners() {
+        const options = document.querySelectorAll('.question-option');
+        const textarea = document.querySelector('.textarea-input');
+        const q = surveyQuestions[currentQuestionIndex];
+
+        options.forEach(option => {
+            option.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT') {
+                    e.stopPropagation();
+                    return;
+                }
+                if (q.type === 'multiple') {
+                    option.classList.toggle('selected');
+                } else {
+                    options.forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                }
+            });
+        });
+
+        const backText = document.querySelector('.back-text');
+        if (backText) {
+            backText.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleBack();
+            });
+        }
+
+        document.querySelector('.next-btn').addEventListener('click', () => {
+            let finalAnswers = [];
+            const selectedOptions = document.querySelectorAll('.question-option.selected');
+
+            if (textarea) {
+                if (textarea.value.trim() !== '') {
+                    finalAnswers.push(textarea.value.trim());
+                }
+            } else if (selectedOptions.length > 0) {
+                selectedOptions.forEach(opt => {
+                    const baseValue = opt.dataset.value;
+                    const inlineInput = opt.querySelector('.other-input-inline');
+                    if (inlineInput && inlineInput.value.trim() !== '') {
+                        finalAnswers.push(`${baseValue}: ${inlineInput.value.trim()}`);
+                    } else {
+                        finalAnswers.push(baseValue);
+                    }
+                });
+            }
+
+            if (finalAnswers.length === 0) {
+                showAlert('Please select an answer.');
+                return;
+            }
+
+            const answerValue = finalAnswers.join(', ');
+
+            userAnswers[`question-${currentQuestionIndex}`] = answerValue.trim();
+            currentQuestionIndex++;
+
+            const currentCard = document.querySelector('.question-card');
+            if (currentCard) {
+                currentCard.classList.add('slide-out-question');
+                setTimeout(() => {
+                    renderQuestion();
+                }, 400);
+            } else {
+                renderQuestion();
+            }
+        });
+    }
+    function endSurvey() {
+        const spinner = showSpinner('Saving your answers...');
+
+        const responses = surveyQuestions.map((q, index) => {
+            return userAnswers[`question-${index}`] || '';
+        });
+
+        const payload = {
+            action: 'submitAnswers',
+            sheet: surveyId,
+            answers: {
+                participant: userAnswers.name,
+                age: userAnswers.age,
+                company: companyName,
+                responses: responses
+            }
+        };
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            }
+        }).then(res => res.json()).then(result => {
+            hideSpinner(spinner);
+            if (result.status === 'success') {
+                renderFinalPage();
+            } else {
+                showAlert('Error saving answers: ' + result.message);
+            }
+        }).catch(err => {
+            hideSpinner(spinner);
+            if (err instanceof TypeError && err.message === 'Failed to fetch') {
+                console.log("Submit answers request may have succeeded despite CORS error.");
+                renderFinalPage();
+            } else {
+                showAlert('An unexpected network error occurred while saving answers.');
+            }
+        });
+    }
+
+    function renderFinalPage() {
+        mainHeader.style.opacity = '0';
+        const thankYouMessage = userAnswers.name === 'Anonymous' ? 'Thank you!' : `Thank you, ${userAnswers.name}!`;
+        let suggestedLinksHtml = '<p>No other surveys available at the moment.</p>';
+        const otherSurveys = allSurveys.filter(s => s.id !== surveyId);
+        if (otherSurveys.length > 0) {
+            const userNameForLink = encodeURIComponent(userAnswers.name || 'Anonymous');
+            suggestedLinksHtml = otherSurveys.map(s => `<a href="?s=${s.id}&c=${companyName}-${themes[companyName].code}&skipWelcome=true&name=${userNameForLink}" class="survey-link">${s.name}</a>`).join('');
+        }
+
+        mainContent.innerHTML = `
+            <div class="final-page">
+                <h2>${thankYouMessage}</h2>
+                <p>Your feedback is highly valuable and has been recorded.</p>
+                <div class="suggested-surveys">
+                    <h3>Suggested Surveys</h3>
+                    <div class="survey-links-container">
+                        ${suggestedLinksHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function showAlert(message) {
+        const existingModal = document.querySelector('.alert-modal');
+        if(existingModal) existingModal.remove();
+        const alertModal = document.createElement('div');
+        alertModal.classList.add('alert-modal');
+        alertModal.innerHTML = `<p>${message}</p><button>OK</button>`;
+        document.body.appendChild(alertModal);
+        alertModal.querySelector('button').addEventListener('click', () => {
+            alertModal.remove();
+        });
+    }
+
+    function showSpinner(text = 'Molimo sačekajte...') {
+        const spinner = document.createElement('div');
+        spinner.className = 'alert-modal';
+        spinner.style.cssText = 'background-color: rgba(255,255,255,0.9); padding: 40px;';
+        spinner.innerHTML = `<p class="loading-animation">${text}</p>`;
+        document.body.appendChild(spinner);
+        return spinner;
+    }
+
+    function hideSpinner(spinner) {
+        if(spinner) spinner.remove();
+    }
+
+    function showAdminSpinner() {
+    const existingSpinner = document.querySelector('.spinner-overlay');
+    if (existingSpinner) existingSpinner.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'spinner-overlay';
+    overlay.innerHTML = '<div class="custom-spinner"></div>';
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.classList.add('visible');
+    }, 10);
+
+    return overlay;
+}
+
+function hideAdminSpinner(spinnerElement) {
+    if (spinnerElement && spinnerElement.classList.contains('spinner-overlay')) {
+        spinnerElement.classList.remove('visible');
+        spinnerElement.addEventListener('transitionend', () => {
+            if (spinnerElement.parentNode) {
+                spinnerElement.parentNode.removeChild(spinnerElement);
+            }
+        }, { once: true });
+    }
+}
+
+    function initAdmin() {
+        document.querySelector('.background-container').style.display = 'none';
+        document.querySelector('.main-header').style.display = 'none';
+        mainContent.style.display = 'none';
+        adminPanelContainer.style.display = 'flex';
+        renderAdminMainMenu();
+    }
+
+    function renderAdminMainMenu() {
+        adminPanelContainer.innerHTML = `
+            <div class="admin-panel-title">
+                <svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40" fill="currentColor"><path d="M120-240v-240h320v240H120Zm0-320v-240h320v240H120Zm400 320v-240h320v240H520Zm0-320v-240h320v240H520Z"/></svg>
+                <span>Admin Panel</span>
+            </div>
+            <div class="admin-main-menu">
+                <div class="admin-card" id="add-survey-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    <h2>Add Survey</h2>
+                </div>
+                <div class="admin-card" id="edit-survey-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                    <h2>Edit Surveys</h2>
+                </div>
+                <div class="admin-card" id="stats-survey-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>
+                    <h2>Statistics</h2>
+                </div>
+            </div>
+        `;
+        document.getElementById('add-survey-btn').addEventListener('click', () => renderAddOrEditSurveyForm());
+        document.getElementById('edit-survey-btn').addEventListener('click', () => renderSurveyList('edit'));
+        document.getElementById('stats-survey-btn').addEventListener('click', () => renderStatisticsDashboard());
+
+    }
+    function renderAddOrEditSurveyForm(surveyData = null) {
+        const isEditMode = surveyData !== null;
+        const originalSurveyName = isEditMode ? surveyData.name : '';
+        const title = isEditMode ? 'Edit Survey' : 'Add New Survey';
+        const saveButtonText = isEditMode ? 'Apply Changes' : 'Save Survey';
+        let questionsHtml = '';
+        if (isEditMode && surveyData.questions) {
+            surveyData.questions.forEach((q, index) => {
+                questionsHtml += generateQuestionBlock(index, q, isEditMode);
+            });
+        } else {
+            questionsHtml = generateQuestionBlock(0, {}, isEditMode);
+        }
+        adminPanelContainer.innerHTML = `
+            <div class="admin-page-content">
+                <a href="#" class="admin-back-button" style="display: flex; align-items: center; gap: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
+                    <span>${isEditMode ? 'Back to Survey List' : 'Back to Admin Panel'}</span>
+                </a>
+                <h1 style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+    <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 0 24 24" width="32" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    <span>${title}</span>
+</h1>
+                <div id="survey-form-admin">
+                    <div class="admin-form-group">
+                        <label for="survey-name">Survey Name</label>
+                        <input type="text" id="survey-name" class="admin-input" placeholder="Enter the name of the survey" value="${originalSurveyName}">
+                    </div>
+                    <div id="questions-container">
+                        ${questionsHtml}
+                        ${!isEditMode ? `
+                            <button class="add-question-btn-main">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                                Add Question
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="admin-form-footer">
+                    <button id="save-survey-btn" class="admin-button save-btn">${saveButtonText}</button>
+                </div>
+            </div>
+        `;
+
+        document.querySelector('.admin-back-button').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (isEditMode) {
+        renderSurveyList('edit');
+    } else {
+        renderAdminMainMenu();
+    }
+});
+
+    
+        adminPanelContainer.querySelector('.admin-page-content').addEventListener('click', function(e) {
+            if (e.target.closest('.add-question-btn-main')) {
+                e.preventDefault();
+                const newIndex = document.querySelectorAll('.question-block-wrapper').length;
+                const newQuestionHtml = generateQuestionBlock(newIndex, {}, isEditMode);
+                const button = e.target.closest('.add-question-btn-main');
+
+                if (isEditMode) {
+                    button.previousElementSibling.insertAdjacentHTML('afterend', newQuestionHtml);
+                } else {
+                    button.insertAdjacentHTML('beforebegin', newQuestionHtml);
+                }
+            }
+            if (e.target.closest('.add-answer-btn')) {
+                e.preventDefault();
+                const questionBlock = e.target.closest('.admin-question-block');
+                const answersContainer = questionBlock.querySelector('.question-answers');
+                answersContainer.appendChild(generateAnswerInput());
+            }
+            if (e.target.closest('.delete-question-btn-wrapper')) {
+                e.preventDefault();
+                const wrapperToDelete = e.target.closest('.delete-question-btn-wrapper').parentElement;
+                const nextElement = wrapperToDelete.nextElementSibling;
+                if (nextElement && nextElement.matches('.add-question-btn-main')) {
+                    nextElement.remove();
+                }
+                wrapperToDelete.remove();
+            }
+            if (e.target.closest('.delete-answer-btn')) {
+                e.preventDefault();
+                e.target.closest('.admin-answer-group').remove();
+            }
+            if (e.target.closest('.toggle-answers-btn')) {
+                e.preventDefault();
+                const toggleBtn = e.target.closest('.toggle-answers-btn');
+                const questionBlock = e.target.closest('.admin-question-block');
+                const answersContainer = questionBlock.querySelector('.question-answers');
+                answersContainer.classList.toggle('collapsed');
+                toggleBtn.classList.toggle('collapsed');
+            }
+        });
+
+        document.getElementById('save-survey-btn').addEventListener('click', () => {
+    const newSurveyName = document.getElementById('survey-name').value.trim();
+    if (!newSurveyName) {
+        showAlert('Please enter a survey name.');
+        return;
+    }
+    const questions = [];
+    document.querySelectorAll('.admin-question-block').forEach(block => {
+        const questionText = block.querySelector('input[name="question-text"]').value.trim();
+        const questionType = block.querySelector('select[name="question-type"]').value;
+        const answers = [];
+        
+        block.querySelectorAll('.admin-answer-group').forEach(answerGroup => {
+            const answerTextInput = answerGroup.querySelector('input[name="answer-text"]');
+            const answerScoreSelect = answerGroup.querySelector('select[name="answer-score"]');
+            const answerText = answerTextInput.value.trim();
+            const answerScore = answerScoreSelect.value;
+
+            if (answerText) {
+                if (answerScore !== '-') {
+                    answers.push(`${answerText}::score=${answerScore}`);
+                } else {
+                    answers.push(answerText);
+                }
+            }
+        });
+
+        if (questionText) {
+            questions.push({ question: questionText, type: questionType, options: answers });
+        }
+    });
+    if (questions.length === 0) {
+        showAlert('Please add at least one question.');
+        return;
+    }
+    const data = isEditMode ? 
+        { oldName: originalSurveyName, newName: newSurveyName, questions: questions } :
+        { name: newSurveyName, questions: questions };
+    const action = isEditMode ? 'updateSurvey' : 'saveNewSurvey';
+    const spinner = showAdminSpinner();
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: action, data: data }),
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+        }
+    }).then(res => res.json()).then(result => {
+        hideAdminSpinner(spinner);
+        if (result.status === 'success') {
+            showAlert(result.message || 'Survey saved successfully!');
+            if (isEditMode) {
+                renderSurveyList('edit');
+            } else {
+                renderAdminMainMenu();
+            }
+        } else {
+            showAlert('Error: ' + (result.message || 'An unknown error occurred on the server.'));
+        }
+    }).catch(err => {
+        hideAdminSpinner(spinner);
+        if (err instanceof TypeError && err.message === 'Failed to fetch') {
+            showAlert('Survey data sent successfully. The change should be saved.');
+            if (isEditMode) {
+                renderSurveyList('edit');
+            } else {
+                renderAdminMainMenu();
+            }
+        } else {
+            showAlert('An unexpected error occurred: ' + err.message);
+        }
+    });
+});
+    }
+    function generateQuestionBlock(index, data = {}, isEditMode = false) {
+    let answersHtml = '';
+    if (data.options && data.options.length > 0) {
+        data.options.forEach(opt => {
+            answersHtml += generateAnswerInput(opt).outerHTML;
+        });
+    } else {
+        answersHtml = generateAnswerInput('').outerHTML;
+    }
+
+    let addButtonHtml = '';
+    if (isEditMode) {
+        addButtonHtml = `
+            <button class="add-question-btn-main" style="margin: -10px auto 30px auto;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                Add Question
+            </button>
+        `;
+    }
+
+    return `
+        <div class="question-block-wrapper">
+            <div class="admin-question-block" data-index="${index}">
+                <div class="question-header">
+                    <div class="toggle-answers-btn" title="Show/Hide Answers">
+                         <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>
+                    </div>
+                    <div class="admin-form-group" style="flex-grow: 1; margin-right: 5px;">
+                        <input type="text" name="question-text" class="admin-input" placeholder="Enter question text" value="${data.question || ''}">
+                    </div>
+                    <div class="admin-form-group" style="flex-basis: 0px; flex-shrink: 0;">
+                        <select name="question-type" class="admin-select">
+                            <option value="single" ${data.type === 'single' ? 'selected' : ''}>Single Choice</option>
+                            <option value="multiple" ${data.type === 'multiple' ? 'selected' : ''}>Multiple Choice</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="question-answers">
+                    ${answersHtml}
+                </div>
+                <a href="#" class="add-answer-btn" style="color: #fff; text-decoration: none; margin-top: 15px; display: inline-flex; align-items: center; gap: 5px; font-size: 0.9rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                    Add Answer
+                </a>
+            </div>
+            <div class="delete-question-btn-wrapper" title="Delete Question">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+            </div>
+        </div>
+        ${addButtonHtml}
+        `;
+}
+    function generateAnswerInput(value = '') {
+        let text = value;
+        let score = '-';
+        if (value.includes('::score=')) {
+            const parts = value.split('::score=');
+            text = parts[0];
+            score = parts[1];
+        }
+
+        const div = document.createElement('div');
+        div.className = 'admin-answer-group';
+
+        const scoreOptions = ['-', '1', '2', '3', '4', '5'].map(s =>
+            `<option value="${s}" ${s === score ? 'selected' : ''}>${s}</option>`
+        ).join('');
+
+        div.innerHTML = `
+            <input type="text" name="answer-text" class="admin-input answer-text-input" placeholder="Enter answer option" value="${text}">
+            <select name="answer-score" class="admin-select answer-score-select">
+                ${scoreOptions}
+            </select>
+            <span class="delete-answer-btn" title="Delete Answer" style="cursor: pointer; color: #ccc; padding: 5px; transition: color 0.2s ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+            </span>
+        `;
+        div.querySelector('.delete-answer-btn').onmouseover = function() { this.style.color = '#fff'; };
+        div.querySelector('.delete-answer-btn').onmouseout = function() { this.style.color = '#ccc'; };
+        return div;
+    }
+
+    function renderStatisticsDashboard() {
+        const spinner = showAdminSpinner();
+        let statsData = {};
+        let activeCharts = [];
+        let timelineChartInstance = null;
+        let activeTimelineAnswerInfo = { answer: null, question: null };
+        let currentQuestionIndex = 0, topAnswersSortKey = 'count', topAnswersSortDirection = 'desc';
+
+        window.handleAllStatsData = (data) => {
+            hideAdminSpinner(spinner);
+            if (data.error) {
+                showAlert(data.error);
+                renderAdminMainMenu();
+                return;
+            }
+            statsData = data;
+            renderUI();
+        };
+
+        const renderTopAnswersTable = (rankedAnswers, limit) => {
+            const container = document.getElementById('top-answers-table-body');
+            if (!container) return;
+
+            let dataToShow = rankedAnswers;
+
+            if (limit !== 'all') {
+                dataToShow = rankedAnswers.slice(0, parseInt(limit, 10));
+            }
+
+            container.innerHTML = dataToShow.map((item, index) => `
+                <tr class="top-answers-row">
+                    <td class="rank">${index + 1}</td>
+                    <td class="answer-details" data-survey="Survey: ${item.survey}">
+                        <span class="question">${item.question}</span>
+                        <span class="answer">${item.answer}</span>
+                    </td>
+                    <td class="count">${item.score || 'N/A'}</td>
+                    <td class="count">${item.count}</td>
+                    <td class="percentage">${item.percentage}</td>
+                </tr>
+            `).join('');
+        };
+
+        function renderUI() {
+            const surveyOptions = statsData.surveys.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+            const companyOptions = statsData.companyNames.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            adminPanelContainer.innerHTML = `
+                     <div class="admin-page-content">
+                         <a href="#" class="admin-back-button" style="display: flex; align-items: center; gap: 5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
+                            <span>Back to Admin Panel</span>
+                         </a>
+                    <h1 style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 0 24 24" width="32" fill="currentColor"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>
+                        Statistics
+                    </h1>
+                    <div id="stats-content" class="stats-dashboard"></div>
+                </div>
+            `;
+            document.querySelector('.admin-back-button').addEventListener('click', (e) => { e.preventDefault(); renderAdminMainMenu(); });
+            document.getElementById('stats-content').innerHTML = `
+                <div class="stats-filters">
+                    <div class="stats-filter-group">
+                        <label for="answers-filter">View</label>
+                        <select id="answers-filter" class="admin-select">
+                            <option value="all">All answers</option>
+                            <option value="top">Top answers</option>
+                        </select>
+                    </div>
+                    <div class="stats-filter-group">
+                        <label for="survey-select">Select Survey</label>
+                        <select id="survey-select" class="admin-select">
+                            <option value="all">All</option>
+                            ${surveyOptions}
+                        </select>
+                    </div>
+                    <div class="stats-filter-group">
+                        <label for="company-select">Select Company</label>
+                        <select id="company-select" class="admin-select">
+                            <option value="all">All</option>
+                            ${companyOptions}
+                        </select>
+                    </div>
+                    <div class="stats-filter-group">
+                        <label for="age-filter">Age</label>
+                        <select id="age-filter" class="admin-select">
+                            <option value="all">All</option>
+                            <option value="21-30">21-30</option>
+                            <option value="31-40">31-40</option>
+                            <option value="41-50">41-50</option>
+                            <option value="50+">50+</option>
+                        </select>
+                    </div>
+                    <div class="stats-filter-group">
+                        <label>Date Range</label>
+                        <div class="date-range-filter">
+                            <input type="date" id="date-from" class="admin-date-input">
+                            <input type="date" id="date-to" class="admin-date-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="clear-filters-wrapper">
+    <button id="clear-filters-btn" class="clear-filters-btn">Clear all filters</button>
+</div>
+                <div id="stats-view-container"></div>
+            `;
+            document.getElementById('answers-filter').addEventListener('change', updateDisplay);
+            document.getElementById('survey-select').addEventListener('change', updateDisplay);
+            document.getElementById('company-select').addEventListener('change', updateDisplay);
+            document.getElementById('age-filter').addEventListener('change', updateDisplay);
+            document.getElementById('date-from').addEventListener('change', updateDisplay);
+            document.getElementById('date-to').addEventListener('change', updateDisplay);
+            document.getElementById('clear-filters-btn').addEventListener('click', () => {
+                document.getElementById('answers-filter').value = 'all';
+                document.getElementById('survey-select').value = 'all';
+                document.getElementById('company-select').value = 'all';
+                document.getElementById('age-filter').value = 'all';
+                document.getElementById('date-from').value = '';
+                document.getElementById('date-to').value = '';
+                updateDisplay();
+            });
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const answersFilter = document.getElementById('answers-filter').value;
+            const viewContainer = document.getElementById('stats-view-container');
+            const surveySelect = document.getElementById('survey-select');
+            const companySelect = document.getElementById('company-select');
+            const ageSelect = document.getElementById('age-filter');
+            const dateFromInput = document.getElementById('date-from');
+            const dateToInput = document.getElementById('date-to');
+            
+            const selectedSurvey = surveySelect.value;
+            const selectedCompany = companySelect.value;
+            const selectedAge = ageSelect.value;
+            const dateFrom = dateFromInput.value;
+            const dateTo = dateToInput.value;
+
+            let baseParticipants = (statsData.allParticipants || []);
+            let filteredParticipants = baseParticipants;
+
+            if (selectedSurvey !== 'all') {
+                filteredParticipants = filteredParticipants.filter(p => p.survey === selectedSurvey);
+            }
+            if (selectedCompany !== 'all') {
+                filteredParticipants = filteredParticipants.filter(p => p.company === selectedCompany);
+            }
+            if (selectedAge !== 'all') {
+                filteredParticipants = filteredParticipants.filter(p => {
+                    const age = parseInt(p.age, 10);
+                    if (isNaN(age)) return false;
+                    if (selectedAge === '21-30') return age >= 21 && age <= 30;
+                    if (selectedAge === '31-40') return age >= 31 && age <= 40;
+                    if (selectedAge === '41-50') return age >= 41 && age <= 50;
+                    if (selectedAge === '50+') return age >= 50;
+                    return false;
+                });
+            }
+            if (dateFrom) {
+                const fromDate = new Date(dateFrom); fromDate.setHours(0, 0, 0, 0);
+                filteredParticipants = filteredParticipants.filter(p => new Date(p.date) >= fromDate);
+            }
+            if (dateTo) {
+                const toDate = new Date(dateTo); toDate.setHours(23, 59, 59, 999);
+                filteredParticipants = filteredParticipants.filter(p => new Date(p.date) <= toDate);
+            }
+            
+            const sortedParticipants = sortParticipants(filteredParticipants, currentSortKey, currentSortDirection);
+
+            
+            if (answersFilter === 'top') {
+                const frequencyMap = {};
+                const questionTotalMap = {};
+                sortedParticipants.forEach(p => {
+                    const survey = statsData.surveys.find(s => s.name === p.survey);
+                    if (!survey) return;
+
+                    p.responses.forEach((response, index) => {
+                        const question = survey.questions[index];
+                        if (!response || !question || question.options.length <= 1) return;
+                        
+                        const questionText = question.text;
+                        if (!questionTotalMap[questionText]) {
+                            questionTotalMap[questionText] = 0;
+                        }
+                        questionTotalMap[questionText]++;
+                        const answers = response.toString().split(', ');
+                        
+                        answers.forEach(fullAnswer => {
+                            if (!fullAnswer.trim()) return;
+                            let answerText = fullAnswer.trim();
+                            let score = 'N/A';
+                            if (answerText.includes('::score=')) {
+                                const parts = answerText.split('::score=');
+                                answerText = parts[0];
+                                score = parts[1];
+                            }
+                            const key = `${p.survey}|${questionText}|${answerText}`;
+                            if (!frequencyMap[key]) {
+                                frequencyMap[key] = { survey: p.survey, question: questionText, answer: answerText, score: score, count: 0 };
+                            }
+                            frequencyMap[key].count++;
+                        });
+                    });
+                });
+                
+                let rankedAnswers = Object.values(frequencyMap).map(item => {
+                    const totalForQuestion = questionTotalMap[item.question] || 0;
+                    const percentage = totalForQuestion > 0 ? ((item.count / totalForQuestion) * 100).toFixed(1) + '%' : '0.0%';
+                    return {...item, percentage };
+                });
+
+                rankedAnswers.sort((a, b) => {
+                    let valA, valB;
+                    const key = topAnswersSortKey;
+                    
+                    if (key === 'rank') { valA = b.count; valB = a.count; }
+                    else if (key === 'score') { valA = parseFloat(a.score) || 0; valB = parseFloat(b.score) || 0; }
+                    else if (key === 'percentage') { valA = parseFloat(a.percentage) || 0; valB = parseFloat(b.percentage) || 0; }
+                    else if (key === 'count') { valA = a.count; valB = b.count; }
+                    else { valA = (a[key] || '').toString().toLowerCase(); valB = (b[key] || '').toString().toLowerCase(); }
+
+                    let comparison = 0;
+                    if (valA > valB) comparison = 1;
+                    else if (valA < valB) comparison = -1;
+
+                    return topAnswersSortDirection === 'asc' ? comparison : -comparison;
+                });
+
+                viewContainer.innerHTML = `
+                    <div class="top-answers-container">
+                        <div class="top-answers-controls">
+                            <button class="top-answers-limit-btn" data-limit="all">All</button>
+                            <button class="top-answers-limit-btn" data-limit="5">Top 5</button>
+                            <button class="top-answers-limit-btn" data-limit="10">Top 10</button>
+                            <button class="top-answers-limit-btn" data-limit="20">Top 20</button>
+                        </div>
+                        <div class="top-answers-table-wrapper">
+                            <table class="top-answers-table">
+                                <thead>
+                                    <tr>
+                                        <th><span class="sortable-header" data-sort-by="rank">Rank<i class="sort-icon"></i></span></th>
+                                        <th><span class="sortable-header" data-sort-by="answer">Answer<i class="sort-icon"></i></span></th>
+                                        <th><span class="sortable-header" data-sort-by="score">Rate<i class="sort-icon"></i></span></th>
+                                        <th><span class="sortable-header" data-sort-by="count">Total<i class="sort-icon"></i></span></th>
+                                        <th><span class="sortable-header" data-sort-by="percentage">%<i class="sort-icon"></i></span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top-answers-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                
+                let currentLimit = 'all';
+
+                const controlsContainer = viewContainer.querySelector('.top-answers-controls');
+                const limitButtons = controlsContainer.querySelectorAll('.top-answers-limit-btn');
+
+                const updateActiveButton = () => {
+                    limitButtons.forEach(btn => {
+                        if (btn.dataset.limit === currentLimit) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                };
+                
+                controlsContainer.addEventListener('click', e => {
+                    if (e.target.matches('.top-answers-limit-btn')) {
+                        currentLimit = e.target.dataset.limit;
+                        updateActiveButton();
+                        renderTopAnswersTable(rankedAnswers, currentLimit);
+                    }
+                });
+
+                const tableHeader = viewContainer.querySelector('.top-answers-table thead');
+                tableHeader.querySelectorAll('.sortable-header').forEach(header => {
+                    if (header.dataset.sortBy === topAnswersSortKey) {
+                        header.classList.add('active');
+                        const icon = header.querySelector('.sort-icon');
+                        icon.classList.add(topAnswersSortDirection);
+                    }
+                });
+
+                tableHeader.addEventListener('click', e => {
+                    const header = e.target.closest('.sortable-header');
+                    if (!header) return;
+
+                    const newSortKey = header.dataset.sortBy;
+                    if (topAnswersSortKey === newSortKey) {
+                        topAnswersSortDirection = topAnswersSortDirection === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        topAnswersSortKey = newSortKey;
+                        topAnswersSortDirection = (newSortKey === 'answer') ? 'asc' : 'desc';
+                    }
+                    updateDisplay();
+                });
+                
+                updateActiveButton();
+                renderTopAnswersTable(rankedAnswers, currentLimit);
+            }
+                
+
+             else {
+                activeCharts.forEach(chart => chart.destroy());
+                activeCharts = [];
+                
+                const totals = { total: sortedParticipants.length };
+                statsData.companyNames.forEach(c => { totals[c] = 0; });
+                sortedParticipants.forEach(p => { if (totals.hasOwnProperty(p.company)) totals[p.company]++; });
+                const summaryHtml = `Total Participants: <b>${totals.total}</b>  |  ${statsData.companyNames.map(c => `${c}: <b>${totals[c]}</b>`).join('  |  ')}`;
+
+                if (selectedSurvey === 'all') {
+                    viewContainer.innerHTML = `
+                        <div class="all-surveys-layout">
+                            <div class="text-summary-stats">${summaryHtml}</div>
+                            <div class="participant-list-container">
+                                <input type="text" id="participant-search" class="admin-input" placeholder="Search participants...">
+                                <div class="participant-list-header">
+                                    <span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span>
+                                    <span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span>
+                                    <span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span>
+                                    <span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span>
+                                    <span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span>
+                                    <span class="sortable-header" data-sort-by="rate" style="padding-right: 20px;">RATE<i class="sort-icon"></i></span>
+                                </div>
+                                <ul id="all-participants-list" class="participant-list"></ul>
+                            </div>
+                        </div>
+                    `;
+                    renderAllParticipantsList(sortedParticipants);
+                } else {
+                    const currentView = document.querySelector('.view-icon-btn.active')?.dataset.view || 'list';
+                    viewContainer.innerHTML = `
+                        <div id="single-survey-content-wrapper">
+                            <div class="stats-sub-header">
+                                <div class="view-icon-switcher">
+                                    <button id="icon-list-btn" data-view="list" class="view-icon-btn" title="List View"><svg xmlns="http://www.w.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M120-280v-80h560v80H120Zm0-160v-80h560v80H120Zm0-160v-80h560v80H120Z"/></svg></button>
+                                    <button id="icon-dashboard-btn" data-view="dashboard" class="view-icon-btn" title="Dashboard View"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M120-120v-560h240v560H120Zm280 0v-320h240v320H400Zm280 0v-440h240v440H680Z"/></svg></button>
+                                </div>
+                                <div class="text-summary-stats" id="summary-text-area">${summaryHtml}</div>
+                            </div>
+                            <div id="single-survey-content"></div>
+                        </div>
+                    `;
+                    
+                    const renderView = (view) => {
+                        const summaryTextArea = document.getElementById('summary-text-area');
+                        document.querySelectorAll('.view-icon-btn').forEach(b => b.classList.remove('active'));
+                        document.getElementById(`icon-${view}-btn`).classList.add('active');
+                        if (view === 'list') {
+                            summaryTextArea.style.display = 'block';
+                            document.getElementById('single-survey-content').innerHTML = `
+                                <div class="participant-list-container full-width">
+                                    <input type="text" id="participant-search" class="admin-input" placeholder="Search participants...">
+                                    <div class="participant-list-header">
+                                        <span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span>
+                                        <span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span>
+                                        <span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span>
+                                        <span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span>
+                                        <span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span>
+                                        <span class="sortable-header" data-sort-by="rate" style="padding-right: 20px;">RATE<i class="sort-icon"></i></span>
+                                    </div>
+                                    <ul id="all-participants-list" class="participant-list"></ul>
+                                </div>
+                            `;
+                            renderAllParticipantsList(sortedParticipants);
+                        } else {
+                            summaryTextArea.style.display = 'none';
+                            displaySingleSurveyDetails(selectedSurvey, selectedCompany, sortedParticipants);
+                        }
+                    };
+                    document.getElementById('icon-list-btn').addEventListener('click', () => renderView('list'));
+                    document.getElementById('icon-dashboard-btn').addEventListener('click', () => renderView('dashboard'));
+                    renderView(currentView);
+                }
+
+                const listHeader = viewContainer.querySelector('.participant-list-header');
+                if(listHeader) {
+                    listHeader.addEventListener('click', (e) => {
+                        const header = e.target.closest('.sortable-header');
+                        if (!header) return;
+
+                        const newSortKey = header.dataset.sortBy;
+                        if (currentSortKey === newSortKey) {
+                            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            currentSortKey = newSortKey;
+                            currentSortDirection = newSortKey === 'date' ? 'desc' : 'asc';
+                        }
+                        updateDisplay();
+                    });
+
+                    document.querySelectorAll('.sortable-header').forEach(header => {
+                        header.classList.remove('active');
+                        const icon = header.querySelector('.sort-icon');
+                        icon.classList.remove('asc', 'desc');
+
+                        if (header.dataset.sortBy === currentSortKey) {
+                            header.classList.add('active');
+                            icon.classList.add(currentSortDirection);
+                        }
+                    });
+                }
+            }
+        }
+    function displaySingleSurveyDetails(surveyName, companyFilter, filteredParticipants) {
+        const contentArea = document.getElementById('single-survey-content');
+        const survey = statsData.surveys.find(s => s.name === surveyName);
+        
+        if (!contentArea) return;
+
+        if (!survey || !survey.questions || survey.questions.length === 0) {
+            contentArea.innerHTML = '<p style="text-align:center; padding: 20px;">No questions or data found for this survey.</p>';
+            return;
+        }
+
+        if (timelineChartInstance) {
+            timelineChartInstance.destroy();
+            timelineChartInstance = null;
+        }
+
+        contentArea.innerHTML = `
+            <div class="stats-overall-layout">
+                <div id="question-card-main-wrapper"></div>
+                <div class="stats-right-column">
+                    <div class="stats-timeline-chart-container" id="timeline-container">
+                         <div id="timeline-placeholder" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: rgba(255, 255, 255, 0.3); text-align: center; padding: 20px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="80" viewBox="0 -960 960 960" width="80" fill="currentColor"><path d="M120-120v-80h720v80H120Zm112-160-84-84 213-212 159 159 253-253 56 56-309 309-159-159-157 157Z"/></svg>
+                            <p style="margin-top: 10px; font-size: 1.1rem;">Select an answer to view its trend</p>
+                        </div>
+                        <canvas id="timeline-chart" style="display: none;"></canvas>
+                    </div>
+                </div>
+            </div>
+        `;
+
+       
+        
+        function renderQuestion(index) {
+
+            const q = survey.questions[index];
+            const questionCardContainer = document.getElementById('question-card-main-wrapper');
+            const allCompanyNames = statsData.companyNames;
+            const colors = { 'SMJ': 'rgba(217, 48, 37, 0.9)', 'EB Infinity': 'rgba(0, 123, 255, 0.9)', 'AmongUs': 'rgba(255, 255, 255, 0.9)' };
+            
+            let answersHtml;
+            let legendHtml;
+
+            if (!q.options || q.options.length === 0) {
+                const submittedAnswers = filteredParticipants
+                    .map(p => p.responses[index])
+                    .filter(response => response && response.trim() !== '');
+
+                if (submittedAnswers.length > 0) {
+                    answersHtml = `
+                        <div class="stats-freetext-answers-container">
+                            ${submittedAnswers.map(answer => `<div class="stats-freetext-answer-item">${answer.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`).join('')}
+                        </div>`;
+                } else {
+                    answersHtml = '<div class="stats-freetext-no-answers">No answers submitted for this question.</div>';
+                }
+                legendHtml = '';
+            } else {
+                const dynamicResults = {};
+                q.options.forEach(opt => {
+                    const cleanOpt = opt.split('::score=')[0];
+                    if (!dynamicResults[cleanOpt]) {
+                        dynamicResults[cleanOpt] = {};
+                        allCompanyNames.forEach(c => dynamicResults[cleanOpt][c] = 0);
+                    }
+                });
+                
+                filteredParticipants.forEach(p => {
+                    const answerCell = p.responses[index] || '';
+                    const respondentAnswers = answerCell.toString().split(', ');
+                    const company = p.company;
+                    
+                    respondentAnswers.forEach(ans => {
+                        let cleanAns = ans.split('::score=')[0];
+                        if (dynamicResults[cleanAns] && dynamicResults[cleanAns].hasOwnProperty(company)) {
+                            dynamicResults[cleanAns][company]++;
+                        }
+                    });
+                });
+
+                let companiesToDisplay = (companyFilter === 'all') ? allCompanyNames : [companyFilter];
+
+                answersHtml = q.options.map(opt => {
+                    const cleanOpt = opt.split('::score=')[0];
+                    const optionResults = dynamicResults[cleanOpt] || {};
+                    const miniBarsHtml = companiesToDisplay.map(name => {
+                        const count = optionResults[name] || 0;
+                        const companyTotalForQuestion = filteredParticipants.filter(p => p.company === name && p.responses[index]).length;
+                        const percentage = companyTotalForQuestion > 0 ? (count / companyTotalForQuestion) * 100 : 0;
+                        return `<div class="stats-mini-bar" style="width: ${percentage}%; background-color: ${colors[name]};" title="${name}: ${count} (${percentage.toFixed(1)}%)"></div>`;
+                    }).join('');
+                    const breakdownCountsHtml = companiesToDisplay.map(name => {
+                        const count = optionResults[name] || 0;
+                        return `<div class="stats-company-count" style="color: ${colors[name]};"><span>•</span><span>${count}</span></div>`;
+                    }).join('');
+                    return `
+                        <div class="stats-answer-row" data-answer="${cleanOpt}" style="cursor: pointer;">
+                            <div class="stats-answer-item">
+                                <span class="stats-answer-text">${cleanOpt}</span>
+                                <div class="stats-mini-bars-container">${miniBarsHtml}</div>
+                            </div>
+                            <div class="stats-answer-breakdown-counts">${breakdownCountsHtml}</div>
+                        </div>`;
+                }).join('');
+
+                legendHtml = allCompanyNames.map(name => `
+                    <div class="stats-legend-item">
+                        <div class="stats-legend-color-box" style="background-color: ${colors[name]};"></div>
+                        <span>${name}</span>
+                    </div>`).join('');
+            }
+
+            if(questionCardContainer){
+                 const progressPercentage = ((index + 1) / survey.questions.length) * 100;
+                 questionCardContainer.innerHTML = `
+                <div class="stats-question-view">
+                    <div id="prev-question" class="stats-nav-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
+                    </div>
+                    <div id="question-card-container">
+                        <div class="stats-question-card">
+                            <h3 class="stats-question-title">${q.text}</h3>
+                            <div class="stats-answers-container">${answersHtml}</div>
+                            <div class="stats-legend">
+                                <div class="progress-line-container">
+                                    <div class="progress-line-fill" style="width: ${progressPercentage}%;"></div>
+                                </div>
+                                ${legendHtml}
+                            </div>
+                        </div>
+                    </div>
+                    <div id="next-question" class="stats-nav-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="m304-82-56-57 343-343-343-343 56-57 400 400L304-82Z"/></svg>
+                    </div>
+                </div>`;
+            
+            const prevBtn = document.getElementById('prev-question');
+            const nextBtn = document.getElementById('next-question');
+            const answersContainer = document.querySelector('.stats-answers-container');
+            
+            answersContainer.addEventListener('click', (e) => {
+                const answerRow = e.target.closest('.stats-answer-row');
+                if (answerRow) {
+                    const selectedAnswer = answerRow.dataset.answer;
+                    document.querySelectorAll('.stats-answer-row').forEach(row => row.style.background = 'rgba(0, 0, 0, 0.25)');
+                    answerRow.style.background = 'rgba(0, 123, 255, 0.3)';
+                    activeTimelineAnswerInfo = { answer: selectedAnswer, question: q };
+                    generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
+                }
+            });
+
+            if (activeTimelineAnswerInfo.answer && activeTimelineAnswerInfo.question.text === q.text) {
+                const answerRow = answersContainer.querySelector(`.stats-answer-row[data-answer="${activeTimelineAnswerInfo.answer}"]`);
+                if(answerRow) {
+                    answerRow.style.background = 'rgba(0, 123, 255, 0.3)';
+                    generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
+                }
+            }
+            
+            function updateNavButtons() {
+                prevBtn.classList.toggle('disabled', currentQuestionIndex === 0);
+                nextBtn.classList.toggle('disabled', currentQuestionIndex === survey.questions.length - 1);
+            }
+
+            prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(currentQuestionIndex); } });
+            nextBtn.addEventListener('click', () => { if (currentQuestionIndex < survey.questions.length - 1) { currentQuestionIndex++; renderQuestion(currentQuestionIndex); } });
+            updateNavButtons();
+            }
+        }
+        
+        renderQuestion(currentQuestionIndex);
+    }
+    function generateTimelineDataAndRenderChart(answerInfo, participants, survey, companies, colors) {
+        if (timelineChartInstance) {
+            timelineChartInstance.destroy();
+        }
+
+        const placeholder = document.getElementById('timeline-placeholder');
+        const canvas = document.getElementById('timeline-chart');
+        if (!placeholder || !canvas) return;
+        
+        placeholder.style.display = 'none';
+        canvas.style.display = 'block';
+
+        const dateFromInput = document.getElementById('date-from');
+        const dateToInput = document.getElementById('date-to');
+        const questionIndex = survey.questions.findIndex(q => q.text === answerInfo.question.text);
+
+        let startDateString = dateFromInput.value;
+        let endDateString = dateToInput.value;
+
+        if (!startDateString || !endDateString) {
+            const allParticipantDates = participants.filter(p => p.date).map(p => new Date(p.date)).sort((a, b) => a - b);
+            if (allParticipantDates.length > 0) {
+                if (!startDateString) startDateString = allParticipantDates[0].toISOString().slice(0, 10);
+                if (!endDateString) endDateString = allParticipantDates[allParticipantDates.length - 1].toISOString().slice(0, 10);
+            }
+        }
+        
+        const labels = [];
+        let grouping = 'daily';
+        const startDate = new Date(startDateString);
+        const endDate = new Date(endDateString);
+
+        if (startDateString && endDateString) {
+            const diffTime = Math.abs(endDate - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+            if (diffDays > 90) {
+                grouping = 'monthly';
+            } else if (diffDays > 14) {
+                grouping = 'weekly';
+            }
+        }
+
+        if (grouping === 'monthly') {
+            let current = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+            while (current <= endDate) {
+                labels.push(current.toISOString().slice(0, 7));
+                current.setMonth(current.getMonth() + 1);
+            }
+        } else if (grouping === 'weekly') {
+            let current = new Date(startDate);
+            current.setDate(current.getDate() - current.getDay());
+            
+            while (current <= endDate) {
+                labels.push(current.toISOString().slice(0, 10));
+                current.setDate(current.getDate() + 7);
+            }
+        } else {
+            let current = new Date(startDate);
+            while (current <= endDate) {
+                labels.push(current.toISOString().slice(0, 10));
+                current.setDate(current.getDate() + 1);
+            }
+        }
+        
+        const datasets = companies.map(company => {
+            const data = [];
+            let lastValidValue = 0;
+            
+            labels.forEach(label => {
+                let periodParticipants = [];
+                 if (grouping === 'monthly') {
+                    const year = parseInt(label.substring(0, 4), 10);
+                    const month = parseInt(label.substring(5, 7), 10) - 1;
+                    periodParticipants = participants.filter(p => {
+                        if (!p.date) return false;
+                        const pDate = new Date(p.date);
+                        return p.company === company && pDate.getFullYear() === year && pDate.getMonth() === month;
+                    });
+                } else if (grouping === 'weekly') {
+                    const weekStart = new Date(label);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 7);
+                    
+                    periodParticipants = participants.filter(p => {
+                        if (!p.date) return false;
+                        const pDate = new Date(p.date);
+                        return p.company === company && pDate >= weekStart && pDate < weekEnd;
+                    });
+                } else {
+                    periodParticipants = participants.filter(p => p.date && p.date.slice(0, 10) === label && p.company === company);
+                }
+
+                const totalResponsesInPeriod = periodParticipants.length;
+                
+                if (totalResponsesInPeriod === 0) {
+                    data.push(lastValidValue);
+                    return;
+                }
+
+                const selectedAnswerCountInPeriod = periodParticipants.filter(p => {
+                    const response = p.responses[questionIndex] || '';
+                    return response.toString().split(', ').map(r => r.split('::score=')[0]).includes(answerInfo.answer);
+                }).length;
+
+                const currentPercentage = (selectedAnswerCountInPeriod / totalResponsesInPeriod) * 100;
+                
+                const weight = Math.min(totalResponsesInPeriod / 10, 1);
+                const newValue = (lastValidValue * (1 - weight)) + (currentPercentage * weight);
+                
+                data.push(newValue);
+                lastValidValue = newValue;
+            });
+
+            return {
+                label: company,
+                data: data,
+                borderColor: colors[company],
+                backgroundColor: colors[company].replace('0.9', '0.2'),
+                fill: false,
+                tension: 0.2,
+                borderWidth: 2
+            };
+        });
+
+        const ctx = document.getElementById('timeline-chart')?.getContext('2d');
+        if (!ctx) return;
+        
+        timelineChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: { labels, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { color: '#fff' } },
+                    title: {
+                        display: true,
+                        text: `Trend for: "${answerInfo.answer}" (${grouping})`,
+                        color: '#fff',
+                        padding: { top: 5, bottom: 15 },
+                        font: { size: 14 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { callback: value => value.toFixed(1) + '%', color: '#ccc' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#ccc' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+            }
+        });
+    }
+function calculateAverageScore(responses) {
+    let totalScore = 0;
+    let scoredAnswersCount = 0;
+
+    responses.forEach(response => {
+        if (typeof response === 'string' && response.includes('::score=')) {
+            const parts = response.split('::score=');
+            const score = parseInt(parts[1], 10);
+            if (!isNaN(score)) {
+                totalScore += score;
+                scoredAnswersCount++;
+            }
+        }
+    });
+
+    if (scoredAnswersCount === 0) {
+        return 'N/A';
+    }
+
+    const average = totalScore / scoredAnswersCount;
+    return `${average.toFixed(1)} / 5`;
+}
+function sortParticipants(participants, key, direction) {
+    return [...participants].sort((a, b) => {
+        let valA, valB;
+
+        if (key === 'age') {
+            valA = parseInt(a.age, 10) || 0;
+            valB = parseInt(b.age, 10) || 0;
+        } else if (key === 'date') {
+            valA = new Date(a.date);
+            valB = new Date(b.date);
+        } else if (key === 'rate') {
+            valA = parseFloat(calculateAverageScore(a.responses)) || 0;
+            valB = parseFloat(calculateAverageScore(b.responses)) || 0;
+        } else {
+            valA = (a[key] || '').toString().toLowerCase();
+            valB = (b[key] || '').toString().toLowerCase();
+        }
+        
+        let comparison = 0;
+        if (valA > valB) {
+            comparison = 1;
+        } else if (valA < valB) {
+            comparison = -1;
+        }
+        
+        return direction === 'asc' ? comparison : -comparison;
+    });
+}
+function showParticipantDetailsModal(participantData) {
+        const existingModal = document.querySelector('.participant-modal-overlay');
+        if (existingModal) existingModal.remove();
+
+        const survey = statsData.surveys.find(s => s.name === participantData.survey);
+        if (!survey) {
+            showAlert('Could not find questions for this survey.');
+            return;
+        }
+
+        let qaHtml = '';
+        survey.questions.forEach((q, index) => {
+            const rawAnswer = participantData.responses[index] || 'No answer recorded';
+            let displayAnswer = rawAnswer;
+            let scoreHtml = '';
+
+            if (typeof rawAnswer === 'string' && rawAnswer.includes('::score=')) {
+                const parts = rawAnswer.split('::score=');
+                displayAnswer = parts[0];
+                scoreHtml = `<span class="qa-card-score">(Score: ${parts[1]}/5)</span>`;
+            }
+
+            qaHtml += `
+                <div class="qa-card">
+                    <div class="qa-card-question">${q.text}</div>
+                    <div class="qa-card-answer">${displayAnswer}${scoreHtml}</div>
+                </div>
+            `;
+        });
+        if (survey.questions.length === 0) {
+            qaHtml = '<p style="text-align: center; opacity: 0.7;">This survey had no questions at the time of submission.</p>'
+        }
+
+        const modal = document.createElement('div');
+        modal.className = 'participant-modal-overlay';
+        modal.innerHTML = `
+            <div class="participant-modal-content">
+                <div class="participant-modal-header">
+                    <h2>${participantData.participant}</h2>
+                    <div style="display: flex; align-items: center; gap: 30px;">
+                        <div class="participant-modal-details">
+                            <div>Survey: <b>${participantData.survey}</b></div>
+                            <div>Company: <b>${participantData.company}</b></div>
+                            <div>Age: <b>${participantData.age || 'N/A'}</b></div>
+                        </div>
+                        <button class="participant-modal-close">&times;</button>
+                    </div>
+                </div>
+                <div class="participant-modal-body">
+                    ${qaHtml}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelector('.participant-modal-close').addEventListener('click', () => {
+            modal.remove();
+        });
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+
+    function renderAllParticipantsList(participants) {
+        const listElement = document.getElementById('all-participants-list');
+        const searchInput = document.getElementById('participant-search');
+        if (!listElement || !participants) return;
+
+        function displayList(filteredParticipants) {
+            listElement.innerHTML = '';
+            filteredParticipants.forEach(p => {
+                const date = new Date(p.date);
+                const formattedDate = date.toLocaleString ? date.toLocaleString('en-US', {
+                    year: '2-digit', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute:'2-digit', hour12: true
+                }) : p.date;
+
+                const rate = calculateAverageScore(p.responses);
+                const item = document.createElement('li');
+                item.className = 'participant-list-item';
+                item.innerHTML = `
+                    <span>${p.survey}</span>
+                    <span>${p.participant}</span>
+                    <span>${p.age || 'N/A'}</span>
+                    <span>${p.company}</span>
+                    <span>${formattedDate}</span>
+                     <span style="text-align: right; font-weight: 400; padding-right: 20px;">${rate}</span>
+                `;
+                item.dataset.participantData = JSON.stringify(p);
+                listElement.appendChild(item);
+            });
+        }
+
+        displayList(participants);
+
+        searchInput.addEventListener('keyup', () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filtered = participants.filter(p =>
+            p.participant.trim().toLowerCase().startsWith(searchTerm)
+        );
+        displayList(filtered);
+    });
+        listElement.addEventListener('click', (e) => {
+            const listItem = e.target.closest('.participant-list-item');
+            if (listItem && listItem.dataset.participantData) {
+                const participantData = JSON.parse(listItem.dataset.participantData);
+                showParticipantDetailsModal(participantData);
+            }
+        });
+    }
+    const script = document.createElement('script');
+    script.id = 'jsonp-script-stats-all';
+    script.src = `${SCRIPT_URL}?action=getStatisticsData&callback=handleAllStatsData`;
+    script.onerror = () => {
+        hideAdminSpinner(spinner);
+        showAlert('Failed to load statistics data.');
+    };
+    document.body.appendChild(script);
+}
+    
+
+function renderSurveyList(mode) {
+        const spinner = showAdminSpinner();
+
+        window.handleSurveyList = (surveys) => {
+            hideAdminSpinner(spinner);
+            const title = mode === 'edit' ? 'Edit Surveys' : 'View Statistics';
+            
+            let listHtml = surveys.map(s => {
+                const dateString = s.lastModified;
+                let formattedDateTime = 'N/A';
+
+                if (dateString) {
+                    const date = new Date(dateString);
+                    const options = { 
+                        year: 'numeric', 
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        hour12: true
+                    };
+                    formattedDateTime = new Intl.DateTimeFormat('en-us', options).format(date).replace(',', '');
+                }
+
+                return `
+                    <li class="admin-list-item" data-id="${s.id}" data-name="${s.name}">
+                        <div class="admin-list-item-info">
+                            <span class="name">${s.name}</span>
+                        </div>
+                        <div class="admin-list-item-url">
+                            <button class="url-btn" title="Get Survey Links">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="currentColor"><path d="M440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm120 160v-80h160q50 0 85-35t35-85q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 83-58.5 141.5T680-280H520Z"/></svg>
+                            </button>
+                        </div>
+                        <div class="admin-list-item-date">
+                            <span>${formattedDateTime}</span>
+                        </div>
+                        <div class="admin-list-item-actions">
+                            <button class="edit-btn" title="Edit"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button>
+                            <button class="delete-btn" title="Delete"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></button>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+
+            if (surveys.length === 0) {
+                listHtml = '<p style="text-align:center; padding: 20px;">No surveys found.</p>';
+            }
+
+            adminPanelContainer.innerHTML = `
+                <div class="admin-page-content">
+                    <a href="#" class="admin-back-button" style="display: flex; align-items: center; gap: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
+                        <span>Back to Admin Panel</span>
+                    </a>
+                     <h1 style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32" fill="currentColor"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
+                        ${title}
+                     </h1>
+                     
+                     <input type="text" id="survey-search" class="admin-search-bar" placeholder="Search surveys...">
+
+                     <div class="admin-list-header">
+                        <span>Survey Name</span>
+                        <span style="text-align: center;">URLs</span>
+                        <span>Last Modified</span>
+                        <span style="justify-self: end;">Actions</span>
+                     </div>
+                     <ul class="admin-list">${listHtml}</ul>
+                </div>
+            `;
+            
+            document.getElementById('survey-search').addEventListener('keyup', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                document.querySelectorAll('.admin-list-item').forEach(item => {
+                    const surveyName = item.dataset.name.toLowerCase();
+                    if (surveyName.startsWith(searchTerm)) {
+                        item.style.display = 'grid';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            document.querySelector('.admin-back-button').addEventListener('click', renderAdminMainMenu);
+            document.querySelector('.admin-list').addEventListener('click', e => {
+                const button = e.target.closest('button');
+                if(!button) return;
+                
+                const listItem = button.closest('.admin-list-item');
+                const surveyId = listItem.dataset.id;
+                const surveyName = listItem.dataset.name;
+                
+                if (button.classList.contains('url-btn')) {
+                    showUrlModal(surveyId, surveyName);
+                    return;
+                }
+                
+                if (button.classList.contains('edit-btn')) {
+                    const spinner = showAdminSpinner();
+                    window.handleSurveyQuestions = (questions) => {
+                        hideAdminSpinner(spinner);
+                        if (questions.error) {
+                            showAlert(questions.error);
+                            return;
+                        }
+                        const surveyData = {
+                            name: listItem.dataset.name,
+                            id: surveyId,
+                            questions: questions
+                        };
+                        renderAddOrEditSurveyForm(surveyData);
+                        document.getElementById('jsonp-script-questions').remove();
+                        delete window.handleSurveyQuestions;
+                    };
+                    const script = document.createElement('script');
+                    script.id = 'jsonp-script-questions';
+                    script.src = `${SCRIPT_URL}?action=getQuestions&sheet=${surveyId}&callback=handleSurveyQuestions`;
+                    document.body.appendChild(script);
+
+                } else if (button.classList.contains('delete-btn')) {
+                    if (confirm(`Are you sure you want to delete the survey "${listItem.dataset.name}"? This action cannot be undone.`)) {
+                        const spinner = showAdminSpinner();
+                         fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'deleteSurvey', sheetName: surveyId }),
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                         }).then(res => res.json()).then(result => {
+                            hideAdminSpinner(spinner);
+                            if(result.status === 'success'){
+                                showAlert('Survey deleted.');
+                                renderSurveyList('edit');
+                            } else {
+                                showAlert('Error: ' + result.message);
+                            }
+                         }).catch(err => {
+                            hideAdminSpinner(spinner);
+                            if (err instanceof TypeError && err.message === 'Failed to fetch') {
+                                showAlert('Survey deleted.');
+                                renderSurveyList('edit');
+                            } else {
+                                showAlert('An unexpected network error occurred.');
+                            }
+                        });
+                    }
+                }
+            });
+
+            document.getElementById('jsonp-script-list').remove();
+            delete window.handleSurveyList;
+        };
+
+        const script = document.createElement('script');
+        script.id = 'jsonp-script-list';
+        script.src = `${SCRIPT_URL}?action=getSurveyNames&callback=handleSurveyList`;
+        script.onerror = () => {
+            hideAdminSpinner(spinner);
+            showAlert('Failed to load the survey list. Check your network connection and SCRIPT_URL.');
+            delete window.handleSurveyList;
+        };
+        document.body.appendChild(script);
+    }
+
+    function showUrlModal(surveyId, surveyName) {
+        const existingModal = document.querySelector('.url-modal-overlay');
+        if (existingModal) existingModal.remove();
+
+        let linksHtml = '';
+        const baseUrl = `${window.location.origin}${window.location.pathname}`;
+        
+        Object.keys(themes).forEach(companyKey => {
+            const theme = themes[companyKey];
+            const link = `${baseUrl}?s=${surveyId}&c=${encodeURIComponent(companyKey)}-${theme.code}`;
+            linksHtml += `
+                <div class="link-entry">
+                    <span class="company-name">${companyKey}:</span>
+                    <input type="text" class="link-text-input" value="${link}" readonly>
+                    <div class="link-actions">
+                        <button class="copy-link-btn" data-link="${link}" title="Copy Link">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>
+                        </button>
+                        <button class="go-to-link-btn" data-link="${link}" title="Go to Link">
+                           <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="m256-240-56-56 384-384H240v-80h480v480h-80v-344L256-240Z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        const modal = document.createElement('div');
+        modal.className = 'url-modal-overlay';
+        modal.innerHTML = `
+            <div class="url-modal-content">
+                <div class="url-modal-header">
+                    <h2>Links for: ${surveyName}</h2>
+                    <button class="url-modal-close">&times;</button>
+                </div>
+                <div class="url-modal-body">
+                    ${linksHtml}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelector('.url-modal-close').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+        
+        modal.querySelectorAll('.copy-link-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                const linkToCopy = e.currentTarget.dataset.link;
+                navigator.clipboard.writeText(linkToCopy).then(() => {
+                    showAlert('Link copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showAlert('Failed to copy link.');
+                });
+            });
+        });
+
+        modal.querySelectorAll('.go-to-link-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                const linkToGo = e.currentTarget.dataset.link;
+                window.open(linkToGo, '_blank');
+            });
+        });
+    }
+      
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('admin')) {
+        initAdmin();
+    } else {
+        initializeSurvey();
+    }
+});
+</script>
+</body>
+</html>
