@@ -2547,7 +2547,32 @@ function hideAdminSpinner(spinnerElement) {
         }, { once: true });
     }
 }
+function checkAdminAccess() {
+        // --- CONFIGURE YOUR SECRET VALUES HERE ---
+        const ADMIN_ACCESS_KEY = 'dM456ad3n9';
+        const ADMIN_PASSWORD = '8gjx9Al4f4';
+        // -----------------------------------------
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const providedKey = urlParams.get('access-key');
+
+        if (providedKey === ADMIN_ACCESS_KEY) {
+            const enteredPassword = prompt("Please enter the administrator password:");
+
+            if (enteredPassword === null) {
+                // User clicked Cancel
+                return;
+            }
+
+            if (enteredPassword === ADMIN_PASSWORD) {
+                // If both the key and password are correct, initialize the admin panel
+                initAdmin();
+            } else {
+                alert('Access denied. Incorrect password.');
+                window.location.href = window.location.pathname; // Optional: redirect to the main page
+            }
+        }
+    }
     function initAdmin() {
         document.querySelector('.background-container').style.display = 'none';
         document.querySelector('.main-header').style.display = 'none';
@@ -3981,13 +4006,15 @@ function renderSurveyList(mode) {
     }
       
 
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('admin')) {
-        initAdmin();
+    const urlParamsForCheck = new URLSearchParams(window.location.search);
+    if (urlParamsForCheck.has('access-key')) {
+        checkAdminAccess();
     } else {
         initializeSurvey();
     }
 });
+
+
 </script>
 </body>
 </html>
