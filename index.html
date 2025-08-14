@@ -1457,6 +1457,8 @@
     display: flex;
     gap: 8px;
     flex-direction: column;
+    position: relative;
+    z-index: 10;
 }
 .view-icon-btn {
     background: rgba(0, 0, 0, 0.2);
@@ -2019,13 +2021,473 @@
 .slide-out-question-reverse {
     animation: slide-out-question-reverse 0.4s ease-out forwards;
 }
+.update-notification-modal {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: rgba(0, 80, 150, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #fff;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    z-index: 4000;
+    width: 90%;
+    max-width: 350px;
+    animation: slideInUp 0.5s ease-out;
+    border: 1px solid rgba(0, 123, 255, 0.5);
+}
+.update-notification-modal h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #a2d2ff;
+}
+.update-notification-modal ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+}
+.update-notification-modal li {
+    padding: 5px 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(0, 123, 255, 0.2);
+}
+.update-notification-modal li:last-child {
+    border-bottom: none;
+}
+.update-notification-modal button {
+    background: rgba(0, 123, 255, 0.5);
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+    font-weight: bold;
+}
+.update-notification-modal button:hover {
+    background: rgba(0, 123, 255, 0.7);
+}
+@keyframes slideInUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.live-toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(40, 167, 69, 0.9); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    z-index: 5000;
+    width: auto;
+    max-width: 320px;
+    animation: slideInFromRight 0.5s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.live-toast-notification h4 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+.live-toast-notification ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.9rem;
+}
+@keyframes slideInFromRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.custom-welcome-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(14, 42, 71, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 4500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.custom-welcome-modal-content {
+    background: rgba(0, 80, 150, 0.45);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 123, 255, 0.5);
+    padding: 30px 40px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 550px;
+    color: #fff;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+.custom-welcome-modal-content h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.8rem;
+    margin: 0 0 20px 0;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.custom-welcome-modal-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 25px 0;
+    text-align: left;
+}
+
+.custom-welcome-modal-content li {
+    padding: 8px 0;
+    font-size: 1.05rem;
+    border-bottom: 1px solid rgba(0, 123, 255, 0.2);
+}
+.custom-welcome-modal-content li:last-child {
+    border-bottom: none;
+}
+
+.custom-welcome-modal-content button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+}
+
+.custom-welcome-modal-content button:hover {
+    background: #0069d9;
+    box-shadow: 0 7px 20px rgba(0,123,255,0.4);
+}
+/* --- Novi stilovi za početni Admin Loader --- */
+.initial-admin-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    background-color: rgba(14, 42, 71, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+.initial-admin-loader-overlay.visible {
+    opacity: 1;
+}
+.loader-content {
+    text-align: center;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    animation: pulse 2s infinite ease-in-out;
+}
+.loader-content svg {
+    width: 80px;
+    height: 80px;
+    fill: #fff;
+    margin-bottom: 10px; 
+    animation: rotateAdminIcon 2.5s linear infinite;
+}
+.loader-content h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.loader-dots {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 40px;
+}
+.loader-dots::after {
+    content: ' .';
+    font-size: 3rem;
+    animation: dots 1.4s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes rotateAdminIcon {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.alert-modal {
+    background: rgba(0, 80, 150, 0.45);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 123, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    color: #fff;
+    padding: 30px 40px;
+    border-radius: 15px;
+    font-family: 'Poppins', sans-serif;
+}
+.alert-modal p {
+    color: #fff;
+    font-size: 1.1rem;
+}
+.alert-modal button {
+    background: #007bff;
+    box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+    border-radius: 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+.alert-modal button:hover {
+    background: #0069d9;
+    box-shadow: 0 7px 20px rgba(0,123,255,0.4);
+}
+
+.custom-welcome-modal-content li {
+    font-size: 1rem;
+    padding: 10px 5px;
+}
+.custom-welcome-modal-content li b, 
+.custom-welcome-modal-content li em {
+    color: #a2d2ff;
+}
+
+
+.live-toast-notification {
+    background: rgba(0, 123, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.live-toast-notification h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.live-toast-notification h4::before {
+    content: '🔔';
+}
+.live-toast-notification li b,
+.live-toast-notification li em {
+    color: #d4eaff;
+}
+.question-header .question-text-group {
+    flex-grow: 1;
+}
+
+.question-type-group,
+.delete-question-btn-wrapper {
+    transition: max-width 0.4s ease-out, opacity 0.2s 0.2s, margin 0.4s ease-out, padding 0.4s ease-out;
+    max-width: 200px;
+    overflow: hidden;
+}
+
+.admin-question-block.collapsed .question-type-group,
+.admin-question-block.collapsed + .delete-question-btn-wrapper {
+    max-width: 0;
+    opacity: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    pointer-events: none;
+}
+.custom-multiselect {
+    position: relative;
+    font-family: 'Montserrat', sans-serif;
+}
+.custom-multiselect .select-display {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 38px;
+    line-height: 1.5;
+}
+.custom-multiselect.open .select-display {
+    border-color: #fff;
+}
+.custom-multiselect .select-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #1c3a59;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    color: #fff;
+}
+.custom-multiselect.open .select-options {
+    display: block;
+}
+.custom-multiselect .select-options ul {
+    list-style: none;
+    margin: 0;
+    padding: 5px 0;
+}
+.custom-multiselect .select-options li {
+    padding: 5px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+     font-size: 0.85rem;
+}
+.custom-multiselect .select-options li:hover {
+    background-color: rgba(0, 123, 255, 0.2);
+}
+.custom-multiselect .select-options input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+}
+.custom-select {
+    position: relative;
+    font-family: 'Montserrat', sans-serif;
+}
+.custom-select .select-display {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 38px;
+    line-height: 1.5;
+}
+.custom-select.open .select-display {
+    border-color: #fff;
+}
+.custom-select .select-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #1c3a59;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    color: #fff;
+}
+.custom-select.open .select-options {
+    display: block;
+}
+.custom-select .select-options ul {
+    list-style: none;
+    margin: 0;
+    padding: 5px 0;
+}
+.custom-select .select-options li {
+    padding: 5px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    gap: 10px;
+    font-size: 0.85rem;
+}
+.custom-select .select-options li:hover {
+    background-color: rgba(0, 123, 255, 0.2);
+}
+.custom-select .tick-mark {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3e%3c/svg%3e");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+.custom-select .select-options li.selected .tick-mark {
+    opacity: 1;
+}
+.answer-score-select option,
+.question-type-group .admin-select option {
+    background: #1c3a59; 
+    color: #ffffff;     
+}
+.stats-answer-breakdown-counts div[style*="#FFD700"] {
+    font-size: 0.8rem;  
+    padding-right: 10px; 
+}
+
     </style>
 </head>
 <body>
     <div id="admin-panel-container"></div>
     <header class="main-header">
         <div class="logo">
-            <img src="https://i.imgur.com/sn6V6PG.png" alt="Logo" class="logo-icon">
             <h1 class="logo-text">SURVEY</h1>
         </div>
     </header>
@@ -2033,8 +2495,12 @@
     <div class="container" id="main-content">
     </div>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz75ZiMeiaQlcUfZS8DqBi8kN1w4QeDUKRChUTRIDsx8p6FpZqAWYqMmR81prj_DyjnPA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxF6BNkmZ9X-sWzCsSvAKVclU8Pr89oaFL5tJfMFROvKnU-rLkpVUVG2FKHKNKV6Xc_Aw/exec';
+    let companyConfig = {};
+    let adminDataCache = null;
+    let cacheIntervalId = null;
+    document.addEventListener('DOMContentLoaded', () => {
+    
     const mainContent = document.getElementById('main-content');
     const mainHeader = document.querySelector('.main-header');
     const adminPanelContainer = document.getElementById('admin-panel-container');
@@ -2103,7 +2569,6 @@ document.addEventListener('DOMContentLoaded', () => {
         backTextColor: '#555'
     }
     };
-    let companyConfig = {};
 
     function applyCompanyTheme(company) {
         const normalizedCompany = (company || '').toLowerCase();
@@ -2547,39 +3012,104 @@ function hideAdminSpinner(spinnerElement) {
         }, { once: true });
     }
 }
+function showInitialAdminLoader() {
+    const existingLoader = document.querySelector('#initial-admin-loader');
+    if (existingLoader) existingLoader.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'initial-admin-loader';
+    overlay.className = 'initial-admin-loader-overlay';
+    overlay.innerHTML = `
+        <div class="loader-content">
+            <svg xmlns="http://www.w3.org/2000/svg" height="80" viewBox="0 -960 960 960" width="80" fill="currentColor"><path d="M120-240v-240h320v240H120Zm0-320v-240h320v240H120Zm400 320v-240h320v240H520Zm0-320v-240h320v240H520Z"/></svg>
+            <h2>Admin Panel</h2>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.classList.add('visible');
+    }, 10);
+    return overlay;
+}
+
+function hideInitialAdminLoader(loaderElement) {
+    if (loaderElement) {
+        loaderElement.classList.remove('visible');
+        loaderElement.addEventListener('transitionend', () => loaderElement.remove(), { once: true });
+    }
+}
 function checkAdminAccess() {
-        // --- CONFIGURE YOUR SECRET VALUES HERE ---
         const ADMIN_ACCESS_KEY = 'dM456ad3n9';
-        const ADMIN_PASSWORD = '8gjx9Al4f4';
-        // -----------------------------------------
 
         const urlParams = new URLSearchParams(window.location.search);
         const providedKey = urlParams.get('access-key');
 
         if (providedKey === ADMIN_ACCESS_KEY) {
-            const enteredPassword = prompt("Please enter the administrator password:");
-
-            if (enteredPassword === null) {
-                // User clicked Cancel
-                return;
-            }
-
-            if (enteredPassword === ADMIN_PASSWORD) {
-                // If both the key and password are correct, initialize the admin panel
-                initAdmin();
-            } else {
-                alert('Access denied. Incorrect password.');
-                window.location.href = window.location.pathname; // Optional: redirect to the main page
-            }
+            initAdmin();
         }
     }
+
     function initAdmin() {
-        document.querySelector('.background-container').style.display = 'none';
-        document.querySelector('.main-header').style.display = 'none';
-        mainContent.style.display = 'none';
-        adminPanelContainer.style.display = 'flex';
+    document.querySelector('.background-container').style.display = 'none';
+    document.querySelector('.main-header').style.display = 'none';
+    mainContent.style.display = 'none';
+    adminPanelContainer.style.display = 'flex';
+    
+    const loader = showInitialAdminLoader();
+
+    
+    fetchAllAdminDataInPromise().then(newData => {
+        
+       
+        const oldDataString = localStorage.getItem('adminLastKnownState');
+        const oldData = oldDataString ? JSON.parse(oldDataString) : null;
+
+       
+        if (oldData) {
+            compareAndNotify(newData, oldData, 'welcome'); 
+        }
+
+       
+        localStorage.setItem('adminLastKnownState', JSON.stringify(newData));
+        
+       
+        adminDataCache = newData;
+
+       
+        hideInitialAdminLoader(loader);
         renderAdminMainMenu();
+        startBackgroundRefresh(); 
+
+    }).catch(error => {
+        hideInitialAdminLoader(loader);
+        showAlert('Failed to load initial admin data: ' + error);
+        renderAdminMainMenu();
+    });
+}
+    function startBackgroundRefresh() {
+    if (cacheIntervalId) {
+        clearInterval(cacheIntervalId);
     }
+    cacheIntervalId = setInterval(() => {
+        refreshDataInBackground();
+    }, 15 * 60 * 1000);
+}
+
+
+
+function refreshDataInBackground() {
+    fetchAllAdminDataInPromise().then(latestData => {
+        if (adminDataCache) {
+            compareAndNotify(latestData, adminDataCache, 'live'); 
+        }
+        adminDataCache = latestData;
+        localStorage.setItem('adminLastKnownState', JSON.stringify(latestData));
+
+    }).catch(error => {
+        console.error("Background refresh failed:", error);
+    });
+}
 
     function renderAdminMainMenu() {
         adminPanelContainer.innerHTML = `
@@ -2607,7 +3137,7 @@ function checkAdminAccess() {
         document.getElementById('stats-survey-btn').addEventListener('click', () => renderStatisticsDashboard());
 
     }
-    function renderAddOrEditSurveyForm(surveyData = null) {
+   function renderAddOrEditSurveyForm(surveyData = null) {
         const isEditMode = surveyData !== null;
         const originalSurveyName = isEditMode ? surveyData.name : '';
         const title = isEditMode ? 'Edit Survey' : 'Add New Survey';
@@ -2651,6 +3181,16 @@ function checkAdminAccess() {
             </div>
         `;
 
+        const questionsContainer = document.getElementById('questions-container');
+        if (isEditMode && questionsContainer.innerHTML.trim() === '') {
+            questionsContainer.innerHTML = `
+                <button class="add-question-btn-main" style="margin: 0 auto;">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                    Add Question
+                </button>
+            `;
+        }
+
         document.querySelector('.admin-back-button').addEventListener('click', (e) => {
     e.preventDefault();
     if (isEditMode) {
@@ -2669,25 +3209,44 @@ function checkAdminAccess() {
                 const button = e.target.closest('.add-question-btn-main');
 
                 if (isEditMode) {
-                    button.previousElementSibling.insertAdjacentHTML('afterend', newQuestionHtml);
+                    button.outerHTML = newQuestionHtml;
                 } else {
                     button.insertAdjacentHTML('beforebegin', newQuestionHtml);
                 }
             }
             if (e.target.closest('.add-answer-btn')) {
                 e.preventDefault();
-                const questionBlock = e.target.closest('.admin-question-block');
-                const answersContainer = questionBlock.querySelector('.question-answers');
-                answersContainer.appendChild(generateAnswerInput());
+                const addAnswerButton = e.target.closest('.add-answer-btn');
+                const answersContainer = addAnswerButton.parentElement;
+                answersContainer.insertBefore(generateAnswerInput(), addAnswerButton);
             }
             if (e.target.closest('.delete-question-btn-wrapper')) {
                 e.preventDefault();
                 const wrapperToDelete = e.target.closest('.delete-question-btn-wrapper').parentElement;
-                const nextElement = wrapperToDelete.nextElementSibling;
-                if (nextElement && nextElement.matches('.add-question-btn-main')) {
-                    nextElement.remove();
+
+                
+                if (isEditMode) {
+                    const buttonToDelete = wrapperToDelete.nextElementSibling;
+                    
+                    wrapperToDelete.remove();
+                    if (buttonToDelete && buttonToDelete.matches('.add-question-btn-main')) {
+                        buttonToDelete.remove();
+                    }
+                    
+                    const questionsContainer = document.getElementById('questions-container');
+                    const lastElement = questionsContainer.lastElementChild;
+                    if (!lastElement || lastElement.matches('.question-block-wrapper')) {
+                        const addButtonHtml = `
+                            <button class="add-question-btn-main" style="margin: -10px auto 30px auto;">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                                Add Question
+                            </button>
+                        `;
+                        questionsContainer.insertAdjacentHTML('beforeend', addButtonHtml);
+                    }
+                } else {
+                    wrapperToDelete.remove();
                 }
-                wrapperToDelete.remove();
             }
             if (e.target.closest('.delete-answer-btn')) {
                 e.preventDefault();
@@ -2700,6 +3259,7 @@ function checkAdminAccess() {
                 const answersContainer = questionBlock.querySelector('.question-answers');
                 answersContainer.classList.toggle('collapsed');
                 toggleBtn.classList.toggle('collapsed');
+                questionBlock.classList.toggle('collapsed'); 
             }
         });
 
@@ -2738,9 +3298,7 @@ function checkAdminAccess() {
         showAlert('Please add at least one question.');
         return;
     }
-    const data = isEditMode ? 
-        { oldName: originalSurveyName, newName: newSurveyName, questions: questions } :
-        { name: newSurveyName, questions: questions };
+    const data = isEditMode ? { id: surveyData.id, newName: newSurveyName, questions: questions } : { name: newSurveyName, questions: questions };
     const action = isEditMode ? 'updateSurvey' : 'saveNewSurvey';
     const spinner = showAdminSpinner();
     fetch(SCRIPT_URL, {
@@ -2786,6 +3344,8 @@ function checkAdminAccess() {
         answersHtml = generateAnswerInput('').outerHTML;
     }
 
+    const collapsedClass = isEditMode ? 'collapsed' : '';
+
     let addButtonHtml = '';
     if (isEditMode) {
         addButtonHtml = `
@@ -2796,30 +3356,33 @@ function checkAdminAccess() {
         `;
     }
 
+    // Dodajemo .collapsed klasu i na glavni div ako je potrebno
     return `
         <div class="question-block-wrapper">
-            <div class="admin-question-block" data-index="${index}">
+            <div class="admin-question-block ${collapsedClass}" data-index="${index}">
                 <div class="question-header">
-                    <div class="toggle-answers-btn" title="Show/Hide Answers">
+                    <div class="toggle-answers-btn ${collapsedClass}" title="Show/Hide Answers">
                          <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>
                     </div>
-                    <div class="admin-form-group" style="flex-grow: 1; margin-right: 5px;">
+                    
+                    <div class="admin-form-group question-text-group">
                         <input type="text" name="question-text" class="admin-input" placeholder="Enter question text" value="${data.question || ''}">
                     </div>
-                    <div class="admin-form-group" style="flex-basis: 0px; flex-shrink: 0;">
+                    
+                    <div class="admin-form-group question-type-group">
                         <select name="question-type" class="admin-select">
                             <option value="single" ${data.type === 'single' ? 'selected' : ''}>Single Choice</option>
                             <option value="multiple" ${data.type === 'multiple' ? 'selected' : ''}>Multiple Choice</option>
                         </select>
                     </div>
                 </div>
-                <div class="question-answers">
+                <div class="question-answers ${collapsedClass}">
                     ${answersHtml}
+                    <a href="#" class="add-answer-btn" style="color: #fff; text-decoration: none; margin-top: 15px; display: inline-flex; align-items: center; gap: 5px; font-size: 0.9rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                        Add Answer
+                    </a>
                 </div>
-                <a href="#" class="add-answer-btn" style="color: #fff; text-decoration: none; margin-top: 15px; display: inline-flex; align-items: center; gap: 5px; font-size: 0.9rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
-                    Add Answer
-                </a>
             </div>
             <div class="delete-question-btn-wrapper" title="Delete Question">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
@@ -2858,472 +3421,410 @@ function checkAdminAccess() {
         return div;
     }
 
-    function renderStatisticsDashboard() {
-        const spinner = showAdminSpinner();
-        let statsData = {};
-        let activeCharts = [];
-        let timelineChartInstance = null;
-        let activeTimelineAnswerInfo = { answer: null, question: null };
-        let currentQuestionIndex = 0, topAnswersSortKey = 'count', topAnswersSortDirection = 'desc';
+function renderStatisticsDashboard() {
+    if (!adminDataCache || !adminDataCache.statsData) {
+        showAlert("Data is not available yet. Please wait for the initial load to complete.");
+        return;
+    }
 
-        window.handleAllStatsData = (data) => {
-            hideAdminSpinner(spinner);
-            if (data.error) {
-                showAlert(data.error);
-                renderAdminMainMenu();
-                return;
-            }
-            statsData = data;
-            renderUI();
-        };
+    const statsData = adminDataCache.statsData;
+    let activeCharts = [];
+    let timelineChartInstance = null;
+    let activeTimelineAnswerInfo = { answer: null, question: null };
+    let currentQuestionIndex = 0, currentSortKey = 'date', currentSortDirection = 'desc', topAnswersSortKey = 'count', topAnswersSortDirection = 'desc';
 
-        const renderTopAnswersTable = (rankedAnswers, limit) => {
-            const container = document.getElementById('top-answers-table-body');
-            if (!container) return;
+    function createCustomSelectHTML(containerId, options, isMultiSelect = false) {
+        let optionsHtml = options.map(opt => `<li data-value="${opt.value}" class="${opt.selected ? 'selected' : ''}">${opt.label}<span class="tick-mark"></span></li>`).join('');
+        return `
+            <div class="custom-select" id="${containerId}" data-multi-select="${isMultiSelect}">
+                <div class="select-display" tabindex="0"></div>
+                <div class="select-options"><ul>${optionsHtml}</ul></div>
+            </div>`;
+    }
 
-            let dataToShow = rankedAnswers;
+    function initCustomSelects() {
+        document.querySelectorAll('.custom-select').forEach(container => {
+            const display = container.querySelector('.select-display');
+            const optionsList = container.querySelector('.select-options');
+            const allOptions = container.querySelectorAll('li');
+            const allOption = container.querySelector('li[data-value="all"]');
+            const isMultiSelect = container.dataset.multiSelect === 'true';
 
-            if (limit !== 'all') {
-                dataToShow = rankedAnswers.slice(0, parseInt(limit, 10));
-            }
+            const updateDisplayText = () => {
+                const selected = Array.from(container.querySelectorAll('li.selected'));
+                if (selected.length === 0 || (selected.length === 1 && selected[0].dataset.value === 'all')) {
+                    display.textContent = 'All';
+                } else if (selected.length === 1) {
+                    display.textContent = selected[0].textContent;
+                } else {
+                    display.textContent = `${selected.length} selections`;
+                }
+            };
 
-            container.innerHTML = dataToShow.map((item, index) => `
-                <tr class="top-answers-row">
-                    <td class="rank">${index + 1}</td>
-                    <td class="answer-details" data-survey="Survey: ${item.survey}">
-                        <span class="question">${item.question}</span>
-                        <span class="answer">${item.answer}</span>
-                    </td>
-                    <td class="count">${item.score || 'N/A'}</td>
-                    <td class="count">${item.count}</td>
-                    <td class="percentage">${item.percentage}</td>
-                </tr>
-            `).join('');
-        };
+            display.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.custom-select.open').forEach(openSelect => {
+                    if (openSelect !== container) openSelect.classList.remove('open');
+                });
+                container.classList.toggle('open');
+            });
 
-        function renderUI() {
-            const surveyOptions = statsData.surveys.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-            const companyOptions = statsData.companyNames.map(c => `<option value="${c}">${c}</option>`).join('');
+            optionsList.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const li = e.target.closest('li');
+                if (!li) return;
 
-            adminPanelContainer.innerHTML = `
-                     <div class="admin-page-content">
-                         <a href="#" class="admin-back-button" style="display: flex; align-items: center; gap: 5px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
-                            <span>Back to Admin Panel</span>
-                         </a>
-                    <h1 style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 0 24 24" width="32" fill="currentColor"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>
-                        Statistics
-                    </h1>
-                    <div id="stats-content" class="stats-dashboard"></div>
-                </div>
-            `;
-            document.querySelector('.admin-back-button').addEventListener('click', (e) => { e.preventDefault(); renderAdminMainMenu(); });
-            document.getElementById('stats-content').innerHTML = `
-                <div class="stats-filters">
-                    <div class="stats-filter-group">
-                        <label for="answers-filter">View</label>
-                        <select id="answers-filter" class="admin-select">
-                            <option value="all">All answers</option>
-                            <option value="top">Top answers</option>
-                        </select>
-                    </div>
-                    <div class="stats-filter-group">
-                        <label for="survey-select">Select Survey</label>
-                        <select id="survey-select" class="admin-select">
-                            <option value="all">All</option>
-                            ${surveyOptions}
-                        </select>
-                    </div>
-                    <div class="stats-filter-group">
-                        <label for="company-select">Select Company</label>
-                        <select id="company-select" class="admin-select">
-                            <option value="all">All</option>
-                            ${companyOptions}
-                        </select>
-                    </div>
-                    <div class="stats-filter-group">
-                        <label for="age-filter">Age</label>
-                        <select id="age-filter" class="admin-select">
-                            <option value="all">All</option>
-                            <option value="21-30">21-30</option>
-                            <option value="31-40">31-40</option>
-                            <option value="41-50">41-50</option>
-                            <option value="50+">50+</option>
-                        </select>
-                    </div>
-                    <div class="stats-filter-group">
-                        <label>Date Range</label>
-                        <div class="date-range-filter">
-                            <input type="date" id="date-from" class="admin-date-input">
-                            <input type="date" id="date-to" class="admin-date-input">
-                        </div>
-                    </div>
-                </div>
-                <div class="clear-filters-wrapper">
-    <button id="clear-filters-btn" class="clear-filters-btn">Clear all filters</button>
-</div>
-                <div id="stats-view-container"></div>
-            `;
-            document.getElementById('answers-filter').addEventListener('change', updateDisplay);
-            document.getElementById('survey-select').addEventListener('change', updateDisplay);
-            document.getElementById('company-select').addEventListener('change', updateDisplay);
-            document.getElementById('age-filter').addEventListener('change', updateDisplay);
-            document.getElementById('date-from').addEventListener('change', updateDisplay);
-            document.getElementById('date-to').addEventListener('change', updateDisplay);
-            document.getElementById('clear-filters-btn').addEventListener('click', () => {
-                document.getElementById('answers-filter').value = 'all';
-                document.getElementById('survey-select').value = 'all';
-                document.getElementById('company-select').value = 'all';
-                document.getElementById('age-filter').value = 'all';
-                document.getElementById('date-from').value = '';
-                document.getElementById('date-to').value = '';
+                const isAll = li.dataset.value === 'all';
+
+                if (isMultiSelect) {
+                    if (isAll) {
+                        allOptions.forEach(opt => opt.classList.toggle('selected', opt === li));
+                    } else {
+                        li.classList.toggle('selected');
+                        if (allOption) allOption.classList.remove('selected');
+                        const anySelected = Array.from(allOptions).some(opt => opt.classList.contains('selected'));
+                        if (!anySelected && allOption) allOption.classList.add('selected');
+                    }
+                } else {
+                    allOptions.forEach(opt => opt.classList.remove('selected'));
+                    li.classList.add('selected');
+                    container.classList.remove('open');
+                }
+                
+                updateDisplayText();
                 updateDisplay();
             });
-            updateDisplay();
-        }
+            updateDisplayText();
+        });
+        
+        window.addEventListener('click', () => {
+             document.querySelectorAll('.custom-select.open').forEach(openSelect => {
+                openSelect.classList.remove('open');
+            });
+        });
+    }
 
-        function updateDisplay() {
-            const answersFilter = document.getElementById('answers-filter').value;
-            const viewContainer = document.getElementById('stats-view-container');
-            const surveySelect = document.getElementById('survey-select');
-            const companySelect = document.getElementById('company-select');
-            const ageSelect = document.getElementById('age-filter');
-            const dateFromInput = document.getElementById('date-from');
-            const dateToInput = document.getElementById('date-to');
+    function getSelectedValues(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return ['all'];
+        const selected = Array.from(container.querySelectorAll('li.selected'));
+        return selected.map(li => li.dataset.value);
+    }
+    
+    function renderUI() {
+        const viewOptions = [
+            { value: 'all', label: 'All answers', selected: true },
+            { value: 'top', label: 'Top answers', selected: false }
+        ];
+        const surveyOptions = [{ value: 'all', label: 'All', selected: true }]
+            .concat(statsData.surveys.map(s => ({ value: s.name, label: s.name, selected: false })));
+        const companyOptions = [{ value: 'all', label: 'All', selected: true }]
+            .concat(statsData.companyNames.map(c => ({ value: c, label: c, selected: false })));
+        const ageOptions = [
+            { value: 'all', label: 'All', selected: true },
+            { value: '21-30', label: '21-30', selected: false },
+            { value: '31-40', label: '31-40', selected: false },
+            { value: '41-50', label: '41-50', selected: false },
+            { value: '50+', label: '50+', selected: false }
+        ];
+
+        adminPanelContainer.innerHTML = `<div class="admin-page-content">
+            <a href="#" class="admin-back-button" style="display: flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg><span>Back to Admin Panel</span></a>
+            <h1 style="display: flex; align-items: center; justify-content: center; gap: 15px;"><svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 0 24 24" width="32" fill="currentColor"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>Statistics</h1>
+            <div id="stats-content" class="stats-dashboard"></div>
+        </div>`;
+        document.querySelector('.admin-back-button').addEventListener('click', (e) => { e.preventDefault(); renderAdminMainMenu(); });
+        document.getElementById('stats-content').innerHTML = `
+            <div class="stats-filters">
+                <div class="stats-filter-group"><label>View</label>${createCustomSelectHTML('answers-filter-container', viewOptions, false)}</div>
+                <div class="stats-filter-group"><label>Select Survey</label>${createCustomSelectHTML('survey-select-container', surveyOptions, false)}</div>
+                <div class="stats-filter-group"><label>Select Company</label>${createCustomSelectHTML('company-filter-container', companyOptions, true)}</div>
+                <div class="stats-filter-group"><label>Age</label>${createCustomSelectHTML('age-filter-container', ageOptions, true)}</div>
+                <div class="stats-filter-group"><label>Date Range</label><div class="date-range-filter"><input type="date" id="date-from" class="admin-date-input"><input type="date" id="date-to" class="admin-date-input"></div></div>
+            </div>
+            <div class="clear-filters-wrapper"><button id="clear-filters-btn" class="clear-filters-btn">Clear all filters</button></div>
+            <div id="stats-view-container"></div>`;
+        
+        initCustomSelects();
+
+        document.getElementById('date-from').addEventListener('change', updateDisplay);
+        document.getElementById('date-to').addEventListener('change', updateDisplay);
+        document.getElementById('clear-filters-btn').addEventListener('click', () => {
+            ['answers-filter-container', 'survey-select-container', 'company-filter-container', 'age-filter-container'].forEach(id => {
+                const container = document.getElementById(id);
+                container.querySelectorAll('li').forEach(li => {
+                    li.classList.toggle('selected', li.dataset.value === 'all');
+                });
+                container.querySelector('.select-display').textContent = 'All';
+            });
             
-            const selectedSurvey = surveySelect.value;
-            const selectedCompany = companySelect.value;
-            const selectedAge = ageSelect.value;
-            const dateFrom = dateFromInput.value;
-            const dateTo = dateToInput.value;
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+            updateDisplay();
+        });
+        updateDisplay();
+    }
 
-            let baseParticipants = (statsData.allParticipants || []);
-            let filteredParticipants = baseParticipants;
+    function updateDisplay() {
+        const answersFilter = getSelectedValues('answers-filter-container')[0];
+        const selectedSurvey = getSelectedValues('survey-select-container')[0];
+        const selectedCompanies = getSelectedValues('company-filter-container');
+        const selectedAges = getSelectedValues('age-filter-container');
+        
+        const viewContainer = document.getElementById('stats-view-container');
+        const dateFromInput = document.getElementById('date-from');
+        const dateToInput = document.getElementById('date-to');
+        const dateFrom = dateFromInput.value;
+        const dateTo = dateToInput.value;
 
-            if (selectedSurvey !== 'all') {
-                filteredParticipants = filteredParticipants.filter(p => p.survey === selectedSurvey);
-            }
-            if (selectedCompany !== 'all') {
-                filteredParticipants = filteredParticipants.filter(p => p.company === selectedCompany);
-            }
-            if (selectedAge !== 'all') {
-                filteredParticipants = filteredParticipants.filter(p => {
-                    const age = parseInt(p.age, 10);
-                    if (isNaN(age)) return false;
-                    if (selectedAge === '21-30') return age >= 21 && age <= 30;
-                    if (selectedAge === '31-40') return age >= 31 && age <= 40;
-                    if (selectedAge === '41-50') return age >= 41 && age <= 50;
-                    if (selectedAge === '50+') return age >= 50;
+        let baseParticipants = (statsData.allParticipants || []);
+        let filteredParticipants = baseParticipants;
+        
+        if (selectedSurvey !== 'all') {
+            filteredParticipants = filteredParticipants.filter(p => p.survey === selectedSurvey);
+        }
+        if (!selectedCompanies.includes('all')) {
+            filteredParticipants = filteredParticipants.filter(p => selectedCompanies.includes(p.company));
+        }
+        if (!selectedAges.includes('all')) {
+            filteredParticipants = filteredParticipants.filter(p => {
+                const age = parseInt(p.age, 10);
+                if (isNaN(age)) return false;
+                return selectedAges.some(ageRange => {
+                    if (ageRange === '21-30') return age >= 21 && age <= 30;
+                    if (ageRange === '31-40') return age >= 31 && age <= 40;
+                    if (ageRange === '41-50') return age >= 41 && age <= 50;
+                    if (ageRange === '50+') return age >= 50;
                     return false;
                 });
-            }
-            if (dateFrom) {
-                const fromDate = new Date(dateFrom); fromDate.setHours(0, 0, 0, 0);
-                filteredParticipants = filteredParticipants.filter(p => new Date(p.date) >= fromDate);
-            }
-            if (dateTo) {
-                const toDate = new Date(dateTo); toDate.setHours(23, 59, 59, 999);
-                filteredParticipants = filteredParticipants.filter(p => new Date(p.date) <= toDate);
-            }
-            
-            const sortedParticipants = sortParticipants(filteredParticipants, currentSortKey, currentSortDirection);
+            });
+        }
+        if (dateFrom) {
+            const fromDate = new Date(dateFrom);
+            fromDate.setHours(0, 0, 0, 0);
+            filteredParticipants = filteredParticipants.filter(p => new Date(p.date) >= fromDate);
+        }
+        if (dateTo) {
+            const toDate = new Date(dateTo);
+            toDate.setHours(23, 59, 59, 999);
+            filteredParticipants = filteredParticipants.filter(p => new Date(p.date) <= toDate);
+        }
 
-            
-            if (answersFilter === 'top') {
-                const frequencyMap = {};
-                const questionTotalMap = {};
-                sortedParticipants.forEach(p => {
-                    const survey = statsData.surveys.find(s => s.name === p.survey);
-                    if (!survey) return;
-
-                    p.responses.forEach((response, index) => {
-                        const question = survey.questions[index];
-                        if (!response || !question || question.options.length <= 1) return;
-                        
-                        const questionText = question.text;
-                        if (!questionTotalMap[questionText]) {
-                            questionTotalMap[questionText] = 0;
+        const sortedParticipants = sortParticipants(filteredParticipants, currentSortKey, currentSortDirection);
+        if (answersFilter === 'top') {
+            const frequencyMap = {};
+            const questionTotalMap = {};
+            sortedParticipants.forEach(p => {
+                const survey = statsData.surveys.find(s => s.name === p.survey);
+                if (!survey) return;
+                p.responses.forEach((response, index) => {
+                    const question = survey.questions[index];
+                    if (!response || !question || question.options.length <= 1) return;
+                    const questionText = question.text;
+                    if (!questionTotalMap[questionText]) {
+                        questionTotalMap[questionText] = 0;
+                    }
+                    questionTotalMap[questionText]++;
+                    const answers = response.toString().split(', ');
+                    answers.forEach(fullAnswer => {
+                        if (!fullAnswer.trim()) return;
+                        let answerText = fullAnswer.trim();
+                        let score = 'N/A';
+                        if (answerText.includes('::score=')) {
+                            const parts = answerText.split('::score=');
+                            answerText = parts[0];
+                            score = parts[1];
                         }
-                        questionTotalMap[questionText]++;
-                        const answers = response.toString().split(', ');
-                        
-                        answers.forEach(fullAnswer => {
-                            if (!fullAnswer.trim()) return;
-                            let answerText = fullAnswer.trim();
-                            let score = 'N/A';
-                            if (answerText.includes('::score=')) {
-                                const parts = answerText.split('::score=');
-                                answerText = parts[0];
-                                score = parts[1];
-                            }
-                            const key = `${p.survey}|${questionText}|${answerText}`;
-                            if (!frequencyMap[key]) {
-                                frequencyMap[key] = { survey: p.survey, question: questionText, answer: answerText, score: score, count: 0 };
-                            }
-                            frequencyMap[key].count++;
-                        });
+                        const key = `${p.survey}|${questionText}|${answerText}`;
+                        if (!frequencyMap[key]) {
+                            frequencyMap[key] = { survey: p.survey, question: questionText, answer: answerText, score: score, count: 0 };
+                        }
+                        frequencyMap[key].count++;
                     });
                 });
-                
-                let rankedAnswers = Object.values(frequencyMap).map(item => {
-                    const totalForQuestion = questionTotalMap[item.question] || 0;
-                    const percentage = totalForQuestion > 0 ? ((item.count / totalForQuestion) * 100).toFixed(1) + '%' : '0.0%';
-                    return {...item, percentage };
+            });
+            let rankedAnswers = Object.values(frequencyMap).map(item => {
+                const totalForQuestion = questionTotalMap[item.question] || 0;
+                const percentage = totalForQuestion > 0 ? ((item.count / totalForQuestion) * 100).toFixed(1) + '%' : '0.0%';
+                return { ...item, percentage };
+            });
+            rankedAnswers.sort((a, b) => {
+                let valA, valB;
+                const key = topAnswersSortKey;
+                if (key === 'rank') { valA = b.count; valB = a.count; } else if (key === 'score') { valA = parseFloat(a.score) || 0; valB = parseFloat(b.score) || 0; } else if (key === 'percentage') { valA = parseFloat(a.percentage) || 0; valB = parseFloat(b.percentage) || 0; } else if (key === 'count') { valA = a.count; valB = b.count; } else { valA = (a[key] || '').toString().toLowerCase(); valB = (b[key] || '').toString().toLowerCase(); }
+                let comparison = 0;
+                if (valA > valB) comparison = 1;
+                else if (valA < valB) comparison = -1;
+                return topAnswersSortDirection === 'asc' ? comparison : -comparison;
+            });
+            viewContainer.innerHTML = `<div class="top-answers-container"><div class="top-answers-controls"><button class="top-answers-limit-btn" data-limit="all">All</button><button class="top-answers-limit-btn" data-limit="5">Top 5</button><button class="top-answers-limit-btn" data-limit="10">Top 10</button><button class="top-answers-limit-btn" data-limit="20">Top 20</button></div><div class="top-answers-table-wrapper"><table class="top-answers-table"><thead><tr><th><span class="sortable-header" data-sort-by="rank">Rank<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="answer">Answer<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="score">Rate<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="count">Total<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="percentage">%<i class="sort-icon"></i></span></th></tr></thead><tbody id="top-answers-table-body"></tbody></table></div></div>`;
+            let currentLimit = 'all';
+            const controlsContainer = viewContainer.querySelector('.top-answers-controls');
+            const limitButtons = controlsContainer.querySelectorAll('.top-answers-limit-btn');
+            const updateActiveButton = () => {
+                limitButtons.forEach(btn => {
+                    if (btn.dataset.limit === currentLimit) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
                 });
+            };
+            controlsContainer.addEventListener('click', e => {
+                if (e.target.matches('.top-answers-limit-btn')) {
+                    currentLimit = e.target.dataset.limit;
+                    updateActiveButton();
+                    renderTopAnswersTable(rankedAnswers, currentLimit);
+                }
+            });
+            const tableHeader = viewContainer.querySelector('.top-answers-table thead');
+            tableHeader.querySelectorAll('.sortable-header').forEach(header => {
+                if (header.dataset.sortBy === topAnswersSortKey) {
+                    header.classList.add('active');
+                    const icon = header.querySelector('.sort-icon');
+                    icon.classList.add(topAnswersSortDirection);
+                }
+            });
+            tableHeader.addEventListener('click', e => {
+                const header = e.target.closest('.sortable-header');
+                if (!header) return;
+                const newSortKey = header.dataset.sortBy;
+                if (topAnswersSortKey === newSortKey) {
+                    topAnswersSortDirection = topAnswersSortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    topAnswersSortKey = newSortKey;
+                    topAnswersSortDirection = (newSortKey === 'answer') ? 'asc' : 'desc';
+                }
+                updateDisplay();
+            });
+            updateActiveButton();
+            renderTopAnswersTable(rankedAnswers, currentLimit);
+        } else {
+            activeCharts.forEach(chart => chart.destroy());
+            activeCharts = [];
+            const totals = { total: sortedParticipants.length };
+            statsData.companyNames.forEach(c => { totals[c] = 0; });
+            sortedParticipants.forEach(p => { if (totals.hasOwnProperty(p.company)) totals[p.company]++; });
+            const summaryHtml = `Total Participants: <b>${totals.total}</b>  |  ${statsData.companyNames.map(c => `${c}: <b>${totals[c]}</b>`).join('  |  ')}`;
+            if (selectedSurvey === 'all') {
+                viewContainer.innerHTML = `<div class="all-surveys-layout"><div class="text-summary-stats">${summaryHtml}</div><div class="participant-list-container"><input type="text" id="participant-search" class="admin-input" placeholder="Search participants..."><div class="participant-list-header"><span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="rate" style="padding-right: 20px;">RATE<i class="sort-icon"></i></span></div><ul id="all-participants-list" class="participant-list"></ul></div></div>`;
+                renderAllParticipantsList(sortedParticipants);
+            } else {
+                const currentView = document.querySelector('.view-icon-btn.active')?.dataset.view || 'list';
+                viewContainer.innerHTML = `<div id="single-survey-content-wrapper"><div class="stats-sub-header"><div class="view-icon-switcher"><button id="icon-list-btn" data-view="list" class="view-icon-btn" title="List View"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M120-280v-80h560v80H120Zm0-160v-80h560v80H120Zm0-160v-80h560v80H120Z"/></svg></button><button id="icon-dashboard-btn" data-view="dashboard" class="view-icon-btn" title="Dashboard View"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M120-120v-560h240v560H120Zm280 0v-320h240v320H400Zm280 0v-440h240v440H680Z"/></svg></button></div><div class="text-summary-stats" id="summary-text-area">${summaryHtml}</div></div><div id="single-survey-content"></div></div>`;
+                const renderView = (view) => {
+                    const summaryTextArea = document.getElementById('summary-text-area');
+                    document.querySelectorAll('.view-icon-btn').forEach(b => b.classList.remove('active'));
+                    document.getElementById(`icon-${view}-btn`).classList.add('active');
 
-                rankedAnswers.sort((a, b) => {
-                    let valA, valB;
-                    const key = topAnswersSortKey;
-                    
-                    if (key === 'rank') { valA = b.count; valB = a.count; }
-                    else if (key === 'score') { valA = parseFloat(a.score) || 0; valB = parseFloat(b.score) || 0; }
-                    else if (key === 'percentage') { valA = parseFloat(a.percentage) || 0; valB = parseFloat(b.percentage) || 0; }
-                    else if (key === 'count') { valA = a.count; valB = b.count; }
-                    else { valA = (a[key] || '').toString().toLowerCase(); valB = (b[key] || '').toString().toLowerCase(); }
+                    const companyFilterContainer = document.getElementById('company-filter-container');
+                    const allCombinedOption = companyFilterContainer.querySelector('li[data-value="All Combined"]');
 
-                    let comparison = 0;
-                    if (valA > valB) comparison = 1;
-                    else if (valA < valB) comparison = -1;
-
-                    return topAnswersSortDirection === 'asc' ? comparison : -comparison;
-                });
-
-                viewContainer.innerHTML = `
-                    <div class="top-answers-container">
-                        <div class="top-answers-controls">
-                            <button class="top-answers-limit-btn" data-limit="all">All</button>
-                            <button class="top-answers-limit-btn" data-limit="5">Top 5</button>
-                            <button class="top-answers-limit-btn" data-limit="10">Top 10</button>
-                            <button class="top-answers-limit-btn" data-limit="20">Top 20</button>
-                        </div>
-                        <div class="top-answers-table-wrapper">
-                            <table class="top-answers-table">
-                                <thead>
-                                    <tr>
-                                        <th><span class="sortable-header" data-sort-by="rank">Rank<i class="sort-icon"></i></span></th>
-                                        <th><span class="sortable-header" data-sort-by="answer">Answer<i class="sort-icon"></i></span></th>
-                                        <th><span class="sortable-header" data-sort-by="score">Rate<i class="sort-icon"></i></span></th>
-                                        <th><span class="sortable-header" data-sort-by="count">Total<i class="sort-icon"></i></span></th>
-                                        <th><span class="sortable-header" data-sort-by="percentage">%<i class="sort-icon"></i></span></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="top-answers-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
-                
-                let currentLimit = 'all';
-
-                const controlsContainer = viewContainer.querySelector('.top-answers-controls');
-                const limitButtons = controlsContainer.querySelectorAll('.top-answers-limit-btn');
-
-                const updateActiveButton = () => {
-                    limitButtons.forEach(btn => {
-                        if (btn.dataset.limit === currentLimit) {
-                            btn.classList.add('active');
-                        } else {
-                            btn.classList.remove('active');
+                    if (view === 'list') {
+                        summaryTextArea.style.display = 'block';
+                        if (allCombinedOption) {
+                            if (allCombinedOption.classList.contains('selected')) {
+                                companyFilterContainer.querySelector('li[data-value="all"]').classList.add('selected');
+                                companyFilterContainer.querySelector('.select-display').textContent = 'All';
+                            }
+                            allCombinedOption.remove();
                         }
-                    });
+                        document.getElementById('single-survey-content').innerHTML = `<div class="participant-list-container full-width"><input type="text" id="participant-search" class="admin-input" placeholder="Search participants..."><div class="participant-list-header"><span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="rate" style="padding-right: 20px;">RATE<i class="sort-icon"></i></span></div><ul id="all-participants-list" class="participant-list"></ul></div>`;
+                        renderAllParticipantsList(sortedParticipants);
+                    } else {
+                        summaryTextArea.style.display = 'none';
+                        if (companyFilterContainer && !allCombinedOption) {
+                            const optionsList = companyFilterContainer.querySelector('.select-options ul');
+                            optionsList.insertAdjacentHTML('afterbegin', '<li data-value="All Combined">All Combined<span class="tick-mark"></span></li>');
+                        }
+                        displaySingleSurveyDetails(selectedSurvey, selectedCompanies, sortedParticipants);
+                    }
                 };
-                
-                controlsContainer.addEventListener('click', e => {
-                    if (e.target.matches('.top-answers-limit-btn')) {
-                        currentLimit = e.target.dataset.limit;
-                        updateActiveButton();
-                        renderTopAnswersTable(rankedAnswers, currentLimit);
-                    }
-                });
-
-                const tableHeader = viewContainer.querySelector('.top-answers-table thead');
-                tableHeader.querySelectorAll('.sortable-header').forEach(header => {
-                    if (header.dataset.sortBy === topAnswersSortKey) {
-                        header.classList.add('active');
-                        const icon = header.querySelector('.sort-icon');
-                        icon.classList.add(topAnswersSortDirection);
-                    }
-                });
-
-                tableHeader.addEventListener('click', e => {
+                document.getElementById('icon-list-btn').addEventListener('click', () => renderView('list'));
+                document.getElementById('icon-dashboard-btn').addEventListener('click', () => renderView('dashboard'));
+                renderView(currentView);
+            }
+            const listHeader = viewContainer.querySelector('.participant-list-header');
+            if (listHeader) {
+                listHeader.addEventListener('click', (e) => {
                     const header = e.target.closest('.sortable-header');
                     if (!header) return;
-
                     const newSortKey = header.dataset.sortBy;
-                    if (topAnswersSortKey === newSortKey) {
-                        topAnswersSortDirection = topAnswersSortDirection === 'asc' ? 'desc' : 'asc';
+                    if (currentSortKey === newSortKey) {
+                        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
                     } else {
-                        topAnswersSortKey = newSortKey;
-                        topAnswersSortDirection = (newSortKey === 'answer') ? 'asc' : 'desc';
+                        currentSortKey = newSortKey;
+                        currentSortDirection = newSortKey === 'date' ? 'desc' : 'asc';
                     }
                     updateDisplay();
                 });
-                
-                updateActiveButton();
-                renderTopAnswersTable(rankedAnswers, currentLimit);
-            }
-                
-
-             else {
-                activeCharts.forEach(chart => chart.destroy());
-                activeCharts = [];
-                
-                const totals = { total: sortedParticipants.length };
-                statsData.companyNames.forEach(c => { totals[c] = 0; });
-                sortedParticipants.forEach(p => { if (totals.hasOwnProperty(p.company)) totals[p.company]++; });
-                const summaryHtml = `Total Participants: <b>${totals.total}</b>  |  ${statsData.companyNames.map(c => `${c}: <b>${totals[c]}</b>`).join('  |  ')}`;
-
-                if (selectedSurvey === 'all') {
-                    viewContainer.innerHTML = `
-                        <div class="all-surveys-layout">
-                            <div class="text-summary-stats">${summaryHtml}</div>
-                            <div class="participant-list-container">
-                                <input type="text" id="participant-search" class="admin-input" placeholder="Search participants...">
-                                <div class="participant-list-header">
-                                    <span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span>
-                                    <span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span>
-                                    <span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span>
-                                    <span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span>
-                                    <span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span>
-                                    <span class="sortable-header" data-sort-by="rate" style="padding-right: 20px;">RATE<i class="sort-icon"></i></span>
-                                </div>
-                                <ul id="all-participants-list" class="participant-list"></ul>
-                            </div>
-                        </div>
-                    `;
-                    renderAllParticipantsList(sortedParticipants);
-                } else {
-                    const currentView = document.querySelector('.view-icon-btn.active')?.dataset.view || 'list';
-                    viewContainer.innerHTML = `
-                        <div id="single-survey-content-wrapper">
-                            <div class="stats-sub-header">
-                                <div class="view-icon-switcher">
-                                    <button id="icon-list-btn" data-view="list" class="view-icon-btn" title="List View"><svg xmlns="http://www.w.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M120-280v-80h560v80H120Zm0-160v-80h560v80H120Zm0-160v-80h560v80H120Z"/></svg></button>
-                                    <button id="icon-dashboard-btn" data-view="dashboard" class="view-icon-btn" title="Dashboard View"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M120-120v-560h240v560H120Zm280 0v-320h240v320H400Zm280 0v-440h240v440H680Z"/></svg></button>
-                                </div>
-                                <div class="text-summary-stats" id="summary-text-area">${summaryHtml}</div>
-                            </div>
-                            <div id="single-survey-content"></div>
-                        </div>
-                    `;
-                    
-                    const renderView = (view) => {
-                        const summaryTextArea = document.getElementById('summary-text-area');
-                        document.querySelectorAll('.view-icon-btn').forEach(b => b.classList.remove('active'));
-                        document.getElementById(`icon-${view}-btn`).classList.add('active');
-                        if (view === 'list') {
-                            summaryTextArea.style.display = 'block';
-                            document.getElementById('single-survey-content').innerHTML = `
-                                <div class="participant-list-container full-width">
-                                    <input type="text" id="participant-search" class="admin-input" placeholder="Search participants...">
-                                    <div class="participant-list-header">
-                                        <span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span>
-                                        <span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span>
-                                        <span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span>
-                                        <span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span>
-                                        <span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span>
-                                        <span class="sortable-header" data-sort-by="rate" style="padding-right: 20px;">RATE<i class="sort-icon"></i></span>
-                                    </div>
-                                    <ul id="all-participants-list" class="participant-list"></ul>
-                                </div>
-                            `;
-                            renderAllParticipantsList(sortedParticipants);
-                        } else {
-                            summaryTextArea.style.display = 'none';
-                            displaySingleSurveyDetails(selectedSurvey, selectedCompany, sortedParticipants);
-                        }
-                    };
-                    document.getElementById('icon-list-btn').addEventListener('click', () => renderView('list'));
-                    document.getElementById('icon-dashboard-btn').addEventListener('click', () => renderView('dashboard'));
-                    renderView(currentView);
-                }
-
-                const listHeader = viewContainer.querySelector('.participant-list-header');
-                if(listHeader) {
-                    listHeader.addEventListener('click', (e) => {
-                        const header = e.target.closest('.sortable-header');
-                        if (!header) return;
-
-                        const newSortKey = header.dataset.sortBy;
-                        if (currentSortKey === newSortKey) {
-                            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
-                        } else {
-                            currentSortKey = newSortKey;
-                            currentSortDirection = newSortKey === 'date' ? 'desc' : 'asc';
-                        }
-                        updateDisplay();
-                    });
-
-                    document.querySelectorAll('.sortable-header').forEach(header => {
-                        header.classList.remove('active');
-                        const icon = header.querySelector('.sort-icon');
-                        icon.classList.remove('asc', 'desc');
-
-                        if (header.dataset.sortBy === currentSortKey) {
-                            header.classList.add('active');
-                            icon.classList.add(currentSortDirection);
-                        }
-                    });
-                }
+                document.querySelectorAll('.sortable-header').forEach(header => {
+                    header.classList.remove('active');
+                    const icon = header.querySelector('.sort-icon');
+                    icon.classList.remove('asc', 'desc');
+                    if (header.dataset.sortBy === currentSortKey) {
+                        header.classList.add('active');
+                        icon.classList.add(currentSortDirection);
+                    }
+                });
             }
         }
+    }
+
     function displaySingleSurveyDetails(surveyName, companyFilter, filteredParticipants) {
         const contentArea = document.getElementById('single-survey-content');
         const survey = statsData.surveys.find(s => s.name === surveyName);
-        
         if (!contentArea) return;
-
         if (!survey || !survey.questions || survey.questions.length === 0) {
             contentArea.innerHTML = '<p style="text-align:center; padding: 20px;">No questions or data found for this survey.</p>';
             return;
         }
-
         if (timelineChartInstance) {
             timelineChartInstance.destroy();
             timelineChartInstance = null;
         }
+        contentArea.innerHTML = `<div class="stats-overall-layout"><div id="question-card-main-wrapper"></div><div class="stats-right-column"><div class="stats-timeline-chart-container" id="timeline-container"><div id="timeline-placeholder" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: rgba(255, 255, 255, 0.3); text-align: center; padding: 20px;"><svg xmlns="http://www.w3.org/2000/svg" height="80" viewBox="0 -960 960 960" width="80" fill="currentColor"><path d="M120-120v-80h720v80H120Zm112-160-84-84 213-212 159 159 253-253 56 56-309 309-159-159-157 157Z"/></svg><p style="margin-top: 10px; font-size: 1.1rem;">Select an answer to view its trend</p></div><canvas id="timeline-chart" style="display: none;"></canvas></div></div></div>`;
 
-        contentArea.innerHTML = `
-            <div class="stats-overall-layout">
-                <div id="question-card-main-wrapper"></div>
-                <div class="stats-right-column">
-                    <div class="stats-timeline-chart-container" id="timeline-container">
-                         <div id="timeline-placeholder" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: rgba(255, 255, 255, 0.3); text-align: center; padding: 20px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="80" viewBox="0 -960 960 960" width="80" fill="currentColor"><path d="M120-120v-80h720v80H120Zm112-160-84-84 213-212 159 159 253-253 56 56-309 309-159-159-157 157Z"/></svg>
-                            <p style="margin-top: 10px; font-size: 1.1rem;">Select an answer to view its trend</p>
-                        </div>
-                        <canvas id="timeline-chart" style="display: none;"></canvas>
-                    </div>
-                </div>
-            </div>
-        `;
-
-       
-        
         function renderQuestion(index) {
-
             const q = survey.questions[index];
             const questionCardContainer = document.getElementById('question-card-main-wrapper');
             const allCompanyNames = statsData.companyNames;
             const colors = { 'SMJ': 'rgba(217, 48, 37, 0.9)', 'EB Infinity': 'rgba(0, 123, 255, 0.9)', 'AmongUs': 'rgba(255, 255, 255, 0.9)' };
-            
             let answersHtml;
             let legendHtml;
-
+            const companyFilter = getSelectedValues('company-filter-container');
             if (!q.options || q.options.length === 0) {
-                const submittedAnswers = filteredParticipants
-                    .map(p => p.responses[index])
-                    .filter(response => response && response.trim() !== '');
-
+                const submittedAnswers = filteredParticipants.map(p => p.responses[index]).filter(response => response && response.trim() !== '');
                 if (submittedAnswers.length > 0) {
-                    answersHtml = `
-                        <div class="stats-freetext-answers-container">
-                            ${submittedAnswers.map(answer => `<div class="stats-freetext-answer-item">${answer.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`).join('')}
-                        </div>`;
+                    answersHtml = `<div class="stats-freetext-answers-container">${submittedAnswers.map(answer => `<div class="stats-freetext-answer-item">${answer.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`).join('')}</div>`;
                 } else {
                     answersHtml = '<div class="stats-freetext-no-answers">No answers submitted for this question.</div>';
                 }
+                legendHtml = '';
+            } else if (companyFilter[0] === 'All Combined') {
+                 answersHtml = q.options.map(opt => {
+                    const cleanOpt = opt.split('::score=')[0];
+                    const count = filteredParticipants.filter(p => {
+                        const answerCell = p.responses[index] || '';
+                        const respondentAnswers = answerCell.toString().split(', ');
+                         return respondentAnswers.some(ans => {
+                            let cleanAns = ans.split('::score=')[0];
+                             if (cleanAns.includes(': ')) {
+                                 const baseOpt = q.options.find(o => o.includes(cleanAns.split(': ')[0]));
+                                 cleanAns = baseOpt ? baseOpt.split('::score=')[0] : '';
+                             }
+                             return cleanAns === cleanOpt;
+                        });
+                    }).length;
+                    
+                    const totalForQuestion = filteredParticipants.filter(p => p.responses[index]).length;
+                    const percentage = totalForQuestion > 0 ? (count / totalForQuestion) * 100 : 0;
+
+                    const miniBarHtml = `<div class="stats-mini-bar" style="width: ${percentage}%; background-color: #FFD700;" title="All Combined: ${count} (${percentage.toFixed(1)}%)"></div>`;
+                    const breakdownCountsHtml = `<div class="stats-company-count" style="color: #FFD700; min-width: 50px; text-align: right; justify-content: flex-end;"><span>${count}</span></div>`;
+
+                    return `<div class="stats-answer-row" data-answer="${cleanOpt}" style="cursor: pointer;"><div class="stats-answer-item"><span class="stats-answer-text">${cleanOpt}</span><div class="stats-mini-bars-container">${miniBarHtml}</div></div><div class="stats-answer-breakdown-counts">${breakdownCountsHtml}</div></div>`;
+                }).join('');
                 legendHtml = '';
             } else {
                 const dynamicResults = {};
@@ -3334,22 +3835,22 @@ function checkAdminAccess() {
                         allCompanyNames.forEach(c => dynamicResults[cleanOpt][c] = 0);
                     }
                 });
-                
                 filteredParticipants.forEach(p => {
                     const answerCell = p.responses[index] || '';
                     const respondentAnswers = answerCell.toString().split(', ');
                     const company = p.company;
-                    
                     respondentAnswers.forEach(ans => {
                         let cleanAns = ans.split('::score=')[0];
+                        if (cleanAns.includes(': ')) {
+                           cleanAns = q.options.find(o => o.includes(cleanAns.split(': ')[0]));
+                           if(cleanAns) cleanAns = cleanAns.split('::score=')[0];
+                        }
                         if (dynamicResults[cleanAns] && dynamicResults[cleanAns].hasOwnProperty(company)) {
                             dynamicResults[cleanAns][company]++;
                         }
                     });
                 });
-
-                let companiesToDisplay = (companyFilter === 'all') ? allCompanyNames : [companyFilter];
-
+                let companiesToDisplay = (companyFilter.includes('all')) ? allCompanyNames : companyFilter;
                 answersHtml = q.options.map(opt => {
                     const cleanOpt = opt.split('::score=')[0];
                     const optionResults = dynamicResults[cleanOpt] || {};
@@ -3363,124 +3864,98 @@ function checkAdminAccess() {
                         const count = optionResults[name] || 0;
                         return `<div class="stats-company-count" style="color: ${colors[name]};"><span>•</span><span>${count}</span></div>`;
                     }).join('');
-                    return `
-                        <div class="stats-answer-row" data-answer="${cleanOpt}" style="cursor: pointer;">
-                            <div class="stats-answer-item">
-                                <span class="stats-answer-text">${cleanOpt}</span>
-                                <div class="stats-mini-bars-container">${miniBarsHtml}</div>
-                            </div>
-                            <div class="stats-answer-breakdown-counts">${breakdownCountsHtml}</div>
-                        </div>`;
+                    return `<div class="stats-answer-row" data-answer="${cleanOpt}" style="cursor: pointer;"><div class="stats-answer-item"><span class="stats-answer-text">${cleanOpt}</span><div class="stats-mini-bars-container">${miniBarsHtml}</div></div><div class="stats-answer-breakdown-counts">${breakdownCountsHtml}</div></div>`;
                 }).join('');
-
-                legendHtml = allCompanyNames.map(name => `
-                    <div class="stats-legend-item">
-                        <div class="stats-legend-color-box" style="background-color: ${colors[name]};"></div>
-                        <span>${name}</span>
-                    </div>`).join('');
+                legendHtml = allCompanyNames.map(name => `<div class="stats-legend-item"><div class="stats-legend-color-box" style="background-color: ${colors[name]};"></div><span>${name}</span></div>`).join('');
             }
-
-            if(questionCardContainer){
-                 const progressPercentage = ((index + 1) / survey.questions.length) * 100;
-                 questionCardContainer.innerHTML = `
-                <div class="stats-question-view">
-                    <div id="prev-question" class="stats-nav-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
-                    </div>
-                    <div id="question-card-container">
-                        <div class="stats-question-card">
-                            <h3 class="stats-question-title">${q.text}</h3>
-                            <div class="stats-answers-container">${answersHtml}</div>
-                            <div class="stats-legend">
-                                <div class="progress-line-container">
-                                    <div class="progress-line-fill" style="width: ${progressPercentage}%;"></div>
-                                </div>
-                                ${legendHtml}
-                            </div>
-                        </div>
-                    </div>
-                    <div id="next-question" class="stats-nav-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="m304-82-56-57 343-343-343-343 56-57 400 400L304-82Z"/></svg>
-                    </div>
-                </div>`;
-            
-            const prevBtn = document.getElementById('prev-question');
-            const nextBtn = document.getElementById('next-question');
-            const answersContainer = document.querySelector('.stats-answers-container');
-            
-            answersContainer.addEventListener('click', (e) => {
-                const answerRow = e.target.closest('.stats-answer-row');
-                if (answerRow) {
-                    const selectedAnswer = answerRow.dataset.answer;
-                    document.querySelectorAll('.stats-answer-row').forEach(row => row.style.background = 'rgba(0, 0, 0, 0.25)');
-                    answerRow.style.background = 'rgba(0, 123, 255, 0.3)';
-                    activeTimelineAnswerInfo = { answer: selectedAnswer, question: q };
-                    generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
+            if (questionCardContainer) {
+                const progressPercentage = ((index + 1) / survey.questions.length) * 100;
+                questionCardContainer.innerHTML = `<div class="stats-question-view"><div id="prev-question" class="stats-nav-button"><svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg></div><div id="question-card-container"><div class="stats-question-card"><h3 class="stats-question-title">${q.text}</h3><div class="stats-answers-container">${answersHtml}</div><div class="stats-legend"><div class="progress-line-container"><div class="progress-line-fill" style="width: ${progressPercentage}%;"></div></div>${legendHtml}</div></div></div><div id="next-question" class="stats-nav-button"><svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="m304-82-56-57 343-343-343-343 56-57 400 400L304-82Z"/></svg></div></div>`;
+                const prevBtn = document.getElementById('prev-question');
+                const nextBtn = document.getElementById('next-question');
+                const answersContainer = document.querySelector('.stats-answers-container');
+                answersContainer.addEventListener('click', (e) => {
+                    const answerRow = e.target.closest('.stats-answer-row');
+                    if (answerRow) {
+                        const selectedAnswer = answerRow.dataset.answer;
+                        document.querySelectorAll('.stats-answer-row').forEach(row => row.style.background = 'rgba(0, 0, 0, 0.25)');
+                        answerRow.style.background = 'rgba(0, 123, 255, 0.3)';
+                        activeTimelineAnswerInfo = { answer: selectedAnswer, question: q };
+                        generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
+                    }
+                });
+                if (activeTimelineAnswerInfo.answer && activeTimelineAnswerInfo.question.text === q.text) {
+                    const answerRow = answersContainer.querySelector(`.stats-answer-row[data-answer="${activeTimelineAnswerInfo.answer}"]`);
+                    if (answerRow) {
+                        answerRow.style.background = 'rgba(0, 123, 255, 0.3)';
+                        generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
+                    }
                 }
-            });
 
-            if (activeTimelineAnswerInfo.answer && activeTimelineAnswerInfo.question.text === q.text) {
-                const answerRow = answersContainer.querySelector(`.stats-answer-row[data-answer="${activeTimelineAnswerInfo.answer}"]`);
-                if(answerRow) {
-                    answerRow.style.background = 'rgba(0, 123, 255, 0.3)';
-                    generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
+                function updateNavButtons() {
+                    prevBtn.classList.toggle('disabled', currentQuestionIndex === 0);
+                    nextBtn.classList.toggle('disabled', currentQuestionIndex === survey.questions.length - 1);
                 }
-            }
-            
-            function updateNavButtons() {
-                prevBtn.classList.toggle('disabled', currentQuestionIndex === 0);
-                nextBtn.classList.toggle('disabled', currentQuestionIndex === survey.questions.length - 1);
-            }
-
-            prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(currentQuestionIndex); } });
-            nextBtn.addEventListener('click', () => { if (currentQuestionIndex < survey.questions.length - 1) { currentQuestionIndex++; renderQuestion(currentQuestionIndex); } });
-            updateNavButtons();
+                prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(currentQuestionIndex); } });
+                nextBtn.addEventListener('click', () => { if (currentQuestionIndex < survey.questions.length - 1) { currentQuestionIndex++; renderQuestion(currentQuestionIndex); } });
+                updateNavButtons();
             }
         }
-        
         renderQuestion(currentQuestionIndex);
     }
+
     function generateTimelineDataAndRenderChart(answerInfo, participants, survey, companies, colors) {
         if (timelineChartInstance) {
             timelineChartInstance.destroy();
+            timelineChartInstance = null;
         }
-
         const placeholder = document.getElementById('timeline-placeholder');
         const canvas = document.getElementById('timeline-chart');
         if (!placeholder || !canvas) return;
-        
+
+        const questionIndex = survey.questions.findIndex(q => q.text === answerInfo.question.text);
+        if (questionIndex === -1) return;
+
         placeholder.style.display = 'none';
         canvas.style.display = 'block';
 
+        const allParticipantDates = participants
+            .map(p => p.date ? new Date(p.date) : null)
+            .filter(d => d !== null)
+            .sort((a, b) => a - b);
+
+        if (allParticipantDates.length === 0) {
+            placeholder.innerHTML = `<p>No date data available for this selection.</p>`;
+            placeholder.style.display = 'flex';
+            canvas.style.display = 'none';
+            return;
+        }
+
         const dateFromInput = document.getElementById('date-from');
         const dateToInput = document.getElementById('date-to');
-        const questionIndex = survey.questions.findIndex(q => q.text === answerInfo.question.text);
 
         let startDateString = dateFromInput.value;
-        let endDateString = dateToInput.value;
-
-        if (!startDateString || !endDateString) {
-            const allParticipantDates = participants.filter(p => p.date).map(p => new Date(p.date)).sort((a, b) => a - b);
-            if (allParticipantDates.length > 0) {
-                if (!startDateString) startDateString = allParticipantDates[0].toISOString().slice(0, 10);
-                if (!endDateString) endDateString = allParticipantDates[allParticipantDates.length - 1].toISOString().slice(0, 10);
-            }
+        if (!startDateString) {
+            startDateString = allParticipantDates[0].toISOString().slice(0, 10);
         }
-        
-        const labels = [];
-        let grouping = 'daily';
+
+        let endDateString = dateToInput.value;
+        if (!endDateString) {
+            endDateString = allParticipantDates[allParticipantDates.length - 1].toISOString().slice(0, 10);
+        }
+
         const startDate = new Date(startDateString);
         const endDate = new Date(endDateString);
+        
+        const labels = [];
+        const timeDiff = endDate.getTime() - startDate.getTime();
+        const dayDiff = timeDiff / (1000 * 3600 * 24);
 
-        if (startDateString && endDateString) {
-            const diffTime = Math.abs(endDate - startDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-            if (diffDays > 90) {
-                grouping = 'monthly';
-            } else if (diffDays > 14) {
-                grouping = 'weekly';
-            }
+        let grouping = 'daily';
+        if (dayDiff > 90) {
+            grouping = 'monthly';
+        } else if (dayDiff > 30) {
+            grouping = 'weekly';
         }
 
         if (grouping === 'monthly') {
@@ -3491,8 +3966,6 @@ function checkAdminAccess() {
             }
         } else if (grouping === 'weekly') {
             let current = new Date(startDate);
-            current.setDate(current.getDate() - current.getDay());
-            
             while (current <= endDate) {
                 labels.push(current.toISOString().slice(0, 10));
                 current.setDate(current.getDate() + 7);
@@ -3504,70 +3977,137 @@ function checkAdminAccess() {
                 current.setDate(current.getDate() + 1);
             }
         }
+
+        let datasets;
+        const selectedCompanies = getSelectedValues('company-filter-container');
         
-        const datasets = companies.map(company => {
-            const data = [];
-            let lastValidValue = 0;
-            
-            labels.forEach(label => {
+        if (selectedCompanies[0] === 'All Combined') {
+             const data = [];
+             let lastValidValue = 0;
+             labels.forEach(label => {
                 let periodParticipants = [];
-                 if (grouping === 'monthly') {
+                if (grouping === 'monthly') {
                     const year = parseInt(label.substring(0, 4), 10);
                     const month = parseInt(label.substring(5, 7), 10) - 1;
                     periodParticipants = participants.filter(p => {
                         if (!p.date) return false;
                         const pDate = new Date(p.date);
-                        return p.company === company && pDate.getFullYear() === year && pDate.getMonth() === month;
+                        return pDate.getFullYear() === year && pDate.getMonth() === month;
                     });
                 } else if (grouping === 'weekly') {
                     const weekStart = new Date(label);
                     const weekEnd = new Date(weekStart);
                     weekEnd.setDate(weekEnd.getDate() + 7);
-                    
                     periodParticipants = participants.filter(p => {
                         if (!p.date) return false;
                         const pDate = new Date(p.date);
-                        return p.company === company && pDate >= weekStart && pDate < weekEnd;
+                        return pDate >= weekStart && pDate < weekEnd;
                     });
                 } else {
-                    periodParticipants = participants.filter(p => p.date && p.date.slice(0, 10) === label && p.company === company);
+                    periodParticipants = participants.filter(p => p.date && p.date.slice(0, 10) === label);
                 }
-
                 const totalResponsesInPeriod = periodParticipants.length;
-                
-                if (totalResponsesInPeriod === 0) {
+                 if (totalResponsesInPeriod === 0) {
                     data.push(lastValidValue);
                     return;
                 }
-
-                const selectedAnswerCountInPeriod = periodParticipants.filter(p => {
+                 const selectedAnswerCountInPeriod = periodParticipants.filter(p => {
                     const response = p.responses[questionIndex] || '';
-                    return response.toString().split(', ').map(r => r.split('::score=')[0]).includes(answerInfo.answer);
+                    let participantAnswers = [];
+                    if (answerInfo.question.type === 'multiple') {
+                        participantAnswers = response.toString().split(', ');
+                    } else {
+                        participantAnswers = [response.toString()];
+                    }
+                    const cleanedParticipantAnswers = participantAnswers.map(r => r.split('::score=')[0].trim());
+                    return cleanedParticipantAnswers.includes(answerInfo.answer);
                 }).length;
-
                 const currentPercentage = (selectedAnswerCountInPeriod / totalResponsesInPeriod) * 100;
-                
                 const weight = Math.min(totalResponsesInPeriod / 10, 1);
                 const newValue = (lastValidValue * (1 - weight)) + (currentPercentage * weight);
-                
                 data.push(newValue);
                 lastValidValue = newValue;
             });
 
-            return {
-                label: company,
+            datasets = [{
+                label: 'All Combined',
                 data: data,
-                borderColor: colors[company],
-                backgroundColor: colors[company].replace('0.9', '0.2'),
+                borderColor: '#FFD700',
+                backgroundColor: 'rgba(255, 215, 0, 0.2)',
                 fill: false,
                 tension: 0.2,
                 borderWidth: 2
-            };
-        });
+            }];
+        } else {
+            let allCompanyDatasets = companies.map(company => {
+                const data = [];
+                let lastValidValue = 0;
+                labels.forEach(label => {
+                    let periodParticipants = [];
+                    if (grouping === 'monthly') {
+                        const year = parseInt(label.substring(0, 4), 10);
+                        const month = parseInt(label.substring(5, 7), 10) - 1;
+                        periodParticipants = participants.filter(p => {
+                            if (!p.date) return false;
+                            const pDate = new Date(p.date);
+                            return p.company === company && pDate.getFullYear() === year && pDate.getMonth() === month;
+                        });
+                    } else if (grouping === 'weekly') {
+                        const weekStart = new Date(label);
+                        const weekEnd = new Date(weekStart);
+                        weekEnd.setDate(weekEnd.getDate() + 7);
+                        periodParticipants = participants.filter(p => {
+                            if (!p.date) return false;
+                            const pDate = new Date(p.date);
+                            return p.company === company && pDate >= weekStart && pDate < weekEnd;
+                        });
+                    } else {
+                        periodParticipants = participants.filter(p => p.date && p.date.slice(0, 10) === label && p.company === company);
+                    }
+                    const totalResponsesInPeriod = periodParticipants.length;
+                    if (totalResponsesInPeriod === 0) {
+                        data.push(lastValidValue);
+                        return;
+                    }
+                    const selectedAnswerCountInPeriod = periodParticipants.filter(p => {
+                        const response = p.responses[questionIndex] || '';
+                        let participantAnswers = [];
+
+                        if (answerInfo.question.type === 'multiple') {
+                            participantAnswers = response.toString().split(', ');
+                        } else {
+                            participantAnswers = [response.toString()];
+                        }
+                        
+                        const cleanedParticipantAnswers = participantAnswers.map(r => r.split('::score=')[0].trim());
+                        return cleanedParticipantAnswers.includes(answerInfo.answer);
+                    }).length;
+                    const currentPercentage = (selectedAnswerCountInPeriod / totalResponsesInPeriod) * 100;
+                    const weight = Math.min(totalResponsesInPeriod / 10, 1);
+                    const newValue = (lastValidValue * (1 - weight)) + (currentPercentage * weight);
+                    data.push(newValue);
+                    lastValidValue = newValue;
+                });
+                return {
+                    label: company,
+                    data: data,
+                    borderColor: colors[company],
+                    backgroundColor: colors[company].replace('0.9', '0.2'),
+                    fill: false,
+                    tension: 0.2,
+                    borderWidth: 2
+                };
+            });
+            
+            if (!selectedCompanies.includes('all')) {
+                datasets = allCompanyDatasets.filter(ds => selectedCompanies.includes(ds.label));
+            } else {
+                datasets = allCompanyDatasets;
+            }
+        }
 
         const ctx = document.getElementById('timeline-chart')?.getContext('2d');
         if (!ctx) return;
-        
         timelineChartInstance = new Chart(ctx, {
             type: 'line',
             data: { labels, datasets },
@@ -3582,6 +4122,15 @@ function checkAdminAccess() {
                         color: '#fff',
                         padding: { top: 5, bottom: 15 },
                         font: { size: 14 }
+                    },
+                    tooltip: {
+                        filter: function(tooltipItem) {
+                            const selectedCompanies = getSelectedValues('company-filter-container');
+                            if (selectedCompanies.includes('all')) {
+                                return true;
+                            }
+                            return selectedCompanies.includes(tooltipItem.dataset.label);
+                        }
                     }
                 },
                 scales: {
@@ -3603,112 +4152,83 @@ function checkAdminAccess() {
             }
         });
     }
-function calculateAverageScore(responses) {
-    let totalScore = 0;
-    let scoredAnswersCount = 0;
 
-    responses.forEach(response => {
-        if (typeof response === 'string' && response.includes('::score=')) {
-            const parts = response.split('::score=');
-            const score = parseInt(parts[1], 10);
-            if (!isNaN(score)) {
-                totalScore += score;
-                scoredAnswersCount++;
+    function calculateAverageScore(responses) {
+        let totalScore = 0;
+        let scoredAnswersCount = 0;
+        if(!responses) return 'N/A';
+        responses.forEach(response => {
+            if (typeof response === 'string' && response.includes('::score=')) {
+                const parts = response.split('::score=');
+                const score = parseInt(parts[1], 10);
+                if (!isNaN(score)) {
+                    totalScore += score;
+                    scoredAnswersCount++;
+                }
             }
+        });
+        if (scoredAnswersCount === 0) {
+            return 'N/A';
         }
-    });
-
-    if (scoredAnswersCount === 0) {
-        return 'N/A';
+        const average = totalScore / scoredAnswersCount;
+        return `${average.toFixed(1)} / 5`;
     }
 
-    const average = totalScore / scoredAnswersCount;
-    return `${average.toFixed(1)} / 5`;
-}
-function sortParticipants(participants, key, direction) {
-    return [...participants].sort((a, b) => {
-        let valA, valB;
+    function sortParticipants(participants, key, direction) {
+        return [...participants].sort((a, b) => {
+            let valA, valB;
+            if (key === 'age') {
+                valA = parseInt(a.age, 10) || 0;
+                valB = parseInt(b.age, 10) || 0;
+            } else if (key === 'date') {
+                valA = new Date(a.date);
+                valB = new Date(b.date);
+            } else if (key === 'rate') {
+                valA = parseFloat(calculateAverageScore(a.responses)) || 0;
+                valB = parseFloat(calculateAverageScore(b.responses)) || 0;
+            } else {
+                valA = (a[key] || '').toString().toLowerCase();
+                valB = (b[key] || '').toString().toLowerCase();
+            }
+            let comparison = 0;
+            if (valA > valB) {
+                comparison = 1;
+            } else if (valA < valB) {
+                comparison = -1;
+            }
+            return direction === 'asc' ? comparison : -comparison;
+        });
+    }
 
-        if (key === 'age') {
-            valA = parseInt(a.age, 10) || 0;
-            valB = parseInt(b.age, 10) || 0;
-        } else if (key === 'date') {
-            valA = new Date(a.date);
-            valB = new Date(b.date);
-        } else if (key === 'rate') {
-            valA = parseFloat(calculateAverageScore(a.responses)) || 0;
-            valB = parseFloat(calculateAverageScore(b.responses)) || 0;
-        } else {
-            valA = (a[key] || '').toString().toLowerCase();
-            valB = (b[key] || '').toString().toLowerCase();
-        }
-        
-        let comparison = 0;
-        if (valA > valB) {
-            comparison = 1;
-        } else if (valA < valB) {
-            comparison = -1;
-        }
-        
-        return direction === 'asc' ? comparison : -comparison;
-    });
-}
-function showParticipantDetailsModal(participantData) {
+    function showParticipantDetailsModal(participantData) {
         const existingModal = document.querySelector('.participant-modal-overlay');
         if (existingModal) existingModal.remove();
-
         const survey = statsData.surveys.find(s => s.name === participantData.survey);
         if (!survey) {
             showAlert('Could not find questions for this survey.');
             return;
         }
-
         let qaHtml = '';
-        survey.questions.forEach((q, index) => {
-            const rawAnswer = participantData.responses[index] || 'No answer recorded';
-            let displayAnswer = rawAnswer;
-            let scoreHtml = '';
-
-            if (typeof rawAnswer === 'string' && rawAnswer.includes('::score=')) {
-                const parts = rawAnswer.split('::score=');
-                displayAnswer = parts[0];
-                scoreHtml = `<span class="qa-card-score">(Score: ${parts[1]}/5)</span>`;
-            }
-
-            qaHtml += `
-                <div class="qa-card">
-                    <div class="qa-card-question">${q.text}</div>
-                    <div class="qa-card-answer">${displayAnswer}${scoreHtml}</div>
-                </div>
-            `;
-        });
-        if (survey.questions.length === 0) {
+        if (survey.questions && participantData.responses) {
+            survey.questions.forEach((q, index) => {
+                const rawAnswer = participantData.responses[index] || 'No answer recorded';
+                let displayAnswer = rawAnswer;
+                let scoreHtml = '';
+                if (typeof rawAnswer === 'string' && rawAnswer.includes('::score=')) {
+                    const parts = rawAnswer.split('::score=');
+                    displayAnswer = parts[0];
+                    scoreHtml = `<span class="qa-card-score">(Score: ${parts[1]}/5)</span>`;
+                }
+                qaHtml += `<div class="qa-card"><div class="qa-card-question">${q.text}</div><div class="qa-card-answer">${displayAnswer}${scoreHtml}</div></div>`;
+            });
+        }
+        if (!survey.questions || survey.questions.length === 0) {
             qaHtml = '<p style="text-align: center; opacity: 0.7;">This survey had no questions at the time of submission.</p>'
         }
-
         const modal = document.createElement('div');
         modal.className = 'participant-modal-overlay';
-        modal.innerHTML = `
-            <div class="participant-modal-content">
-                <div class="participant-modal-header">
-                    <h2>${participantData.participant}</h2>
-                    <div style="display: flex; align-items: center; gap: 30px;">
-                        <div class="participant-modal-details">
-                            <div>Survey: <b>${participantData.survey}</b></div>
-                            <div>Company: <b>${participantData.company}</b></div>
-                            <div>Age: <b>${participantData.age || 'N/A'}</b></div>
-                        </div>
-                        <button class="participant-modal-close">&times;</button>
-                    </div>
-                </div>
-                <div class="participant-modal-body">
-                    ${qaHtml}
-                </div>
-            </div>
-        `;
-
+        modal.innerHTML = `<div class="participant-modal-content"><div class="participant-modal-header"><h2>${participantData.participant}</h2><div style="display: flex; align-items: center; gap: 30px;"><div class="participant-modal-details"><div>Survey: <b>${participantData.survey}</b></div><div>Company: <b>${participantData.company}</b></div><div>Age: <b>${participantData.age || 'N/A'}</b></div></div><button class="participant-modal-close">&times;</button></div></div><div class="participant-modal-body">${qaHtml}</div></div>`;
         document.body.appendChild(modal);
-
         modal.querySelector('.participant-modal-close').addEventListener('click', () => {
             modal.remove();
         });
@@ -3730,34 +4250,24 @@ function showParticipantDetailsModal(participantData) {
                 const date = new Date(p.date);
                 const formattedDate = date.toLocaleString ? date.toLocaleString('en-US', {
                     year: '2-digit', month: '2-digit', day: '2-digit',
-                    hour: '2-digit', minute:'2-digit', hour12: true
+                    hour: '2-digit', minute: '2-digit', hour12: true
                 }) : p.date;
-
                 const rate = calculateAverageScore(p.responses);
                 const item = document.createElement('li');
                 item.className = 'participant-list-item';
-                item.innerHTML = `
-                    <span>${p.survey}</span>
-                    <span>${p.participant}</span>
-                    <span>${p.age || 'N/A'}</span>
-                    <span>${p.company}</span>
-                    <span>${formattedDate}</span>
-                     <span style="text-align: right; font-weight: 400; padding-right: 20px;">${rate}</span>
-                `;
+                item.innerHTML = `<span>${p.survey}</span><span>${p.participant}</span><span>${p.age || 'N/A'}</span><span>${p.company}</span><span>${formattedDate}</span><span style="text-align: right; font-weight: 400; padding-right: 20px;">${rate}</span>`;
                 item.dataset.participantData = JSON.stringify(p);
                 listElement.appendChild(item);
             });
         }
-
         displayList(participants);
-
         searchInput.addEventListener('keyup', () => {
-        const searchTerm = searchInput.value.toLowerCase();
-        const filtered = participants.filter(p =>
-            p.participant.trim().toLowerCase().startsWith(searchTerm)
-        );
-        displayList(filtered);
-    });
+            const searchTerm = searchInput.value.toLowerCase();
+            const filtered = participants.filter(p =>
+                p.participant.trim().toLowerCase().startsWith(searchTerm)
+            );
+            displayList(filtered);
+        });
         listElement.addEventListener('click', (e) => {
             const listItem = e.target.closest('.participant-list-item');
             if (listItem && listItem.dataset.participantData) {
@@ -3766,179 +4276,104 @@ function showParticipantDetailsModal(participantData) {
             }
         });
     }
-    const script = document.createElement('script');
-    script.id = 'jsonp-script-stats-all';
-    script.src = `${SCRIPT_URL}?action=getStatisticsData&callback=handleAllStatsData`;
-    script.onerror = () => {
-        hideAdminSpinner(spinner);
-        showAlert('Failed to load statistics data.');
-    };
-    document.body.appendChild(script);
+    
+    function renderTopAnswersTable(answers, limit) {
+        const tableBody = document.getElementById('top-answers-table-body');
+        if (!tableBody) return;
+        const answersToShow = limit === 'all' ? answers : answers.slice(0, parseInt(limit));
+        tableBody.innerHTML = answersToShow.map((item, index) => {
+            return `
+                <tr class="top-answers-row">
+                    <td class="rank">${index + 1}</td>
+                    <td class="answer-details" data-survey="Survey: ${item.survey}">
+                        <span class="question">${item.question}</span>
+                        <span class="answer">${item.answer}</span>
+                    </td>
+                    <td class="count">${item.score}</td>
+                    <td class="count">${item.count}</td>
+                    <td class="percentage">${item.percentage}</td>
+                </tr>`;
+        }).join('');
+    }
+
+    renderUI();
 }
+    
     
 
 function renderSurveyList(mode) {
-        const spinner = showAdminSpinner();
-
-        window.handleSurveyList = (surveys) => {
-            hideAdminSpinner(spinner);
-            const title = mode === 'edit' ? 'Edit Surveys' : 'View Statistics';
-            
-            let listHtml = surveys.map(s => {
-                const dateString = s.lastModified;
-                let formattedDateTime = 'N/A';
-
-                if (dateString) {
-                    const date = new Date(dateString);
-                    const options = { 
-                        year: 'numeric', 
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit', 
-                        minute: '2-digit',
-                        hour12: true
-                    };
-                    formattedDateTime = new Intl.DateTimeFormat('en-us', options).format(date).replace(',', '');
-                }
-
-                return `
-                    <li class="admin-list-item" data-id="${s.id}" data-name="${s.name}">
-                        <div class="admin-list-item-info">
-                            <span class="name">${s.name}</span>
-                        </div>
-                        <div class="admin-list-item-url">
-                            <button class="url-btn" title="Get Survey Links">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="currentColor"><path d="M440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm120 160v-80h160q50 0 85-35t35-85q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 83-58.5 141.5T680-280H520Z"/></svg>
-                            </button>
-                        </div>
-                        <div class="admin-list-item-date">
-                            <span>${formattedDateTime}</span>
-                        </div>
-                        <div class="admin-list-item-actions">
-                            <button class="edit-btn" title="Edit"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button>
-                            <button class="delete-btn" title="Delete"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></button>
-                        </div>
-                    </li>
-                `;
-            }).join('');
-
-            if (surveys.length === 0) {
-                listHtml = '<p style="text-align:center; padding: 20px;">No surveys found.</p>';
-            }
-
-            adminPanelContainer.innerHTML = `
-                <div class="admin-page-content">
-                    <a href="#" class="admin-back-button" style="display: flex; align-items: center; gap: 5px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
-                        <span>Back to Admin Panel</span>
-                    </a>
-                     <h1 style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32" fill="currentColor"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
-                        ${title}
-                     </h1>
-                     
-                     <input type="text" id="survey-search" class="admin-search-bar" placeholder="Search surveys...">
-
-                     <div class="admin-list-header">
-                        <span>Survey Name</span>
-                        <span style="text-align: center;">URLs</span>
-                        <span>Last Modified</span>
-                        <span style="justify-self: end;">Actions</span>
-                     </div>
-                     <ul class="admin-list">${listHtml}</ul>
-                </div>
-            `;
-            
-            document.getElementById('survey-search').addEventListener('keyup', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                document.querySelectorAll('.admin-list-item').forEach(item => {
-                    const surveyName = item.dataset.name.toLowerCase();
-                    if (surveyName.startsWith(searchTerm)) {
-                        item.style.display = 'grid';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-
-            document.querySelector('.admin-back-button').addEventListener('click', renderAdminMainMenu);
-            document.querySelector('.admin-list').addEventListener('click', e => {
-                const button = e.target.closest('button');
-                if(!button) return;
-                
-                const listItem = button.closest('.admin-list-item');
-                const surveyId = listItem.dataset.id;
-                const surveyName = listItem.dataset.name;
-                
-                if (button.classList.contains('url-btn')) {
-                    showUrlModal(surveyId, surveyName);
-                    return;
-                }
-                
-                if (button.classList.contains('edit-btn')) {
-                    const spinner = showAdminSpinner();
-                    window.handleSurveyQuestions = (questions) => {
-                        hideAdminSpinner(spinner);
-                        if (questions.error) {
-                            showAlert(questions.error);
-                            return;
-                        }
-                        const surveyData = {
-                            name: listItem.dataset.name,
-                            id: surveyId,
-                            questions: questions
-                        };
-                        renderAddOrEditSurveyForm(surveyData);
-                        document.getElementById('jsonp-script-questions').remove();
-                        delete window.handleSurveyQuestions;
-                    };
-                    const script = document.createElement('script');
-                    script.id = 'jsonp-script-questions';
-                    script.src = `${SCRIPT_URL}?action=getQuestions&sheet=${surveyId}&callback=handleSurveyQuestions`;
-                    document.body.appendChild(script);
-
-                } else if (button.classList.contains('delete-btn')) {
-                    if (confirm(`Are you sure you want to delete the survey "${listItem.dataset.name}"? This action cannot be undone.`)) {
-                        const spinner = showAdminSpinner();
-                         fetch(SCRIPT_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ action: 'deleteSurvey', sheetName: surveyId }),
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-                         }).then(res => res.json()).then(result => {
-                            hideAdminSpinner(spinner);
-                            if(result.status === 'success'){
-                                showAlert('Survey deleted.');
-                                renderSurveyList('edit');
-                            } else {
-                                showAlert('Error: ' + result.message);
-                            }
-                         }).catch(err => {
-                            hideAdminSpinner(spinner);
-                            if (err instanceof TypeError && err.message === 'Failed to fetch') {
-                                showAlert('Survey deleted.');
-                                renderSurveyList('edit');
-                            } else {
-                                showAlert('An unexpected network error occurred.');
-                            }
-                        });
-                    }
-                }
-            });
-
-            document.getElementById('jsonp-script-list').remove();
-            delete window.handleSurveyList;
-        };
-
-        const script = document.createElement('script');
-        script.id = 'jsonp-script-list';
-        script.src = `${SCRIPT_URL}?action=getSurveyNames&callback=handleSurveyList`;
-        script.onerror = () => {
-            hideAdminSpinner(spinner);
-            showAlert('Failed to load the survey list. Check your network connection and SCRIPT_URL.');
-            delete window.handleSurveyList;
-        };
-        document.body.appendChild(script);
+    if (!adminDataCache || !adminDataCache.surveyNames) {
+        showAlert("Data is not available yet. Please wait for the initial load to complete.");
+        return;
     }
+
+    const surveys = adminDataCache.surveyNames;
+    const title = mode === 'edit' ? 'Edit Surveys' : 'View Statistics';
+    let listHtml = surveys.map(s => {
+        const dateString = s.lastModified;
+        let formattedDateTime = 'N/A';
+        if (dateString) {
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true };
+            formattedDateTime = new Intl.DateTimeFormat('en-us', options).format(date).replace(',', '');
+        }
+        return `<li class="admin-list-item" data-id="${s.id}" data-name="${s.name}">
+            <div class="admin-list-item-info"><span class="name">${s.name}</span></div>
+            <div class="admin-list-item-url"><button class="url-btn" title="Get Survey Links"><svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="currentColor"><path d="M440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm120 160v-80h160q50 0 85-35t35-85q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 83-58.5 141.5T680-280H520Z"/></svg></button></div>
+            <div class="admin-list-item-date"><span>${formattedDateTime}</span></div>
+            <div class="admin-list-item-actions"><button class="edit-btn" title="Edit"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button><button class="delete-btn" title="Delete"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></button></div>
+        </li>`;
+    }).join('');
+    if (surveys.length === 0) { listHtml = '<p style="text-align:center; padding: 20px;">No surveys found.</p>'; }
+    adminPanelContainer.innerHTML = `<div class="admin-page-content">
+        <a href="#" class="admin-back-button" style="display: flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg><span>Back to Admin Panel</span></a>
+        <h1 style="display: flex; align-items: center; justify-content: center; gap: 15px;"><svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32" fill="currentColor"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>${title}</h1>
+        <input type="text" id="survey-search" class="admin-search-bar" placeholder="Search surveys...">
+        <div class="admin-list-header"><span>Survey Name</span><span style="text-align: center;">URLs</span><span>Last Modified</span><span style="justify-self: end;">Actions</span></div>
+        <ul class="admin-list">${listHtml}</ul>
+    </div>`;
+    document.getElementById('survey-search').addEventListener('keyup', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        document.querySelectorAll('.admin-list-item').forEach(item => { item.style.display = item.dataset.name.toLowerCase().startsWith(searchTerm) ? 'grid' : 'none'; });
+    });
+    document.querySelector('.admin-back-button').addEventListener('click', renderAdminMainMenu);
+    document.querySelector('.admin-list').addEventListener('click', e => {
+        const button = e.target.closest('button');
+        if (!button) return;
+        const listItem = button.closest('.admin-list-item');
+        const surveyId = listItem.dataset.id;
+        const surveyName = listItem.dataset.name;
+        if (button.classList.contains('url-btn')) { showUrlModal(surveyId, surveyName); return; }
+        if (button.classList.contains('edit-btn')) {
+            const spinner = showAdminSpinner();
+            window.handleSurveyQuestions = (questions) => {
+                hideAdminSpinner(spinner);
+                if (questions.error) { showAlert(questions.error); return; }
+                renderAddOrEditSurveyForm({ name: listItem.dataset.name, id: surveyId, questions: questions });
+                document.getElementById('jsonp-script-questions').remove();
+                delete window.handleSurveyQuestions;
+            };
+            const script = document.createElement('script');
+            script.id = 'jsonp-script-questions';
+            script.src = `${SCRIPT_URL}?action=getQuestions&sheet=${surveyId}&callback=handleSurveyQuestions`;
+            document.body.appendChild(script);
+        } else if (button.classList.contains('delete-btn')) {
+            if (confirm(`Are you sure you want to delete the survey "${listItem.dataset.name}"? This action cannot be undone.`)) {
+                const spinner = showAdminSpinner();
+                fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteSurvey', sheetId: surveyId }), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+                .then(res => res.json()).then(result => {
+                    hideAdminSpinner(spinner);
+                    if (result.status === 'success') { showAlert('Survey deleted.'); refreshDataInBackground(true); } 
+                    else { showAlert('Error: ' + result.message); }
+                }).catch(err => {
+                    hideAdminSpinner(spinner);
+                    if (err instanceof TypeError && err.message === 'Failed to fetch') { showAlert('Survey deleted.'); refreshDataInBackground(true); } 
+                    else { showAlert('An unexpected network error occurred.'); }
+                });
+            }
+        }
+    });
+}
 
     function showUrlModal(surveyId, surveyName) {
         const existingModal = document.querySelector('.url-modal-overlay');
@@ -4013,8 +4448,162 @@ function renderSurveyList(mode) {
         initializeSurvey();
     }
 });
+function fetchJsonpInPromise(url) {
+    return new Promise((resolve, reject) => {
+        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+        window[callbackName] = (data) => {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            resolve(data);
+        };
+        const script = document.createElement('script');
+        script.src = `${url}&callback=${callbackName}`;
+        script.onerror = () => {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            reject('Failed to load script for ' + url);
+        };
+        document.body.appendChild(script);
+    });
+}
 
+function fetchAllAdminDataInPromise() {
+    const statsUrl = `${SCRIPT_URL}?action=getStatisticsData`;
+    const namesUrl = `${SCRIPT_URL}?action=getSurveyNames`;
 
+    return Promise.all([
+        fetchJsonpInPromise(statsUrl),
+        fetchJsonpInPromise(namesUrl)
+    ]).then(([statsData, surveyNames]) => {
+        return { statsData, surveyNames };
+    });
+}
+
+function startBackgroundRefresh() {
+    if (cacheIntervalId) {
+        clearInterval(cacheIntervalId);
+    }
+    cacheIntervalId = setInterval(() => {
+        refreshDataInBackground();
+    }, 20 * 60 * 1000); 
+}
+
+function refreshDataInBackground(forceRender = false) {
+    fetchAllAdminDataInPromise().then(newData => {
+        if (adminDataCache) {
+            compareAndNotify(newData, adminDataCache);
+        }
+        adminDataCache = newData;
+
+        if (forceRender) {
+            if (document.querySelector('.admin-list')) {
+                renderSurveyList('edit');
+            }
+        }
+    }).catch(error => {
+        console.error("Background refresh failed:", error);
+    });
+}
+
+function compareAndNotify(newData, oldData, notificationType) {
+    const changes = [];
+
+    const oldSurveyMap = oldData.surveyNames.reduce((map, survey) => {
+        map[survey.id] = survey;
+        return map;
+    }, {});
+    const newSurveyMap = newData.surveyNames.reduce((map, survey) => {
+        map[survey.id] = survey;
+        return map;
+    }, {});
+
+    for (const id in newSurveyMap) {
+        const newSurvey = newSurveyMap[id];
+        const oldSurvey = oldSurveyMap[id];
+
+        if (!oldSurvey) {
+            changes.push(`New survey added: <b>${newSurvey.name}</b>`);
+        } else {
+            if (newSurvey.name !== oldSurvey.name) {
+                changes.push(`Survey '<em>${oldSurvey.name}</em>' was renamed to <b>${newSurvey.name}</b>`);
+            } else if (newSurvey.lastModified !== oldSurvey.lastModified) {
+                changes.push(`Survey edited: <b>${newSurvey.name}</b>`);
+            }
+        }
+    }
+
+    for (const id in oldSurveyMap) {
+        if (!newSurveyMap[id]) {
+            changes.push(`Survey deleted: <b>${oldSurveyMap[id].name}</b>`);
+        }
+    }
+
+    const newResponsesCount = newData.statsData.allParticipants.length;
+    const oldResponsesCount = oldData.statsData.allParticipants.length;
+    if (newResponsesCount > oldResponsesCount) {
+        const diff = newResponsesCount - oldResponsesCount;
+        changes.push(`<b>${diff}</b> new survey response(s) submitted.`);
+    }
+
+    if (changes.length > 0) {
+        if (notificationType === 'welcome') {
+            showWelcomeNotificationModal(changes);
+        } else {
+            showLiveToastNotification(changes);
+        }
+    }
+}
+function showWelcomeNotificationModal(messages) {
+    const existingModal = document.querySelector('.custom-welcome-modal-overlay');
+    if (existingModal) existingModal.remove();
+
+    const listItems = messages.map(msg => `<li>${msg}</li>`).join('');
+    
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'custom-welcome-modal-overlay';
+    
+    modalOverlay.innerHTML = `
+        <div class="custom-welcome-modal-content">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32" fill="currentColor"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm-40-160v-360h80v360h-80Zm40-440q-17 0-28.5-11.5T440-720q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720q0 17-11.5 28.5T480-680Z"/></svg>
+                What's New?
+            </h2>
+            <ul>${listItems}</ul>
+            <button>CONTINUE</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modalOverlay);
+    
+    const closeButton = modalOverlay.querySelector('button');
+    closeButton.addEventListener('click', () => {
+        modalOverlay.remove();
+    });
+
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            modalOverlay.remove();
+        }
+    });
+}
+
+function showLiveToastNotification(messages) {
+    const existingToast = document.querySelector('.live-toast-notification');
+    if (existingToast) existingToast.remove();
+
+    const listItems = messages.map(msg => `<li>- ${msg}</li>`).join('');
+    const toast = document.createElement('div');
+    toast.className = 'live-toast-notification';
+    toast.innerHTML = `
+        <h4>Updates Found!</h4>
+        <ul>${listItems}</ul>
+    `;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 10000);
+}
 </script>
 </body>
 </html>
