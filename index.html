@@ -327,7 +327,10 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 10px;
         }
         .survey-link {
             background-color: var(--suggested-link-bg);
@@ -1129,6 +1132,7 @@
     flex-direction: column;
     gap: 25px;
     justify-content: stretch;
+    min-height: 0;
 }
 .stats-timeline-chart-container {
     background: rgba(0, 0, 0, 0.2);
@@ -1137,8 +1141,10 @@
     width: 100%;
     flex-grow: 1;
     min-height: 300px;
+    height: 0; 
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 .stats-summary-grid {
     display: grid;
@@ -2488,6 +2494,66 @@
     font-size: 0.8rem;  
     padding-right: 10px; 
 }
+.timeline-chart-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0px;
+}
+.timeline-chart-nav-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.timeline-chart-nav-dot.active {
+    background-color: #007bff;
+}
+.timeline-info-icon {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: help;
+    color: rgba(255, 255, 255, 0.5);
+    z-index: 10;
+}
+.timeline-info-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+.timeline-info-icon:hover {
+    color: rgba(255, 255, 255, 1);
+}
+.timeline-info-icon::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 120%;
+    right: -20px;
+    transform: translateX(0);
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: 'Montserrat', sans-serif;
+    white-space: normal;
+    width: 280px;
+    text-align: left;
+    line-height: 1.5;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+.timeline-info-icon:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
 
     </style>
 </head>
@@ -2505,7 +2571,10 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxF6BNkmZ9X-sWzCsSvAKVclU8Pr89oaFL5tJfMFROvKnU-rLkpVUVG2FKHKNKV6Xc_Aw/exec';
     let companyConfig = {};
     let adminDataCache = null;
+    let surveyListSortKey = 'lastModified';
+    let surveyListSortDirection = 'desc';
     let cacheIntervalId = null;
+    let timelineChartInstance = null;
     document.addEventListener('DOMContentLoaded', () => {
     
     const mainContent = document.getElementById('main-content');
@@ -2980,11 +3049,11 @@ function setupQuestionListeners() {
         });
     }
 
-    function showSpinner(text = 'Molimo sačekajte...') {
+    function showSpinner(text = 'Please wait...') {
         const spinner = document.createElement('div');
         spinner.className = 'alert-modal';
         spinner.style.cssText = 'background-color: rgba(255,255,255,0.9); padding: 40px;';
-        spinner.innerHTML = `<p class="loading-animation">${text}</p>`;
+        spinner.innerHTML = `<p class="loading-animation" style="color: #000;">${text}</p>`;
         document.body.appendChild(spinner);
         return spinner;
     }
@@ -3308,6 +3377,23 @@ function refreshDataInBackground() {
     const data = isEditMode ? { id: surveyData.id, newName: newSurveyName, questions: questions } : { name: newSurveyName, questions: questions };
     const action = isEditMode ? 'updateSurvey' : 'saveNewSurvey';
     const spinner = showAdminSpinner();
+
+    const handleSuccess = (message) => {
+        fetchSurveyNamesInPromise().then(newNames => {
+            if (adminDataCache) {
+                adminDataCache.surveyNames = newNames;
+            }
+        }).finally(() => {
+            hideAdminSpinner(spinner);
+            showAlert(message);
+            if (isEditMode) {
+                renderSurveyList('edit');
+            } else {
+                renderAdminMainMenu();
+            }
+        });
+    };
+
     fetch(SCRIPT_URL, {
         method: 'POST',
         body: JSON.stringify({ action: action, data: data }),
@@ -3315,27 +3401,17 @@ function refreshDataInBackground() {
             'Content-Type': 'text/plain;charset=utf-8',
         }
     }).then(res => res.json()).then(result => {
-        hideAdminSpinner(spinner);
         if (result.status === 'success') {
-            showAlert(result.message || 'Survey saved successfully!');
-            if (isEditMode) {
-                renderSurveyList('edit');
-            } else {
-                renderAdminMainMenu();
-            }
+            handleSuccess(result.message || 'Survey saved successfully!');
         } else {
+            hideAdminSpinner(spinner);
             showAlert('Error: ' + (result.message || 'An unknown error occurred on the server.'));
         }
     }).catch(err => {
-        hideAdminSpinner(spinner);
         if (err instanceof TypeError && err.message === 'Failed to fetch') {
-            showAlert('Survey data sent successfully. The change should be saved.');
-            if (isEditMode) {
-                renderSurveyList('edit');
-            } else {
-                renderAdminMainMenu();
-            }
+            handleSuccess('Survey data sent successfully. The change should be saved.');
         } else {
+            hideAdminSpinner(spinner);
             showAlert('An unexpected error occurred: ' + err.message);
         }
     });
@@ -3436,7 +3512,7 @@ function renderStatisticsDashboard() {
 
     const statsData = adminDataCache.statsData;
     let activeCharts = [];
-    let timelineChartInstance = null;
+    let currentTimelineView = 'weighted';
     let activeTimelineAnswerInfo = { answer: null, question: null };
     let currentQuestionIndex = 0, currentSortKey = 'date', currentSortDirection = 'desc', topAnswersSortKey = 'count', topAnswersSortDirection = 'desc';
 
@@ -3726,9 +3802,11 @@ function renderStatisticsDashboard() {
 
                     const companyFilterContainer = document.getElementById('company-filter-container');
                     const allCombinedOption = companyFilterContainer.querySelector('li[data-value="All Combined"]');
+                    const allOption = companyFilterContainer.querySelector('li[data-value="all"]');
 
                     if (view === 'list') {
                         summaryTextArea.style.display = 'block';
+                        if(allOption) allOption.style.display = 'flex';
                         if (allCombinedOption) {
                             if (allCombinedOption.classList.contains('selected')) {
                                 companyFilterContainer.querySelector('li[data-value="all"]').classList.add('selected');
@@ -3743,6 +3821,14 @@ function renderStatisticsDashboard() {
                         if (companyFilterContainer && !allCombinedOption) {
                             const optionsList = companyFilterContainer.querySelector('.select-options ul');
                             optionsList.insertAdjacentHTML('afterbegin', '<li data-value="All Combined">All Combined<span class="tick-mark"></span></li>');
+                        }
+                        if(allOption) {
+                             if (allOption.classList.contains('selected')) {
+                                companyFilterContainer.querySelector('li[data-value="All Combined"]').classList.add('selected');
+                                allOption.classList.remove('selected');
+                                companyFilterContainer.querySelector('.select-display').textContent = 'All Combined';
+                            }
+                            allOption.style.display = 'none';
                         }
                         displaySingleSurveyDetails(selectedSurvey, selectedCompanies, sortedParticipants);
                     }
@@ -3790,7 +3876,13 @@ function renderStatisticsDashboard() {
             timelineChartInstance.destroy();
             timelineChartInstance = null;
         }
-        contentArea.innerHTML = `<div class="stats-overall-layout"><div id="question-card-main-wrapper"></div><div class="stats-right-column"><div class="stats-timeline-chart-container" id="timeline-container"><div id="timeline-placeholder" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: rgba(255, 255, 255, 0.3); text-align: center; padding: 20px;"><svg xmlns="http://www.w3.org/2000/svg" height="80" viewBox="0 -960 960 960" width="80" fill="currentColor"><path d="M120-120v-80h720v80H120Zm112-160-84-84 213-212 159 159 253-253 56 56-309 309-159-159-157 157Z"/></svg><p style="margin-top: 10px; font-size: 1.1rem;">Select an answer to view its trend</p></div><canvas id="timeline-chart" style="display: none;"></canvas></div></div></div>`;
+        contentArea.innerHTML = `<div class="stats-overall-layout"><div id="question-card-main-wrapper"></div><div class="stats-right-column"><div class="stats-timeline-chart-container" id="timeline-container"><div class="timeline-info-icon" id="timeline-info" data-tooltip=""><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></div><div id="timeline-placeholder" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: rgba(255, 255, 255, 0.3); text-align: center; padding: 20px;"><svg xmlns="http://www.w3.org/2000/svg" height="80" viewBox="0 -960 960 960" width="80" fill="currentColor"><path d="M120-120v-80h720v80H120Zm112-160-84-84 213-212 159 159 253-253 56 56-309 309-159-159-157 157Z"/></svg><p style="margin-top: 10px; font-size: 1.1rem;">Select an answer to view its trend</p></div><canvas id="timeline-chart" style="display: none;"></canvas><div class="timeline-chart-nav" style="display: none;"><span class="timeline-chart-nav-dot active" data-view="weighted"></span><span class="timeline-chart-nav-dot" data-view="count"></span><span class="timeline-chart-nav-dot" data-view="percentage"></span></div></div></div></div>`;
+
+        const generalTooltipText = 'This chart displays the trend of a selected answer over time. Click on any answer on the left to see its data. You can switch between different views using the dots that will appear below the chart.';
+        const infoIcon = document.getElementById('timeline-info');
+        if (infoIcon) {
+            infoIcon.setAttribute('data-tooltip', generalTooltipText);
+        }
 
         function renderQuestion(index) {
             const q = survey.questions[index];
@@ -3881,7 +3973,44 @@ function renderStatisticsDashboard() {
                 const prevBtn = document.getElementById('prev-question');
                 const nextBtn = document.getElementById('next-question');
                 const answersContainer = document.querySelector('.stats-answers-container');
+                const timelineNav = document.querySelector('.timeline-chart-nav');
+                timelineNav.addEventListener('click', e => {
+                    if (e.target.matches('.timeline-chart-nav-dot')) {
+                        currentTimelineView = e.target.dataset.view;
+                        timelineNav.querySelectorAll('.timeline-chart-nav-dot').forEach(dot => dot.classList.remove('active'));
+                        e.target.classList.add('active');
+                        if (activeTimelineAnswerInfo.answer) {
+                            generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
+                        }
+                    }
+                });
                 answersContainer.addEventListener('click', (e) => {
+                    const answerRow = e.target.closest('.stats-answer-row');
+                    if (answerRow) {
+                        const selectedAnswer = answerRow.dataset.answer;
+                        document.querySelectorAll('.stats-answer-row').forEach(row => row.style.background = 'rgba(0, 0, 0, 0.25)');
+                        answerRow.style.background = 'rgba(0, 123, 255, 0.3)';
+                        activeTimelineAnswerInfo = { answer: selectedAnswer, question: q };
+                        generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
+                    }
+                });
+                if (activeTimelineAnswerInfo.answer && activeTimelineAnswerInfo.question.text === q.text) {
+                    const answerRow = answersContainer.querySelector(`.stats-answer-row[data-answer="${activeTimelineAnswerInfo.answer}"]`);
+                    if (answerRow) {
+                        answerRow.style.background = 'rgba(0, 123, 255, 0.3)';
+                        generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
+                    }
+                }
+
+                function updateNavButtons() {
+                    prevBtn.classList.toggle('disabled', currentQuestionIndex === 0);
+                    nextBtn.classList.toggle('disabled', currentQuestionIndex === survey.questions.length - 1);
+                }
+                prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(currentQuestionIndex); } });
+                nextBtn.addEventListener('click', () => { if (currentQuestionIndex < survey.questions.length - 1) { currentQuestionIndex++; renderQuestion(currentQuestionIndex); } });
+                updateNavButtons();
+            
+                        answersContainer.addEventListener('click', (e) => {
                     const answerRow = e.target.closest('.stats-answer-row');
                     if (answerRow) {
                         const selectedAnswer = answerRow.dataset.answer;
@@ -3912,6 +4041,15 @@ function renderStatisticsDashboard() {
     }
 
     function generateTimelineDataAndRenderChart(answerInfo, participants, survey, companies, colors) {
+        const infoIcon = document.getElementById('timeline-info');
+    if (infoIcon) {
+        const tooltips = {
+            weighted: 'Weighted View: Displays a smoothed trend line. The percentage of responses for the selected answer is weighted by the number of total responses in that time period. This reduces the impact of outliers from periods with very few responses.',
+            count: 'Count View: Displays the absolute number of times the selected answer was chosen in each time period (day, week, or month).',
+            percentage: 'Percentage View: Displays the raw percentage of the selected answer compared to all other answers for that question within each time period.'
+        };
+        infoIcon.setAttribute('data-tooltip', tooltips[currentTimelineView]);
+    }
         if (timelineChartInstance) {
             timelineChartInstance.destroy();
             timelineChartInstance = null;
@@ -3919,12 +4057,14 @@ function renderStatisticsDashboard() {
         const placeholder = document.getElementById('timeline-placeholder');
         const canvas = document.getElementById('timeline-chart');
         if (!placeholder || !canvas) return;
+        const timelineNav = document.querySelector('.timeline-chart-nav');
 
         const questionIndex = survey.questions.findIndex(q => q.text === answerInfo.question.text);
         if (questionIndex === -1) return;
 
         placeholder.style.display = 'none';
         canvas.style.display = 'block';
+        if (timelineNav) timelineNav.style.display = 'flex';
 
         const allParticipantDates = participants
             .map(p => p.date ? new Date(p.date) : null)
@@ -3988,177 +4128,252 @@ function renderStatisticsDashboard() {
         let datasets;
         const selectedCompanies = getSelectedValues('company-filter-container');
         
-        if (selectedCompanies[0] === 'All Combined') {
-             const data = [];
-             let lastValidValue = 0;
-             labels.forEach(label => {
-                let periodParticipants = [];
-                if (grouping === 'monthly') {
-                    const year = parseInt(label.substring(0, 4), 10);
-                    const month = parseInt(label.substring(5, 7), 10) - 1;
-                    periodParticipants = participants.filter(p => {
-                        if (!p.date) return false;
-                        const pDate = new Date(p.date);
-                        return pDate.getFullYear() === year && pDate.getMonth() === month;
-                    });
-                } else if (grouping === 'weekly') {
-                    const weekStart = new Date(label);
-                    const weekEnd = new Date(weekStart);
-                    weekEnd.setDate(weekEnd.getDate() + 7);
-                    periodParticipants = participants.filter(p => {
-                        if (!p.date) return false;
-                        const pDate = new Date(p.date);
-                        return pDate >= weekStart && pDate < weekEnd;
-                    });
-                } else {
-                    periodParticipants = participants.filter(p => p.date && p.date.slice(0, 10) === label);
-                }
-                const totalResponsesInPeriod = periodParticipants.length;
-                 if (totalResponsesInPeriod === 0) {
-                    data.push(lastValidValue);
-                    return;
-                }
-                 const selectedAnswerCountInPeriod = periodParticipants.filter(p => {
-                    const response = p.responses[questionIndex] || '';
-                    let participantAnswers = [];
-                    if (answerInfo.question.type === 'multiple') {
-                        participantAnswers = response.toString().split(', ');
-                    } else {
-                        participantAnswers = [response.toString()];
-                    }
-                    const cleanedParticipantAnswers = participantAnswers.map(r => r.split('::score=')[0].trim());
-                    return cleanedParticipantAnswers.includes(answerInfo.answer);
-                }).length;
-                const currentPercentage = (selectedAnswerCountInPeriod / totalResponsesInPeriod) * 100;
-                const weight = Math.min(totalResponsesInPeriod / 10, 1);
-                const newValue = (lastValidValue * (1 - weight)) + (currentPercentage * weight);
-                data.push(newValue);
-                lastValidValue = newValue;
-            });
+        const processData = (participantsForPeriod) => {
+    const totalResponsesInPeriod = participantsForPeriod.length;
+    if (totalResponsesInPeriod === 0) return null;
 
-            datasets = [{
-                label: 'All Combined',
-                data: data,
-                borderColor: '#FFD700',
-                backgroundColor: 'rgba(255, 215, 0, 0.2)',
-                fill: false,
-                tension: 0.2,
-                borderWidth: 2
-            }];
+    const selectedAnswerCountInPeriod = participantsForPeriod.filter(p => {
+        const response = p.responses[questionIndex] || '';
+        let participantAnswers = response.toString().split(', ').map(r => r.split('::score=')[0].trim());
+        return participantAnswers.includes(answerInfo.answer);
+    }).length;
+
+    if (currentTimelineView === 'count') {
+        return selectedAnswerCountInPeriod;
+    }
+    if (currentTimelineView === 'percentage') {
+        return (selectedAnswerCountInPeriod / totalResponsesInPeriod) * 100;
+    }
+    // Weighted average logic (default)
+    const currentPercentage = (selectedAnswerCountInPeriod / totalResponsesInPeriod) * 100;
+    return currentPercentage;
+};
+
+if (selectedCompanies[0] === 'All Combined') {
+     const data = [];
+     let lastValidValue = 0;
+     labels.forEach(label => {
+        let periodParticipants = [];
+        if (grouping === 'monthly') {
+            const year = parseInt(label.substring(0, 4), 10);
+            const month = parseInt(label.substring(5, 7), 10) - 1;
+            periodParticipants = participants.filter(p => {
+                if (!p.date) return false;
+                const pDate = new Date(p.date);
+                return pDate.getFullYear() === year && pDate.getMonth() === month;
+            });
+        } else if (grouping === 'weekly') {
+            const weekStart = new Date(label);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            periodParticipants = participants.filter(p => {
+                if (!p.date) return false;
+                const pDate = new Date(p.date);
+                return pDate >= weekStart && pDate < weekEnd;
+            });
         } else {
-            let allCompanyDatasets = companies.map(company => {
-                const data = [];
-                let lastValidValue = 0;
-                labels.forEach(label => {
-                    let periodParticipants = [];
-                    if (grouping === 'monthly') {
-                        const year = parseInt(label.substring(0, 4), 10);
-                        const month = parseInt(label.substring(5, 7), 10) - 1;
-                        periodParticipants = participants.filter(p => {
-                            if (!p.date) return false;
-                            const pDate = new Date(p.date);
-                            return p.company === company && pDate.getFullYear() === year && pDate.getMonth() === month;
-                        });
-                    } else if (grouping === 'weekly') {
-                        const weekStart = new Date(label);
-                        const weekEnd = new Date(weekStart);
-                        weekEnd.setDate(weekEnd.getDate() + 7);
-                        periodParticipants = participants.filter(p => {
-                            if (!p.date) return false;
-                            const pDate = new Date(p.date);
-                            return p.company === company && pDate >= weekStart && pDate < weekEnd;
-                        });
-                    } else {
-                        periodParticipants = participants.filter(p => p.date && p.date.slice(0, 10) === label && p.company === company);
-                    }
-                    const totalResponsesInPeriod = periodParticipants.length;
-                    if (totalResponsesInPeriod === 0) {
-                        data.push(lastValidValue);
-                        return;
-                    }
-                    const selectedAnswerCountInPeriod = periodParticipants.filter(p => {
-                        const response = p.responses[questionIndex] || '';
-                        let participantAnswers = [];
-
-                        if (answerInfo.question.type === 'multiple') {
-                            participantAnswers = response.toString().split(', ');
-                        } else {
-                            participantAnswers = [response.toString()];
-                        }
-                        
-                        const cleanedParticipantAnswers = participantAnswers.map(r => r.split('::score=')[0].trim());
-                        return cleanedParticipantAnswers.includes(answerInfo.answer);
-                    }).length;
-                    const currentPercentage = (selectedAnswerCountInPeriod / totalResponsesInPeriod) * 100;
-                    const weight = Math.min(totalResponsesInPeriod / 10, 1);
-                    const newValue = (lastValidValue * (1 - weight)) + (currentPercentage * weight);
-                    data.push(newValue);
-                    lastValidValue = newValue;
-                });
-                return {
-                    label: company,
-                    data: data,
-                    borderColor: colors[company],
-                    backgroundColor: colors[company].replace('0.9', '0.2'),
-                    fill: false,
-                    tension: 0.2,
-                    borderWidth: 2
-                };
-            });
-            
-            if (!selectedCompanies.includes('all')) {
-                datasets = allCompanyDatasets.filter(ds => selectedCompanies.includes(ds.label));
-            } else {
-                datasets = allCompanyDatasets;
-            }
+            periodParticipants = participants.filter(p => p.date && p.date.slice(0, 10) === label);
         }
+        
+        const newValue = processData(periodParticipants);
 
+        if (newValue !== null) {
+            if (currentTimelineView === 'weighted') {
+                 const weight = Math.min(periodParticipants.length / 10, 1);
+                 const smoothedValue = (lastValidValue * (1 - weight)) + (newValue * weight);
+                 data.push(smoothedValue);
+                 lastValidValue = smoothedValue;
+            } else {
+                 data.push(newValue);
+            }
+        } else {
+             data.push(currentTimelineView === 'weighted' ? lastValidValue : 0);
+        }
+    });
+
+    datasets = [{
+        label: 'All Combined',
+        data: data,
+        borderColor: '#FFD700',
+        backgroundColor: 'rgba(255, 215, 0, 0.2)',
+        fill: false,
+        tension: 0.2,
+        borderWidth: 2
+    }];
+} else {
+    let allCompanyDatasets = companies.map(company => {
+        const data = [];
+        let lastValidValue = 0;
+        labels.forEach(label => {
+            let periodParticipants = [];
+            if (grouping === 'monthly') {
+                const year = parseInt(label.substring(0, 4), 10);
+                const month = parseInt(label.substring(5, 7), 10) - 1;
+                periodParticipants = participants.filter(p => {
+                    if (!p.date) return false;
+                    const pDate = new Date(p.date);
+                    return p.company === company && pDate.getFullYear() === year && pDate.getMonth() === month;
+                });
+            } else if (grouping === 'weekly') {
+                const weekStart = new Date(label);
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 7);
+                periodParticipants = participants.filter(p => {
+                    if (!p.date) return false;
+                    const pDate = new Date(p.date);
+                    return p.company === company && pDate >= weekStart && pDate < weekEnd;
+                });
+            } else {
+                periodParticipants = participants.filter(p => p.date && p.date.slice(0, 10) === label && p.company === company);
+            }
+
+            const newValue = processData(periodParticipants);
+            
+            if (newValue !== null) {
+                if (currentTimelineView === 'weighted') {
+                    const weight = Math.min(periodParticipants.length / 10, 1);
+                    const smoothedValue = (lastValidValue * (1 - weight)) + (newValue * weight);
+                    data.push(smoothedValue);
+                    lastValidValue = smoothedValue;
+                } else {
+                    data.push(newValue);
+                }
+            } else {
+                data.push(currentTimelineView === 'weighted' ? lastValidValue : 0);
+            }
+        });
+        return {
+            label: company,
+            data: data,
+            borderColor: colors[company],
+            backgroundColor: colors[company].replace('0.9', '0.2'),
+            fill: false,
+            tension: 0.2,
+            borderWidth: 2
+        };
+    });
+    
+    if (!selectedCompanies.includes('all')) {
+        datasets = allCompanyDatasets.filter(ds => selectedCompanies.includes(ds.label));
+    } else {
+        datasets = allCompanyDatasets;
+    }
+}
         const ctx = document.getElementById('timeline-chart')?.getContext('2d');
+        const verticalLinePlugin = {
+            id: 'verticalLiner',
+            afterDraw: chart => {
+                if (chart.tooltip?._active?.length) {
+                    let x = chart.tooltip._active[0].element.x;
+                    let yAxis = chart.scales.y;
+                    let ctx = chart.ctx;
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(x, yAxis.getPixelForValue(yAxis.max));
+                    ctx.lineTo(x, yAxis.getPixelForValue(yAxis.min));
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+        };
         if (!ctx) return;
         timelineChartInstance = new Chart(ctx, {
             type: 'line',
             data: { labels, datasets },
+            plugins: [verticalLinePlugin],
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'top', labels: { color: '#fff' } },
-                    title: {
-                        display: true,
-                        text: `Trend for: "${answerInfo.answer}" (${grouping})`,
-                        color: '#fff',
-                        padding: { top: 5, bottom: 15 },
-                        font: { size: 14 }
-                    },
-                    tooltip: {
-                        filter: function(tooltipItem) {
-                            const selectedCompanies = getSelectedValues('company-filter-container');
-                            if (selectedCompanies.includes('all')) {
-                                return true;
-                            }
-                            return selectedCompanies.includes(tooltipItem.dataset.label);
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        ticks: { callback: value => value.toFixed(1) + '%', color: '#ccc' },
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                    },
-                    x: {
-                        ticks: { color: '#ccc' },
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
-            }
-        });
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+    padding: {
+        bottom: 20
     }
+},
+    plugins: {
+    legend: {
+    position: 'bottom',
+    labels: {
+        color: '#fff',
+        boxWidth: 15,
+        boxHeight: 15,
+        padding: 10,
+        generateLabels: function(chart) {
+            const originalLabels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+            originalLabels.forEach(label => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 15;
+                canvas.height = 15;
+                const ctx = canvas.getContext('2d');
+                const r = 4;
+                ctx.fillStyle = label.fillStyle;
+                ctx.beginPath();
+                ctx.moveTo(r, 0); ctx.lineTo(15 - r, 0); ctx.quadraticCurveTo(15, 0, 15, r);
+                ctx.lineTo(15, 15 - r); ctx.quadraticCurveTo(15, 15, 15 - r, 15);
+                ctx.lineTo(r, 15); ctx.quadraticCurveTo(0, 15, 0, 15 - r);
+                ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
+                ctx.closePath();
+                ctx.fill();
+                label.pointStyle = canvas;
+            });
+            return originalLabels;
+        }
+    }
+},
+    title: {
+        display: true,
+            text: `Trend for: "${answerInfo.answer}" (${currentTimelineView} view, ${grouping})`,
+            color: '#fff',
+            padding: { top: 5, bottom: 15 },
+            font: { size: 14 }
+        },
+        tooltip: {
+            filter: function(tooltipItem) {
+                const selectedCompanies = getSelectedValues('company-filter-container');
+                if (selectedCompanies.includes('all')) {
+                    return true;
+                }
+                return selectedCompanies.includes(tooltipItem.dataset.label);
+            },
+            callbacks: {
+                label: function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                        label += context.parsed.y.toFixed(currentTimelineView === 'percentage' || currentTimelineView === 'weighted' ? 2 : 0);
+                        if (currentTimelineView === 'percentage' || currentTimelineView === 'weighted') label += '%';
+                    }
+                    return label;
+                }
+            }
+        }
+    },
+    scales: {
+        y: {
+            beginAtZero: true,
+            max: (currentTimelineView === 'percentage' || currentTimelineView === 'weighted') ? 100 : undefined,
+            ticks: { 
+                callback: value => value.toFixed(0) + ((currentTimelineView === 'percentage' || currentTimelineView === 'weighted') ? '%' : ''), 
+                color: '#ccc' 
+            },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        },
+        x: {
+            ticks: { color: '#ccc' },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        }
+    },
+    interaction: {
+        intersect: false,
+        mode: 'index',
+    },
+}
+}
+    )}
+
 
     function calculateAverageScore(responses) {
         let totalScore = 0;
@@ -4314,7 +4529,26 @@ function renderSurveyList(mode) {
         return;
     }
 
-    const surveys = adminDataCache.surveyNames;
+    let surveys = [...adminDataCache.surveyNames];
+
+    surveys.sort((a, b) => {
+        let valA, valB;
+        if (surveyListSortKey === 'lastModified') {
+            valA = new Date(a.lastModified);
+            valB = new Date(b.lastModified);
+        } else {
+            valA = (a[surveyListSortKey] || '').toString().toLowerCase();
+            valB = (b[surveyListSortKey] || '').toString().toLowerCase();
+        }
+        let comparison = 0;
+        if (valA > valB) {
+            comparison = 1;
+        } else if (valA < valB) {
+            comparison = -1;
+        }
+        return surveyListSortDirection === 'asc' ? comparison : -comparison;
+    });
+
     const title = mode === 'edit' ? 'Edit Surveys' : 'View Statistics';
     let listHtml = surveys.map(s => {
         const dateString = s.lastModified;
@@ -4336,14 +4570,47 @@ function renderSurveyList(mode) {
         <a href="#" class="admin-back-button" style="display: flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg><span>Back to Admin Panel</span></a>
         <h1 style="display: flex; align-items: center; justify-content: center; gap: 15px;"><svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 -960 960 960" width="32" fill="currentColor"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>${title}</h1>
         <input type="text" id="survey-search" class="admin-search-bar" placeholder="Search surveys...">
-        <div class="admin-list-header"><span>Survey Name</span><span style="text-align: center;">URLs</span><span>Last Modified</span><span style="justify-self: end;">Actions</span></div>
+        <div class="admin-list-header">
+            <span>Survey Name</span>
+            <span style="text-align: center;">URLs</span>
+            <span class="sortable-header" data-sort-by="lastModified">Last Modified<i class="sort-icon"></i></span>
+            <span style="justify-self: end;">Actions</span>
+        </div>
         <ul class="admin-list">${listHtml}</ul>
     </div>`;
+
     document.getElementById('survey-search').addEventListener('keyup', (e) => {
         const searchTerm = e.target.value.toLowerCase();
         document.querySelectorAll('.admin-list-item').forEach(item => { item.style.display = item.dataset.name.toLowerCase().startsWith(searchTerm) ? 'grid' : 'none'; });
     });
+
     document.querySelector('.admin-back-button').addEventListener('click', renderAdminMainMenu);
+    
+    const listHeader = adminPanelContainer.querySelector('.admin-list-header');
+    if (listHeader) {
+        const activeHeader = listHeader.querySelector(`.sortable-header[data-sort-by="${surveyListSortKey}"]`);
+        if (activeHeader) {
+            activeHeader.classList.add('active');
+            const icon = activeHeader.querySelector('.sort-icon');
+            if (icon) {
+                icon.classList.add(surveyListSortDirection);
+            }
+        }
+
+        listHeader.addEventListener('click', (e) => {
+            const header = e.target.closest('.sortable-header');
+            if (!header) return;
+            const newSortKey = header.dataset.sortBy;
+            if (surveyListSortKey === newSortKey) {
+                surveyListSortDirection = surveyListSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                surveyListSortKey = newSortKey;
+                surveyListSortDirection = 'desc';
+            }
+            renderSurveyList(mode);
+        });
+    }
+
     document.querySelector('.admin-list').addEventListener('click', e => {
         const button = e.target.closest('button');
         if (!button) return;
@@ -4472,6 +4739,10 @@ function fetchJsonpInPromise(url) {
         };
         document.body.appendChild(script);
     });
+}
+function fetchSurveyNamesInPromise() {
+    const namesUrl = `${SCRIPT_URL}?action=getSurveyNames`;
+    return fetchJsonpInPromise(namesUrl);
 }
 
 function fetchAllAdminDataInPromise() {
@@ -4614,7 +4885,6 @@ function showLiveToastNotification(messages) {
 </script>
 </body>
 </html>
-
 
 
 
