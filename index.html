@@ -1111,17 +1111,6 @@
     gap: 5px;
 }
 
-.stats-question-card {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    border-radius: 12px;
-    max-width: 700px;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-}
-
 .stats-answers-container {
     overflow-y: auto;
     flex-grow: 1;
@@ -1139,9 +1128,7 @@
     padding: 20px;
     border-radius: 12px;
     width: 100%;
-    flex-grow: 1;
-    min-height: 300px;
-    height: 0; 
+    height: 620px;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -1206,14 +1193,15 @@
     justify-content: center;
     gap: 20px;
 }
-
 .stats-question-card {
     background: rgba(0, 0, 0, 0.2);
     padding: 20px;
     border-radius: 12px;
+    width: 100%;
     max-width: 700px;
     display: flex;
     flex-direction: column;
+    height: 620px;
 }
 #question-card-container {
     flex-grow: 1;
@@ -1224,6 +1212,7 @@
     font-weight: bold;
     margin-bottom: 12px;
     color: #fff;
+    margin-top: 20px;
 }
 
 .stats-legend {
@@ -1284,7 +1273,6 @@
 .stats-legend-color-box {
     width: 15px;
     height: 15px;
-    border-radius: 4px;
 }
 
 .stats-answer-item {
@@ -1294,6 +1282,10 @@
     color: #fff;
     font-size: 0.90rem;
     flex-grow: 1;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .stats-answer-text-container {
@@ -2554,6 +2546,51 @@
     opacity: 1;
     visibility: visible;
 }
+.stats-question-card {
+    position: relative;
+}
+.stats-question-card .timeline-info-icon {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: help;
+    color: rgba(255, 255, 255, 0.5);
+    z-index: 10;
+}
+.stats-question-card .timeline-info-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+.stats-question-card .timeline-info-icon:hover {
+    color: rgba(255, 255, 255, 1);
+}
+.stats-question-card .timeline-info-icon::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 120%;
+    right: -20px;
+    transform: translateX(0);
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: 'Montserrat', sans-serif;
+    white-space: normal;
+    width: 280px;
+    text-align: left;
+    line-height: 1.5;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+.stats-question-card .timeline-info-icon:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
 
     </style>
 </head>
@@ -2568,7 +2605,7 @@
     <div class="container" id="main-content">
     </div>
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxF6BNkmZ9X-sWzCsSvAKVclU8Pr89oaFL5tJfMFROvKnU-rLkpVUVG2FKHKNKV6Xc_Aw/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQsLYNNuFSJDa9WgNXMKD31VGVoLpKOVF3FvD3azCmElg21gDvcIUZshjm91FJZy0N/exec';
     let companyConfig = {};
     let adminDataCache = null;
     let surveyListSortKey = 'lastModified';
@@ -2767,7 +2804,7 @@
                         </div>
                         <div class="input-group age-group">
                             <label for="age-input">Age</label>
-                            <input type="number" id="age-input" name="age" min="16" max="99">
+                            <input type="number" id="age-input" name="age" min="21" max="99">
                         </div>
                     </div>
                     <div class="button-group">
@@ -3666,9 +3703,9 @@ function renderStatisticsDashboard() {
         if (selectedSurvey !== 'all') {
             filteredParticipants = filteredParticipants.filter(p => p.survey === selectedSurvey);
         }
-        if (!selectedCompanies.includes('all')) {
-            filteredParticipants = filteredParticipants.filter(p => selectedCompanies.includes(p.company));
-        }
+        if (!selectedCompanies.includes('all') && !selectedCompanies.includes('All Combined')) {
+    filteredParticipants = filteredParticipants.filter(p => selectedCompanies.includes(p.company));
+}
         if (!selectedAges.includes('all')) {
             filteredParticipants = filteredParticipants.filter(p => {
                 const age = parseInt(p.age, 10);
@@ -3700,31 +3737,32 @@ function renderStatisticsDashboard() {
             sortedParticipants.forEach(p => {
                 const survey = statsData.surveys.find(s => s.name === p.survey);
                 if (!survey) return;
-                p.responses.forEach((response, index) => {
-                    const question = survey.questions[index];
-                    if (!response || !question || question.options.length <= 1) return;
-                    const questionText = question.text;
-                    if (!questionTotalMap[questionText]) {
-                        questionTotalMap[questionText] = 0;
-                    }
-                    questionTotalMap[questionText]++;
-                    const answers = response.toString().split(', ');
-                    answers.forEach(fullAnswer => {
-                        if (!fullAnswer.trim()) return;
-                        let answerText = fullAnswer.trim();
-                        let score = 'N/A';
-                        if (answerText.includes('::score=')) {
-                            const parts = answerText.split('::score=');
-                            answerText = parts[0];
-                            score = parts[1];
-                        }
-                        const key = `${p.survey}|${questionText}|${answerText}`;
-                        if (!frequencyMap[key]) {
-                            frequencyMap[key] = { survey: p.survey, question: questionText, answer: answerText, score: score, count: 0 };
-                        }
-                        frequencyMap[key].count++;
-                    });
-                });
+                survey.questions.forEach((question) => {
+    const response = p.responses[question.text];
+    if (!response || !question.options || question.options.length <= 1) return;
+
+    const questionText = question.text;
+    if (!questionTotalMap[questionText]) {
+        questionTotalMap[questionText] = 0;
+    }
+    questionTotalMap[questionText]++;
+    const answers = response.toString().split(', ');
+    answers.forEach(fullAnswer => {
+        if (!fullAnswer.trim()) return;
+        let answerText = fullAnswer.trim();
+        let score = 'N/A';
+        if (answerText.includes('::score=')) {
+            const parts = answerText.split('::score=');
+            answerText = parts[0];
+            score = parts[1];
+        }
+        const key = `${p.survey}|${questionText}|${answerText}`;
+        if (!frequencyMap[key]) {
+            frequencyMap[key] = { survey: p.survey, question: questionText, answer: answerText, score: score, count: 0 };
+        }
+        frequencyMap[key].count++;
+    });
+});
             });
             let rankedAnswers = Object.values(frequencyMap).map(item => {
                 const totalForQuestion = questionTotalMap[item.question] || 0;
@@ -3877,6 +3915,24 @@ function renderStatisticsDashboard() {
             timelineChartInstance = null;
         }
         contentArea.innerHTML = `<div class="stats-overall-layout"><div id="question-card-main-wrapper"></div><div class="stats-right-column"><div class="stats-timeline-chart-container" id="timeline-container"><div class="timeline-info-icon" id="timeline-info" data-tooltip=""><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></div><div id="timeline-placeholder" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: rgba(255, 255, 255, 0.3); text-align: center; padding: 20px;"><svg xmlns="http://www.w3.org/2000/svg" height="80" viewBox="0 -960 960 960" width="80" fill="currentColor"><path d="M120-120v-80h720v80H120Zm112-160-84-84 213-212 159 159 253-253 56 56-309 309-159-159-157 157Z"/></svg><p style="margin-top: 10px; font-size: 1.1rem;">Select an answer to view its trend</p></div><canvas id="timeline-chart" style="display: none;"></canvas><div class="timeline-chart-nav" style="display: none;"><span class="timeline-chart-nav-dot active" data-view="weighted"></span><span class="timeline-chart-nav-dot" data-view="count"></span><span class="timeline-chart-nav-dot" data-view="percentage"></span></div></div></div></div>`;
+        
+        const overallLayout = contentArea.querySelector('.stats-overall-layout');
+        if (overallLayout) {
+            overallLayout.addEventListener('click', (e) => {
+                if (e.target.closest('#next-question')) {
+                    if (currentQuestionIndex < survey.questions.length - 1) {
+                        currentQuestionIndex++;
+                        renderQuestion(currentQuestionIndex);
+                    }
+                }
+                if (e.target.closest('#prev-question')) {
+                     if (currentQuestionIndex > 0) {
+                        currentQuestionIndex--;
+                        renderQuestion(currentQuestionIndex);
+                    }
+                }
+            });
+        }
 
         const generalTooltipText = 'This chart displays the trend of a selected answer over time. Click on any answer on the left to see its data. You can switch between different views using the dots that will appear below the chart.';
         const infoIcon = document.getElementById('timeline-info');
@@ -3893,10 +3949,10 @@ function renderStatisticsDashboard() {
             let legendHtml;
             const companyFilter = getSelectedValues('company-filter-container');
             if (!q.options || q.options.length === 0) {
-                const submittedAnswers = filteredParticipants.map(p => p.responses[index]).filter(response => response && response.trim() !== '');
+                const submittedAnswers = filteredParticipants.map(p => p.responses[q.text]).filter(response => response && String(response).trim() !== '');
                 if (submittedAnswers.length > 0) {
-                    answersHtml = `<div class="stats-freetext-answers-container">${submittedAnswers.map(answer => `<div class="stats-freetext-answer-item">${answer.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`).join('')}</div>`;
-                } else {
+    answersHtml = `<div class="stats-freetext-answers-container">${submittedAnswers.map(answer => `<div class="stats-freetext-answer-item">${String(answer).replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`).join('')}</div>`;
+} else {
                     answersHtml = '<div class="stats-freetext-no-answers">No answers submitted for this question.</div>';
                 }
                 legendHtml = '';
@@ -3904,7 +3960,7 @@ function renderStatisticsDashboard() {
                  answersHtml = q.options.map(opt => {
                     const cleanOpt = opt.split('::score=')[0];
                     const count = filteredParticipants.filter(p => {
-                        const answerCell = p.responses[index] || '';
+                        const answerCell = p.responses[q.text] || '';
                         const respondentAnswers = answerCell.toString().split(', ');
                          return respondentAnswers.some(ans => {
                             let cleanAns = ans.split('::score=')[0];
@@ -3916,7 +3972,7 @@ function renderStatisticsDashboard() {
                         });
                     }).length;
                     
-                    const totalForQuestion = filteredParticipants.filter(p => p.responses[index]).length;
+                    const totalForQuestion = filteredParticipants.filter(p => p.responses[q.text]).length;
                     const percentage = totalForQuestion > 0 ? (count / totalForQuestion) * 100 : 0;
 
                     const miniBarHtml = `<div class="stats-mini-bar" style="width: ${percentage}%; background-color: #FFD700;" title="All Combined: ${count} (${percentage.toFixed(1)}%)"></div>`;
@@ -3924,7 +3980,7 @@ function renderStatisticsDashboard() {
 
                     return `<div class="stats-answer-row" data-answer="${cleanOpt}" style="cursor: pointer;"><div class="stats-answer-item"><span class="stats-answer-text">${cleanOpt}</span><div class="stats-mini-bars-container">${miniBarHtml}</div></div><div class="stats-answer-breakdown-counts">${breakdownCountsHtml}</div></div>`;
                 }).join('');
-                legendHtml = '';
+                legendHtml = `<div class="stats-legend-item"><div class="stats-legend-color-box" style="background-color: #FFD700;"></div><span>All Combined</span></div>`;
             } else {
                 const dynamicResults = {};
                 q.options.forEach(opt => {
@@ -3935,7 +3991,7 @@ function renderStatisticsDashboard() {
                     }
                 });
                 filteredParticipants.forEach(p => {
-                    const answerCell = p.responses[index] || '';
+                    const answerCell = p.responses[q.text] || '';
                     const respondentAnswers = answerCell.toString().split(', ');
                     const company = p.company;
                     respondentAnswers.forEach(ans => {
@@ -3955,7 +4011,7 @@ function renderStatisticsDashboard() {
                     const optionResults = dynamicResults[cleanOpt] || {};
                     const miniBarsHtml = companiesToDisplay.map(name => {
                         const count = optionResults[name] || 0;
-                        const companyTotalForQuestion = filteredParticipants.filter(p => p.company === name && p.responses[index]).length;
+                        const companyTotalForQuestion = filteredParticipants.filter(p => p.company === name && p.responses[q.text]).length;
                         const percentage = companyTotalForQuestion > 0 ? (count / companyTotalForQuestion) * 100 : 0;
                         return `<div class="stats-mini-bar" style="width: ${percentage}%; background-color: ${colors[name]};" title="${name}: ${count} (${percentage.toFixed(1)}%)"></div>`;
                     }).join('');
@@ -3969,9 +4025,13 @@ function renderStatisticsDashboard() {
             }
             if (questionCardContainer) {
                 const progressPercentage = ((index + 1) / survey.questions.length) * 100;
-                questionCardContainer.innerHTML = `<div class="stats-question-view"><div id="prev-question" class="stats-nav-button"><svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg></div><div id="question-card-container"><div class="stats-question-card"><h3 class="stats-question-title">${q.text}</h3><div class="stats-answers-container">${answersHtml}</div><div class="stats-legend"><div class="progress-line-container"><div class="progress-line-fill" style="width: ${progressPercentage}%;"></div></div>${legendHtml}</div></div></div><div id="next-question" class="stats-nav-button"><svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="m304-82-56-57 343-343-343-343 56-57 400 400L304-82Z"/></svg></div></div>`;
+                questionCardContainer.innerHTML = `<div class="stats-question-view"><div id="prev-question" class="stats-nav-button"><svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg></div><div id="question-card-container"><div class="stats-question-card"><div class="timeline-info-icon" data-tooltip="This card displays the survey questions. Next to each answer, the colored lines represent the percentage of responses for that answer, broken down by company. The numbers show the exact count of responses. Click on any answer to see its trend over time in the chart on the right."><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></div><h3 class="stats-question-title">${q.text}</h3><div class="stats-answers-container">${answersHtml}</div><div class="stats-legend"><div class="progress-line-container"><div class="progress-line-fill" style="width: ${progressPercentage}%;"></div></div>${legendHtml}</div></div></div><div id="next-question" class="stats-nav-button"><svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="m304-82-56-57 343-343-343-343 56-57 400 400L304-82Z"/></svg></div></div>`;
+                
                 const prevBtn = document.getElementById('prev-question');
                 const nextBtn = document.getElementById('next-question');
+                if(prevBtn) prevBtn.classList.toggle('disabled', currentQuestionIndex === 0);
+                if(nextBtn) nextBtn.classList.toggle('disabled', currentQuestionIndex === survey.questions.length - 1);
+                
                 const answersContainer = document.querySelector('.stats-answers-container');
                 const timelineNav = document.querySelector('.timeline-chart-nav');
                 timelineNav.addEventListener('click', e => {
@@ -4001,40 +4061,6 @@ function renderStatisticsDashboard() {
                         generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
                     }
                 }
-
-                function updateNavButtons() {
-                    prevBtn.classList.toggle('disabled', currentQuestionIndex === 0);
-                    nextBtn.classList.toggle('disabled', currentQuestionIndex === survey.questions.length - 1);
-                }
-                prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(currentQuestionIndex); } });
-                nextBtn.addEventListener('click', () => { if (currentQuestionIndex < survey.questions.length - 1) { currentQuestionIndex++; renderQuestion(currentQuestionIndex); } });
-                updateNavButtons();
-            
-                        answersContainer.addEventListener('click', (e) => {
-                    const answerRow = e.target.closest('.stats-answer-row');
-                    if (answerRow) {
-                        const selectedAnswer = answerRow.dataset.answer;
-                        document.querySelectorAll('.stats-answer-row').forEach(row => row.style.background = 'rgba(0, 0, 0, 0.25)');
-                        answerRow.style.background = 'rgba(0, 123, 255, 0.3)';
-                        activeTimelineAnswerInfo = { answer: selectedAnswer, question: q };
-                        generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
-                    }
-                });
-                if (activeTimelineAnswerInfo.answer && activeTimelineAnswerInfo.question.text === q.text) {
-                    const answerRow = answersContainer.querySelector(`.stats-answer-row[data-answer="${activeTimelineAnswerInfo.answer}"]`);
-                    if (answerRow) {
-                        answerRow.style.background = 'rgba(0, 123, 255, 0.3)';
-                        generateTimelineDataAndRenderChart(activeTimelineAnswerInfo, filteredParticipants, survey, allCompanyNames, colors);
-                    }
-                }
-
-                function updateNavButtons() {
-                    prevBtn.classList.toggle('disabled', currentQuestionIndex === 0);
-                    nextBtn.classList.toggle('disabled', currentQuestionIndex === survey.questions.length - 1);
-                }
-                prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(currentQuestionIndex); } });
-                nextBtn.addEventListener('click', () => { if (currentQuestionIndex < survey.questions.length - 1) { currentQuestionIndex++; renderQuestion(currentQuestionIndex); } });
-                updateNavButtons();
             }
         }
         renderQuestion(currentQuestionIndex);
@@ -4133,7 +4159,7 @@ function renderStatisticsDashboard() {
     if (totalResponsesInPeriod === 0) return null;
 
     const selectedAnswerCountInPeriod = participantsForPeriod.filter(p => {
-        const response = p.responses[questionIndex] || '';
+        const response = p.responses[answerInfo.question.text] || '';
         let participantAnswers = response.toString().split(', ').map(r => r.split('::score=')[0].trim());
         return participantAnswers.includes(answerInfo.answer);
     }).length;
@@ -4192,14 +4218,14 @@ if (selectedCompanies[0] === 'All Combined') {
     });
 
     datasets = [{
-        label: 'All Combined',
-        data: data,
-        borderColor: '#FFD700',
-        backgroundColor: 'rgba(255, 215, 0, 0.2)',
-        fill: false,
-        tension: 0.2,
-        borderWidth: 2
-    }];
+    label: 'All Combined',
+    data: data,
+    borderColor: '#FFD700',
+    backgroundColor: '#FFD700',
+    fill: false,
+    tension: 0.2,
+    borderWidth: 2
+}];
 } else {
     let allCompanyDatasets = companies.map(company => {
         const data = [];
@@ -4243,14 +4269,14 @@ if (selectedCompanies[0] === 'All Combined') {
             }
         });
         return {
-            label: company,
-            data: data,
-            borderColor: colors[company],
-            backgroundColor: colors[company].replace('0.9', '0.2'),
-            fill: false,
-            tension: 0.2,
-            borderWidth: 2
-        };
+    label: company,
+    data: data,
+    borderColor: colors[company],
+    backgroundColor: colors[company],
+    fill: false,
+    tension: 0.2,
+    borderWidth: 2
+};
     });
     
     if (!selectedCompanies.includes('all')) {
@@ -4287,46 +4313,53 @@ if (selectedCompanies[0] === 'All Combined') {
     responsive: true,
     maintainAspectRatio: false,
     layout: {
-    padding: {
-        bottom: 20
-    }
-},
-    plugins: {
-    legend: {
-    position: 'bottom',
-    labels: {
-        color: '#fff',
-        boxWidth: 15,
-        boxHeight: 15,
-        padding: 10,
-        generateLabels: function(chart) {
-            const originalLabels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
-            originalLabels.forEach(label => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 15;
-                canvas.height = 15;
-                const ctx = canvas.getContext('2d');
-                const r = 4;
-                ctx.fillStyle = label.fillStyle;
-                ctx.beginPath();
-                ctx.moveTo(r, 0); ctx.lineTo(15 - r, 0); ctx.quadraticCurveTo(15, 0, 15, r);
-                ctx.lineTo(15, 15 - r); ctx.quadraticCurveTo(15, 15, 15 - r, 15);
-                ctx.lineTo(r, 15); ctx.quadraticCurveTo(0, 15, 0, 15 - r);
-                ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
-                ctx.closePath();
-                ctx.fill();
-                label.pointStyle = canvas;
-            });
-            return originalLabels;
+        padding: {
+            top: 10,
+            right: 35,
+            bottom: 20
         }
-    }
-},
-    title: {
-        display: true,
+    },
+    plugins: {
+        legend: {
+            position: 'bottom',
+            labels: {
+                color: '#fff',
+                boxWidth: 15,
+                boxHeight: 15,
+                padding: 10,
+                generateLabels: function(chart) {
+                    const originalLabels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                    originalLabels.forEach(label => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 15;
+                        canvas.height = 15;
+                        const ctx = canvas.getContext('2d');
+                        const r = 4;
+                        ctx.fillStyle = label.fillStyle;
+                        ctx.beginPath();
+                        ctx.moveTo(r, 0); ctx.lineTo(15 - r, 0); ctx.quadraticCurveTo(15, 0, 15, r);
+                        ctx.lineTo(15, 15 - r); ctx.quadraticCurveTo(15, 15, 15 - r, 15);
+                        ctx.lineTo(r, 15); ctx.quadraticCurveTo(0, 15, 0, 15 - r);
+                        ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
+                        ctx.closePath();
+                        ctx.fill();
+                        label.pointStyle = canvas;
+                    });
+                    return originalLabels;
+                }
+            }
+        },
+        title: {
+            display: true,
             text: `Trend for: "${answerInfo.answer}" (${currentTimelineView} view, ${grouping})`,
             color: '#fff',
-            padding: { top: 5, bottom: 15 },
-            font: { size: 14 }
+            padding: {
+                top: 5,
+                bottom: 25
+            },
+            font: {
+                size: 14
+            }
         },
         tooltip: {
             filter: function(tooltipItem) {
@@ -4355,15 +4388,21 @@ if (selectedCompanies[0] === 'All Combined') {
         y: {
             beginAtZero: true,
             max: (currentTimelineView === 'percentage' || currentTimelineView === 'weighted') ? 100 : undefined,
-            ticks: { 
-                callback: value => value.toFixed(0) + ((currentTimelineView === 'percentage' || currentTimelineView === 'weighted') ? '%' : ''), 
-                color: '#ccc' 
+            ticks: {
+                callback: value => value.toFixed(0) + ((currentTimelineView === 'percentage' || currentTimelineView === 'weighted') ? '%' : ''),
+                color: '#ccc'
             },
-            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+            }
         },
         x: {
-            ticks: { color: '#ccc' },
-            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            ticks: {
+                color: '#ccc'
+            },
+            grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+            }
         }
     },
     interaction: {
@@ -4379,7 +4418,7 @@ if (selectedCompanies[0] === 'All Combined') {
         let totalScore = 0;
         let scoredAnswersCount = 0;
         if(!responses) return 'N/A';
-        responses.forEach(response => {
+        Object.values(responses).forEach(response => {
             if (typeof response === 'string' && response.includes('::score=')) {
                 const parts = response.split('::score=');
                 const score = parseInt(parts[1], 10);
@@ -4431,19 +4470,28 @@ if (selectedCompanies[0] === 'All Combined') {
             return;
         }
         let qaHtml = '';
-        if (survey.questions && participantData.responses) {
-            survey.questions.forEach((q, index) => {
-                const rawAnswer = participantData.responses[index] || 'No answer recorded';
-                let displayAnswer = rawAnswer;
-                let scoreHtml = '';
-                if (typeof rawAnswer === 'string' && rawAnswer.includes('::score=')) {
-                    const parts = rawAnswer.split('::score=');
-                    displayAnswer = parts[0];
-                    scoreHtml = `<span class="qa-card-score">(Score: ${parts[1]}/5)</span>`;
+        if (participantData.responses) {
+    Object.keys(participantData.responses).forEach(questionText => {
+        const rawAnswer = participantData.responses[questionText];
+
+        if (rawAnswer && rawAnswer.trim() !== '') {
+            let finalDisplayHtml;
+            const individualAnswers = rawAnswer.split(', ');
+
+            finalDisplayHtml = individualAnswers.map(answer => {
+                if (answer.includes('::score=')) {
+                    const parts = answer.split('::score=');
+                    const text = parts[0];
+                    const score = parts[1];
+                    return `${text} <span class="qa-card-score">(Score: ${score}/5)</span>`;
                 }
-                qaHtml += `<div class="qa-card"><div class="qa-card-question">${q.text}</div><div class="qa-card-answer">${displayAnswer}${scoreHtml}</div></div>`;
-            });
+                return answer;
+            }).join('<br>');
+
+            qaHtml += `<div class="qa-card"><div class="qa-card-question">${questionText}</div><div class="qa-card-answer">${finalDisplayHtml}</div></div>`;
         }
+    });
+}
         if (!survey.questions || survey.questions.length === 0) {
             qaHtml = '<p style="text-align: center; opacity: 0.7;">This survey had no questions at the time of submission.</p>'
         }
