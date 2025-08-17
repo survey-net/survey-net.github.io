@@ -1635,6 +1635,7 @@
 .top-answers-table-wrapper {
     flex-grow: 1;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 #single-survey-content .participant-list {
     overflow-y: auto;
@@ -1656,10 +1657,10 @@
     width: 90px;
 }
 .top-answers-table th:nth-child(4) {
-    width: 110px;
+    width: 120px;
 }
 .top-answers-table th:nth-child(5) {
-    width: 110px;
+    width: 120px;
 }
 
 .top-answers-table th, .top-answers-table td {
@@ -2588,6 +2589,80 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 .stats-question-card .timeline-info-icon:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+.th-content-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+.info-icon {
+    display: inline-block;
+    position: relative;
+    cursor: help;
+    vertical-align: middle;
+    line-height: 1;
+}
+.info-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: #ccc;
+    transition: fill 0.2s;
+}
+.info-icon:hover svg {
+    fill: #fff;
+}
+.info-icon::before, .info-icon::after {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    z-index: 100;
+}
+.info-icon::after {
+    content: attr(data-tooltip);
+    top: calc(100% + 10px);
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: 'Montserrat', sans-serif;
+    white-space: normal;
+    width: 250px;
+    text-align: left;
+    line-height: 1.5;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    text-transform: none;
+    font-weight: normal;
+}
+.top-answers-table th:last-child .info-icon::after {
+    left: auto;
+    right: 0;
+    transform: translateX(0);
+}
+.top-answers-table th:last-child .info-icon::before {
+    left: auto;
+    right: 8px;
+    transform: translateX(0);
+}
+.top-answers-table th:nth-child(2) {
+    display: flex;
+    justify-content: center;
+}
+.info-icon::before {
+    content: '';
+    top: 100%;
+    border: 5px solid transparent;
+    border-bottom-color: #007bff;
+}
+.info-icon:hover::before, .info-icon:hover::after {
     opacity: 1;
     visibility: visible;
 }
@@ -3778,7 +3853,7 @@ function renderStatisticsDashboard() {
                 else if (valA < valB) comparison = -1;
                 return topAnswersSortDirection === 'asc' ? comparison : -comparison;
             });
-            viewContainer.innerHTML = `<div class="top-answers-container"><div class="top-answers-controls"><button class="top-answers-limit-btn" data-limit="all">All</button><button class="top-answers-limit-btn" data-limit="5">Top 5</button><button class="top-answers-limit-btn" data-limit="10">Top 10</button><button class="top-answers-limit-btn" data-limit="20">Top 20</button></div><div class="top-answers-table-wrapper"><table class="top-answers-table"><thead><tr><th><span class="sortable-header" data-sort-by="rank">Rank<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="answer">Answer<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="score">Rate<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="count">Total<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="percentage">%<i class="sort-icon"></i></span></th></tr></thead><tbody id="top-answers-table-body"></tbody></table></div></div>`;
+            viewContainer.innerHTML = `<div class="top-answers-container"><div class="top-answers-controls"><button class="top-answers-limit-btn" data-limit="all">All</button><button class="top-answers-limit-btn" data-limit="5">Top 5</button><button class="top-answers-limit-btn" data-limit="10">Top 10</button><button class="top-answers-limit-btn" data-limit="20">Top 20</button></div><div class="top-answers-table-wrapper"><table class="top-answers-table"><thead><tr><th><span class="sortable-header" data-sort-by="rank">Rank<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="answer">Answer<i class="sort-icon"></i></span></th><th><div class="th-content-wrapper"><span class="sortable-header" data-sort-by="score">Rate<i class="sort-icon"></i></span><span class="info-icon" data-tooltip="The administrator-assigned score for this answer."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></span></div></th><th><div class="th-content-wrapper"><span class="sortable-header" data-sort-by="count">Total<i class="sort-icon"></i></span><span class="info-icon" data-tooltip="The total number of times this answer was selected across all filtered participants."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></span></div></th><th><div class="th-content-wrapper"><span class="sortable-header" data-sort-by="percentage">%<i class="sort-icon"></i></span><span class="info-icon" data-tooltip="The percentage of times this answer was chosen for its specific question, out of all responses to that question."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></span></div></th></tr></thead><tbody id="top-answers-table-body"></tbody></table></div></div>`;
             let currentLimit = 'all';
             const controlsContainer = viewContainer.querySelector('.top-answers-controls');
             const limitButtons = controlsContainer.querySelectorAll('.top-answers-limit-btn');
