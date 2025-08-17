@@ -3206,7 +3206,7 @@ function checkAdminAccess() {
     }
     cacheIntervalId = setInterval(() => {
         refreshDataInBackground();
-    }, 15 * 60 * 1000);
+    }, 10 * 60 * 1000);
 }
 
 
@@ -4680,20 +4680,41 @@ function renderSurveyList(mode) {
             script.src = `${SCRIPT_URL}?action=getQuestions&sheet=${surveyId}&callback=handleSurveyQuestions`;
             document.body.appendChild(script);
         } else if (button.classList.contains('delete-btn')) {
-            if (confirm(`Are you sure you want to delete the survey "${listItem.dataset.name}"? This action cannot be undone.`)) {
-                const spinner = showAdminSpinner();
-                fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteSurvey', sheetId: surveyId }), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
-                .then(res => res.json()).then(result => {
-                    hideAdminSpinner(spinner);
-                    if (result.status === 'success') { showAlert('Survey deleted.'); refreshDataInBackground(true); } 
-                    else { showAlert('Error: ' + result.message); }
-                }).catch(err => {
-                    hideAdminSpinner(spinner);
-                    if (err instanceof TypeError && err.message === 'Failed to fetch') { showAlert('Survey deleted.'); refreshDataInBackground(true); } 
-                    else { showAlert('An unexpected network error occurred.'); }
-                });
+    if (confirm(`Are you sure you want to delete the survey "${listItem.dataset.name}"? This action cannot be undone.`)) {
+        const spinner = showAdminSpinner();
+        
+        const handleSuccess = () => {
+            hideAdminSpinner(spinner);
+            showAlert('Survey deleted.');
+            if (adminDataCache && adminDataCache.surveyNames) {
+                adminDataCache.surveyNames = adminDataCache.surveyNames.filter(s => s.id !== surveyId);
             }
-        }
+            renderSurveyList('edit');
+            refreshDataInBackground();
+        };
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'deleteSurvey', sheetId: surveyId }),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        })
+        .then(res => res.json()).then(result => {
+            if (result.status === 'success') {
+                handleSuccess();
+            } else {
+                hideAdminSpinner(spinner);
+                showAlert('Error: ' + result.message);
+            }
+        }).catch(err => {
+            if (err instanceof TypeError && err.message === 'Failed to fetch') {
+                handleSuccess();
+            } else {
+                hideAdminSpinner(spinner);
+                showAlert('An unexpected network error occurred.');
+            }
+        });
+    }
+}
     });
 }
 
@@ -4811,7 +4832,7 @@ function startBackgroundRefresh() {
     }
     cacheIntervalId = setInterval(() => {
         refreshDataInBackground();
-    }, 20 * 60 * 1000); 
+    }, 10 * 60 * 1000); 
 }
 
 function refreshDataInBackground(forceRender = false) {
