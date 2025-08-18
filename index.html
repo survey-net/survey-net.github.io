@@ -2818,6 +2818,7 @@
 
         const skipWelcome = urlParams.get('skipWelcome');
         const userName = urlParams.get('name');
+        const userAge = urlParams.get('age');
         applyCompanyTheme(companyName);
 
         if (surveyId) {
@@ -2837,6 +2838,9 @@
 
                 if (skipWelcome === 'true' && userName) {
                     userAnswers.name = decodeURIComponent(userName);
+                    userAnswers.age = decodeURIComponent(userAge || 'N/A');
+                    sessionStorage.setItem('surveyUserName', userAnswers.name);
+                    sessionStorage.setItem('surveyUserAge', userAnswers.age);
                     startSurvey();
                 } else {
                     renderWelcomePage();
@@ -2859,7 +2863,6 @@
             mainContent.innerHTML = `<p class="welcome-text">No survey specified. Please use a valid survey link.</p>`;
         }
     }
-
     function renderWelcomePage() {
         mainHeader.style.opacity = '0';
         mainContent.innerHTML = `
@@ -2903,6 +2906,10 @@
             }
             userAnswers.name = nameInput.value.trim();
             userAnswers.age = ageInput.value.trim();
+            sessionStorage.setItem('surveyUserAge', userAnswers.age);
+sessionStorage.setItem('surveyUserName', userAnswers.name);
+
+startSurvey();
             startSurvey();
         });
         document.querySelector('.anonymous-btn').addEventListener('click', () => {
@@ -2911,6 +2918,8 @@
 
             userAnswers.name = 'Anonymous';
             userAnswers.age = ageValue === '' ? 'N/A' : ageValue;
+            sessionStorage.setItem('surveyUserAge', userAnswers.age);
+sessionStorage.setItem('surveyUserName', userAnswers.name);
             startSurvey();
         });
     }
@@ -3131,8 +3140,12 @@ function setupQuestionListeners() {
         let suggestedLinksHtml = '<p>No other surveys available at the moment.</p>';
         const otherSurveys = allSurveys.filter(s => s.id !== surveyId);
         if (otherSurveys.length > 0) {
-            const userNameForLink = encodeURIComponent(userAnswers.name || 'Anonymous');
-            suggestedLinksHtml = otherSurveys.map(s => `<a href="?s=${s.id}&c=${companyName}-${themes[companyName].code}&skipWelcome=true&name=${userNameForLink}" class="survey-link">${s.name}</a>`).join('');
+const finalUserName = sessionStorage.getItem('surveyUserName') || userAnswers.name || 'Anonymous';
+const finalUserAge = sessionStorage.getItem('surveyUserAge') || userAnswers.age || '';
+
+const userNameForLink = encodeURIComponent(finalUserName);
+const userAgeForLink = encodeURIComponent(finalUserAge);
+            suggestedLinksHtml = otherSurveys.map(s => `<a href="?s=${s.id}&c=${companyName}-${themes[companyName].code}&skipWelcome=true&name=${userNameForLink}&age=${userAgeForLink}" class="survey-link">${s.name}</a>`).join('');
         }
 
         mainContent.innerHTML = `
