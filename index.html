@@ -2652,10 +2652,6 @@
     right: 8px;
     transform: translateX(0);
 }
-.top-answers-table th:nth-child(2) {
-    display: flex;
-    justify-content: center;
-}
 .info-icon::before {
     content: '';
     top: 100%;
@@ -2665,6 +2661,9 @@
 .info-icon:hover::before, .info-icon:hover::after {
     opacity: 1;
     visibility: visible;
+}
+.top-answers-table th:nth-child(2) .sortable-header {
+    justify-content: center;
 }
 
     </style>
@@ -3720,9 +3719,9 @@ function renderStatisticsDashboard() {
         return selected.map(li => li.dataset.value);
     }
     
-    function renderUI() {
+   function renderUI() {
         const viewOptions = [
-            { value: 'all', label: 'All answers', selected: true },
+            { value: 'all-answers', label: 'All answers', selected: true }, // <-- IZMENJENO OVDE
             { value: 'top', label: 'Top answers', selected: false }
         ];
         const surveyOptions = [{ value: 'all', label: 'All', selected: true }]
@@ -5043,7 +5042,6 @@ function showLiveToastNotification(messages) {
 </script>
 </body>
 </html>
-
 
 
 
