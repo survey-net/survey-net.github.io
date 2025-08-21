@@ -10,7 +10,8 @@
 	<link rel="icon" type="image/png" sizes="48x48" href="/faviconimg/favicon-48x48.png">
 	<link rel="icon" type="image/png" sizes="96x96" href="/faviconimg/favicon-96x96.png">
 	<link rel="icon" type="image/png" sizes="192x192" href="/faviconimg/favicon-192x192.png">
-	<link rel="icon" type="image/png" sizes="512x512" href="/faviconimg/favicon-512x512.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/faviconimg/favicon-512x512.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;700&display=swap');
@@ -799,6 +800,7 @@
             cursor: pointer;
             color: #ccc;
             transition: all 0.2s ease-in-out;
+            flex-shrink: 0;
         }
         .delete-question-btn-wrapper:hover {
             color: #ff4d4d;
@@ -853,16 +855,27 @@
 .toggle-answers-btn.collapsed svg {
     transform: rotate(-90deg);
 }
-.question-answers.collapsed {
+.question-answers.collapsed,
+.paragraph-answer-container.collapsed,
+.rating-preview-container.collapsed {
     max-height: 0;
-    overflow: hidden;
-    padding-left: 0;
-    border-left: none;
     margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+    opacity: 0;
 }
+.question-answers,
+.paragraph-answer-container,
+.rating-preview-container {
+    transition: all 0.5s ease-in-out;
+    max-height: 1000px;
+    overflow: hidden;
+}
+
 .question-answers {
-    transition: max-height 0.4s ease-out, margin-top 0.4s ease-out, padding-left 0.4s ease-out;
-    max-height: 1000px; /* Dovoljno velika visina da stanu svi odgovori */
+    padding-left: 25px;
+    border-left: 3px solid #007bff;
 }
         
         .admin-button {
@@ -1261,6 +1274,7 @@
     line-height: 1.5;
     border-left: 3px solid #007bff;
     word-wrap: break-word;
+    word-break: break-all;
 }
 .stats-freetext-no-answers {
     color: #ccc;
@@ -1288,7 +1302,7 @@
     color: #fff;
     font-size: 0.90rem;
     flex-grow: 1;
-    height: 70px;
+    min-height: 70px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1331,6 +1345,7 @@
 .stats-answer-text {
     position: relative;
     z-index: 2;
+    word-break: break-all;
 }
 
 .stats-nav-button {
@@ -1421,7 +1436,7 @@
 }
 .participant-list-header {
     display: grid;
-    grid-template-columns: 1.2fr 1.5fr 0.5fr 1fr 1.5fr 0.8fr;
+    grid-template-columns: 1.2fr 1.5fr 0.5fr 1fr 1.5fr 0.8fr 0.5fr;
     gap: 10px;
     padding: 0 10px 10px;
     font-weight: bold;
@@ -1439,7 +1454,7 @@
 }
 .participant-list-item {
     display: grid;
-    grid-template-columns: 1.2fr 1.5fr 0.5fr 1fr 1.5fr 0.8fr;
+    grid-template-columns: 1.2fr 1.5fr 0.5fr 1fr 1.5fr 0.8fr 0.5fr;
     gap: 10px;
     padding: 12px 10px;
     font-size: 0.9rem;
@@ -1454,6 +1469,23 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+.participant-delete-action {
+    text-align: right;
+}
+.delete-participant-btn {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0 5px;
+    transition: all 0.2s ease;
+}
+.delete-participant-btn:hover {
+    color: #fff;
+    transform: scale(1.2);
 }
 .stats-sub-header {
     display: none;
@@ -1528,15 +1560,13 @@
 .participant-list-container {
     flex-grow: 1;
 }
-#single-survey-content .participant-list-container {
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-}
+
 #single-survey-content {
     flex-grow: 1;
     min-height: 0;
     margin-top: -20px;
+    display: flex;
+    flex-direction: column;
 }
 .participant-modal-overlay {
     position: fixed;
@@ -1822,7 +1852,7 @@
 .sortable-header[data-sort-by="age"]         { padding-left: -10px; }
 .sortable-header[data-sort-by="company"]     { padding-left: -7px; }
 .sortable-header[data-sort-by="date"]        { padding-left: 25px; }
-.sortable-header[data-sort-by="rate"]        { padding-left: 85px; }
+.sortable-header[data-sort-by="rate"]        { padding-left: 0; justify-content: flex-start; }
 .sortable-header:hover {
     color: #fff;
 }
@@ -2328,16 +2358,6 @@
     overflow: hidden;
 }
 
-.admin-question-block.collapsed .question-type-group,
-.admin-question-block.collapsed + .delete-question-btn-wrapper {
-    max-width: 0;
-    opacity: 0;
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 0;
-    padding-right: 0;
-    pointer-events: none;
-}
 .custom-multiselect {
     position: relative;
     font-family: 'Montserrat', sans-serif;
@@ -2738,7 +2758,333 @@
     transition: opacity 0.1s ease-in-out;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
+.question-text-group .admin-input {
+    background-color: rgba(0, 123, 255, 0.25);
+}
+.admin-answer-group .answer-text-input {
+    background-color: #ffffff;
+    color: #000;
+}
+.admin-answer-group .answer-text-input::placeholder {
+    color: #888;
+}
+.admin-answer-group {
+    display: flex; 
+    align-items: center;
+    gap: 10px;
+}
 
+
+.answer-input-wrapper {
+    position: relative;
+    display: flex;
+    flex-grow: 1; 
+    align-items: center;
+}
+
+.answer-input-wrapper .answer-text-input {
+    padding-right: 40px; 
+    width: 100%;
+}
+
+.textfield-toggle-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    opacity: 0.12;
+    transition: opacity 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.textfield-toggle-icon img {
+    width: 20px;
+    height: 20px;
+}
+.textfield-toggle-icon:hover,
+.textfield-toggle-icon.enabled {
+    opacity: 1;
+}
+
+.icon-with-tooltip-wrapper {
+    position: relative; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tooltip {
+    visibility: hidden; 
+    width: 220px; 
+    background-color: #007bff; 
+    color: #fff; 
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 10;
+    bottom: 140%; 
+    left: 50%;
+    transform: translateX(-50%); 
+    transition: opacity 0.3s;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #007bff transparent transparent transparent;
+}
+
+.icon-with-tooltip-wrapper:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+.admin-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    background: #ffffff;
+    color: #333;
+    resize: vertical;
+}
+
+.admin-textarea::placeholder {
+    color: #888;
+}
+
+.hidden {
+    display: none !important;
+}
+.input-error {
+    border: 1px solid #ff4d4d !important;
+    box-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    display: block;
+    padding-left: 2px;
+    text-align: left;
+}
+
+.admin-form-group + .error-message {
+    margin-top: -20px; 
+}
+
+.question-text-group + .error-message {
+    margin-top: 5px;
+    transform: translateX(-25px);
+}
+
+.answer-input-wrapper + .error-message {
+    margin-top: 0px;
+}
+.rating-preview-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    pointer-events: none; 
+}
+
+.rating-preview-item {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #888;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #888;
+    border-radius: 0;
+}
+
+.rating-preview-star svg {
+    width: 35px;
+    height: 35px;
+    fill: #888;
+}
+
+.rating-user-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.rating-number {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    background-color: #fff;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ccc;
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.rating-number:hover {
+    transform: scale(1.1);
+    border-color: var(--accent-color);
+}
+.rating-number.selected {
+    background-color: var(--accent-color);
+    color: #fff;
+    border-color: var(--accent-color);
+}
+
+.rating-star {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.rating-star svg {
+    width: 40px;
+    height: 40px;
+    fill: #ccc;
+    transition: fill 0.2s;
+}
+
+.rating-star:hover {
+    transform: scale(1.1);
+}
+
+.rating-star.selected svg {
+    fill: #FFD700; 
+}
+.sort-icon.desc::after {
+    content: '↓';
+}
+.average-rating-display {
+    padding: 8px 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #fff;
+    border-top: 1px solid rgba(0, 123, 255, 0.4);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.average-rating-display span {
+    color: #ccc;
+    font-weight: normal;
+    font-size: 1rem;
+    margin-right: 8px;
+}
+.other-input-inline {
+    display: none; 
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    border-bottom: 1px solid #999;
+    padding: 2px;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    outline: none;
+    width: auto;
+}
+.question-option.selected .other-input-inline {
+    display: inline-block; 
+}
+.admin-question-block.collapsed {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    cursor: pointer;
+}
+/* Osnovni stil za obaveštenja u anketi (AmongUs tema) */
+.survey-alert {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+.survey-alert p {
+    color: #212529;
+    font-size: 1.1rem;
+}
+.survey-alert button {
+    background-color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 50px;
+    padding: 10px 25px;
+}
+
+/* Poseban stil za SMJ Freight */
+.smj-theme-layout .survey-alert {
+    background: #ffffff;
+    border: 2px solid var(--accent-color);
+}
+.smj-theme-layout .survey-alert p {
+    color: #333;
+}
+.smj-theme-layout .survey-alert button {
+    background-color: var(--accent-color);
+}
+
+/* Poseban stil za EB Infinity */
+.eb-theme-layout .survey-alert {
+    background: #1c3a59;
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.4);
+}
+.eb-theme-layout .survey-alert p {
+    color: #fff;
+}
+.eb-theme-layout .survey-alert button {
+    background-color: var(--accent-color);
+}
+.question-block-wrapper {
+    position: relative;
+    /* Brišemo padding-left, više nije potreban */
+}
+
+.drag-handle {
+    cursor: grab;
+    margin-right: 8px; /* Razmak između ikonice i strelice */
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    width: 24px;
+    height: 24px;
+    align-self: center; /* Vertikalno centriranje */
+}
+
+.drag-handle:hover {
+    opacity: 1;
+}
+
+/* Stil za originalnu karticu DOK JE PREVLAČIMO */
+.question-block-wrapper.dragging {
+    opacity: 0.3; /* Postaje skoro nevidljiva da izgleda kao da je nema */
+    background: transparent;
+    border-color: rgba(0, 123, 255, 0.5);
+    border-style: dashed;
+}
 
 
     </style>
@@ -2755,7 +3101,7 @@
     <div class="container" id="main-content">
     </div>
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyPW-Bly01fF1n5yHQgN7bWQMnvkPTORyrQHClEBUXCK_QKupt0nqcOruoXBsb01rq3g/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHdkWKDgNHJc21lNjjGskJxnf1zJTOnLAG_VFGJSiTZcnNPykEEH6gGnvD7E86LO-33g/exec';
     let companyConfig = {};
     let adminDataCache = null;
     let surveyListSortKey = 'lastModified';
@@ -2947,7 +3293,7 @@
                     <h1 class="welcome-logo-title">Survey</h1>
                 </div>
                 <p class="welcome-text">
-                    Share your experience and insights about the trucking industry. Your valuable feedback drives positive change and helps improve conditions for everyone on the road.
+                    Welcome, and thank you for your time. This short survey will only take a few moments to complete, and your valuable perspective is greatly appreciated by our team.
                 </p>
                 <div class="survey-form">
                     <div class="form-row">
@@ -3010,7 +3356,29 @@ sessionStorage.setItem('surveyUserName', userAnswers.name);
         const backButtonHtml = currentQuestionIndex > 0 ? `<a href="#" class="back-text">← Back to Previous Question</a>` : '';
 
         let questionSpecificHtml = '';
-        if (!q.options || q.options.length === 0) {
+        const starSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>`;
+
+        if (q.type === 'rating_numbers') {
+            questionSpecificHtml = `
+                <div class="rating-user-container">
+                    <span class="rating-number" data-value="1">1</span>
+                    <span class="rating-number" data-value="2">2</span>
+                    <span class="rating-number" data-value="3">3</span>
+                    <span class="rating-number" data-value="4">4</span>
+                    <span class="rating-number" data-value="5">5</span>
+                </div>
+            `;
+        } else if (q.type === 'rating_stars') {
+            questionSpecificHtml = `
+                <div class="rating-user-container">
+                    <span class="rating-star" data-value="1">${starSvg}</span>
+                    <span class="rating-star" data-value="2">${starSvg}</span>
+                    <span class="rating-star" data-value="3">${starSvg}</span>
+                    <span class="rating-star" data-value="4">${starSvg}</span>
+                    <span class="rating-star" data-value="5">${starSvg}</span>
+                </div>
+            `;
+        } else if (!q.options || q.options.length === 0) {
             questionSpecificHtml = `<textarea class="textarea-input" placeholder="Type your answer here..."></textarea>`;
         } else {
             let optionsHtml = q.options.map(option => {
@@ -3024,6 +3392,8 @@ sessionStorage.setItem('surveyUserName', userAnswers.name);
     if (displayValue.includes('::score=')) {
         displayValue = displayValue.split('::score=')[0];
     }
+    
+    displayValue = displayValue.replace(' (Please specify)', '').trim();
 
     if (hasTextField) {
         const optionContent = `
@@ -3100,6 +3470,8 @@ sessionStorage.setItem('surveyUserName', userAnswers.name);
 function setupQuestionListeners() {
         const options = document.querySelectorAll('.question-option');
         const textarea = document.querySelector('.textarea-input');
+        const ratingNumbers = document.querySelectorAll('.rating-number');
+        const ratingStars = document.querySelectorAll('.rating-star');
         const q = surveyQuestions[currentQuestionIndex];
 
         options.forEach(option => {
@@ -3117,6 +3489,22 @@ function setupQuestionListeners() {
             });
         });
 
+        ratingNumbers.forEach(num => {
+            num.addEventListener('click', () => {
+                ratingNumbers.forEach(n => n.classList.remove('selected'));
+                num.classList.add('selected');
+            });
+        });
+
+        ratingStars.forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = parseInt(star.dataset.value, 10);
+                ratingStars.forEach((s, i) => {
+                    s.classList.toggle('selected', i < rating);
+                });
+            });
+        });
+
         const backText = document.querySelector('.back-text');
         if (backText) {
             backText.addEventListener('click', (e) => {
@@ -3128,6 +3516,8 @@ function setupQuestionListeners() {
         document.querySelector('.next-btn').addEventListener('click', () => {
             let finalAnswers = [];
             const selectedOptions = document.querySelectorAll('.question-option.selected');
+            const selectedNumber = document.querySelector('.rating-number.selected');
+            const selectedStars = document.querySelectorAll('.rating-star.selected');
 
             if (textarea) {
                 if (textarea.value.trim() !== '') {
@@ -3135,17 +3525,25 @@ function setupQuestionListeners() {
                 }
             } else if (selectedOptions.length > 0) {
                 selectedOptions.forEach(opt => {
-                    const baseValue = opt.dataset.value;
-                    const inlineInput = opt.querySelector('.other-input-inline');
-                    if (inlineInput && inlineInput.value.trim() !== '') {
-                        finalAnswers.push(`${baseValue}: ${inlineInput.value.trim()}`);
-                    } else {
-                        finalAnswers.push(baseValue);
-                    }
-                });
+    const baseValue = opt.dataset.value;
+    const inlineInput = opt.querySelector('.other-input-inline');
+    const displaySpan = opt.querySelector('span');
+    const cleanDisplayText = displaySpan ? displaySpan.textContent : '';
+
+    if (inlineInput && inlineInput.value.trim() !== '') {
+        finalAnswers.push(`${cleanDisplayText}: ${inlineInput.value.trim()}`);
+    } else {
+        finalAnswers.push(baseValue);
+    }
+});
+            } else if (selectedNumber) {
+                finalAnswers.push(selectedNumber.dataset.value);
+            } else if (selectedStars.length > 0) {
+                finalAnswers.push(String(selectedStars.length));
             }
 
-            if (finalAnswers.length === 0) {
+
+            if (finalAnswers.length === 0 && q.type !== 'paragraph') {
                 showAlert('Please select an answer.');
                 return;
             }
@@ -3237,25 +3635,38 @@ const userAgeForLink = encodeURIComponent(finalUserAge);
     }
 
     function showAlert(message) {
-        const existingModal = document.querySelector('.alert-modal');
-        if(existingModal) existingModal.remove();
-        const alertModal = document.createElement('div');
+    const existingModal = document.querySelector('.alert-modal');
+    if(existingModal) existingModal.remove();
+    const alertModal = document.createElement('div');
+    
+    const isAdminView = document.getElementById('admin-panel-container').style.display === 'flex';
+    if (isAdminView) {
         alertModal.classList.add('alert-modal');
-        alertModal.innerHTML = `<p>${message}</p><button>OK</button>`;
-        document.body.appendChild(alertModal);
-        alertModal.querySelector('button').addEventListener('click', () => {
-            alertModal.remove();
-        });
+    } else {
+        alertModal.classList.add('alert-modal', 'survey-alert');
     }
 
+    alertModal.innerHTML = `<p>${message}</p><button>OK</button>`;
+    document.body.appendChild(alertModal);
+    alertModal.querySelector('button').addEventListener('click', () => {
+        alertModal.remove();
+    });
+}
+
     function showSpinner(text = 'Please wait...') {
-        const spinner = document.createElement('div');
+    const spinner = document.createElement('div');
+
+    const isAdminView = document.getElementById('admin-panel-container').style.display === 'flex';
+    if (isAdminView) {
         spinner.className = 'alert-modal';
-        spinner.style.cssText = 'background-color: rgba(255,255,255,0.9); padding: 40px;';
-        spinner.innerHTML = `<p class="loading-animation" style="color: #000;">${text}</p>`;
-        document.body.appendChild(spinner);
-        return spinner;
+    } else {
+        spinner.className = 'alert-modal survey-alert';
     }
+
+    spinner.innerHTML = `<p class="loading-animation">${text}</p>`;
+    document.body.appendChild(spinner);
+    return spinner;
+}
 
     function hideSpinner(spinner) {
         if(spinner) spinner.remove();
@@ -3428,9 +3839,6 @@ function refreshDataInBackground() {
         const tooltipText = `INSTRUCTIONS:\n\n- Scoring (1-5): Assigns a numerical value to an answer, useful for later analysis and statistics.\n\n- Text Input: To allow users to type a custom response next to an option, add '(please explain)' to the answer text.`;
         adminPanelContainer.innerHTML = `
             <div class="admin-page-content">
-                <div class="admin-info-icon-wrapper" data-tooltip="${tooltipText}">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5-11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
-                </div>
                 <a href="#" class="admin-back-button" style="display: flex; align-items: center; gap: 5px;">
                     <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg>
                     <span>${isEditMode ? 'Back to Survey List' : 'Back to Admin Panel'}</span>
@@ -3446,12 +3854,10 @@ function refreshDataInBackground() {
                     </div>
                     <div id="questions-container">
                         ${questionsHtml}
-                        ${!isEditMode ? `
-                            <button class="add-question-btn-main">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
-                                Add Question
-                            </button>
-                        ` : ''}
+                        <button class="add-question-btn-main">
+    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+    Add Question
+</button>
                     </div>
                 </div>
                 <div class="admin-form-footer">
@@ -3479,39 +3885,102 @@ function refreshDataInBackground() {
     }
 });
 
+adminPanelContainer.querySelector('.admin-page-content').addEventListener('change', function(e) {
+            if (e.target.matches('select[name="question-type"]')) {
+                const select = e.target;
+                const questionBlock = select.closest('.admin-question-block');
+                const answersContainer = questionBlock.querySelector('.question-answers');
+                const paragraphContainer = questionBlock.querySelector('.paragraph-answer-container');
+                const numbersPreview = questionBlock.querySelector('.numbers-preview');
+                const starsPreview = questionBlock.querySelector('.stars-preview');
+                
+                answersContainer.classList.add('hidden');
+                paragraphContainer.classList.add('hidden');
+                numbersPreview.classList.add('hidden');
+                starsPreview.classList.add('hidden');
+
+                if (select.value === 'paragraph') {
+                    paragraphContainer.classList.remove('hidden');
+                } else if (select.value === 'rating_numbers') {
+                    numbersPreview.classList.remove('hidden');
+                } else if (select.value === 'rating_stars') {
+                    starsPreview.classList.remove('hidden');
+                } else { 
+                    answersContainer.classList.remove('hidden');
+                }
+            }
+        });
+
     
         adminPanelContainer.querySelector('.admin-page-content').addEventListener('click', function(e) {
+           const toggleIcon = e.target.closest('.textfield-toggle-icon');
+if (toggleIcon && !toggleIcon.classList.contains('permanent')) {
+    e.preventDefault();
+    toggleIcon.classList.toggle('enabled');
+    const tooltip = toggleIcon.querySelector('.tooltip');
+    if (tooltip) {
+        tooltip.textContent = toggleIcon.classList.contains('enabled') 
+            ? 'Disable text input for user' 
+            : 'Enable text input for user';
+    }
+
+    const answerGroup = toggleIcon.closest('.admin-answer-group');
+    const textInput = answerGroup.querySelector('.answer-text-input');
+    const specifyText = ' (Please specify)';
+
+    if (toggleIcon.classList.contains('enabled')) {
+        if (!textInput.value.includes(specifyText)) {
+            textInput.value = textInput.value.trim() + specifyText;
+        }
+    } else {
+        if (textInput.value.endsWith(specifyText)) {
+            textInput.value = textInput.value.slice(0, -specifyText.length).trim();
+        }
+    }
+}
             if (e.target.closest('.add-question-btn-main')) {
                 e.preventDefault();
+
+                const allQuestionInputs = document.querySelectorAll('input[name="question-text"]');
+                if (allQuestionInputs.length > 0) {
+                    validateInput(allQuestionInputs[allQuestionInputs.length - 1]);
+                }
+
                 const newIndex = document.querySelectorAll('.question-block-wrapper').length;
                 const newQuestionHtml = generateQuestionBlock(newIndex, {}, isEditMode);
                 const button = e.target.closest('.add-question-btn-main');
-
-                if (isEditMode) {
-                    button.outerHTML = newQuestionHtml;
-                } else {
-                    button.insertAdjacentHTML('beforebegin', newQuestionHtml);
-                }
+                button.insertAdjacentHTML('beforebegin', newQuestionHtml);
             }
             if (e.target.closest('.add-answer-btn')) {
                 e.preventDefault();
                 const addAnswerButton = e.target.closest('.add-answer-btn');
-                const answersContainer = addAnswerButton.parentElement;
-                answersContainer.insertBefore(generateAnswerInput(), addAnswerButton);
-            }
+                const answersContainer = addAnswerButton.parentElement.parentElement;
+                
+                const allAnswerInputs = answersContainer.querySelectorAll('.answer-text-input');
+                if (allAnswerInputs.length > 0) {
+                    validateInput(allAnswerInputs[allAnswerInputs.length - 1]);
+                }
+
+                answersContainer.insertBefore(generateAnswerInput(), addAnswerButton.parentElement);
+            } else if (e.target.closest('.add-other-btn')) {
+    e.preventDefault();
+    const addOtherButton = e.target.closest('.add-other-btn');
+    const answersContainer = addOtherButton.parentElement.parentElement;
+    const allAnswerInputs = answersContainer.querySelectorAll('.answer-text-input');
+    if (allAnswerInputs.length > 0) {
+        validateInput(allAnswerInputs[allAnswerInputs.length - 1]);
+    }
+    answersContainer.insertBefore(generateAnswerInput('Other::textfield=true'), addOtherButton.parentElement);
+}
             if (e.target.closest('.delete-question-btn-wrapper')) {
                 e.preventDefault();
                 const wrapperToDelete = e.target.closest('.delete-question-btn-wrapper').parentElement;
-
-                
                 if (isEditMode) {
                     const buttonToDelete = wrapperToDelete.nextElementSibling;
-                    
                     wrapperToDelete.remove();
                     if (buttonToDelete && buttonToDelete.matches('.add-question-btn-main')) {
                         buttonToDelete.remove();
                     }
-                    
                     const questionsContainer = document.getElementById('questions-container');
                     const lastElement = questionsContainer.lastElementChild;
                     if (!lastElement || lastElement.matches('.question-block-wrapper')) {
@@ -3536,94 +4005,241 @@ function refreshDataInBackground() {
                 const toggleBtn = e.target.closest('.toggle-answers-btn');
                 const questionBlock = e.target.closest('.admin-question-block');
                 const answersContainer = questionBlock.querySelector('.question-answers');
-                answersContainer.classList.toggle('collapsed');
-                toggleBtn.classList.toggle('collapsed');
-                questionBlock.classList.toggle('collapsed'); 
+const paragraphContainer = questionBlock.querySelector('.paragraph-answer-container');
+const numbersPreview = questionBlock.querySelector('.numbers-preview');
+const starsPreview = questionBlock.querySelector('.stars-preview');
+
+if (answersContainer) answersContainer.classList.toggle('collapsed');
+if (paragraphContainer) paragraphContainer.classList.toggle('collapsed');
+if (numbersPreview) numbersPreview.classList.toggle('collapsed');
+if (starsPreview) starsPreview.classList.toggle('collapsed');
+
+toggleBtn.classList.toggle('collapsed');
+questionBlock.classList.toggle('collapsed');
+            }
+        });
+        
+        let draggedItem = null;
+
+questionsContainer.addEventListener('dragstart', (e) => {
+
+    if (e.target.classList.contains('drag-handle')) {
+        draggedItem = e.target.closest('.question-block-wrapper');
+        
+        setTimeout(() => {
+            if(draggedItem) draggedItem.classList.add('dragging');
+        }, 0);
+        
+        e.dataTransfer.effectAllowed = 'move';
+    } else {
+        e.preventDefault();
+    }
+});
+
+questionsContainer.addEventListener('dragend', () => {
+    if (draggedItem) {
+        draggedItem.classList.remove('dragging');
+        draggedItem = null;
+    }
+});
+
+questionsContainer.addEventListener('dragover', (e) => {
+    e.preventDefault(); 
+    if (!draggedItem) return;
+    const container = questionsContainer;
+    const containerRect = container.getBoundingClientRect();
+    const scrollZoneHeight = 60; 
+    const scrollSpeed = 10; 
+
+
+    if (e.clientY < containerRect.top + scrollZoneHeight) {
+        container.scrollTop -= scrollSpeed;
+    } 
+    else if (e.clientY > containerRect.bottom - scrollZoneHeight) {
+        container.scrollTop += scrollSpeed;
+    }
+
+    const afterElement = getDragAfterElement(container, e.clientY);
+    
+    if (afterElement == null) {
+        container.insertBefore(draggedItem, container.querySelector('.add-question-btn-main'));
+    } else {
+        container.insertBefore(draggedItem, afterElement);
+    }
+});
+
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.question-block-wrapper:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+questionsContainer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (!draggedItem) return;
+    draggedItem.classList.remove('dragging');
+    draggedItem = null;
+});
+        const formContent = adminPanelContainer.querySelector('.admin-page-content');
+
+       function clearValidationError(inputElement) {
+            if (!inputElement) return;
+            inputElement.classList.remove('input-error');
+            const wrapper = inputElement.closest('.admin-form-group') || inputElement.closest('.question-text-group') || inputElement.closest('.answer-input-wrapper');
+            const nextEl = wrapper ? wrapper.nextElementSibling : null;
+            if (nextEl && nextEl.classList.contains('error-message')) {
+                nextEl.remove();
+            }
+        }
+
+        function validateInput(input) {
+            if (!input) return;
+
+            const questionBlock = input.closest('.admin-question-block');
+            const questionTypeSelect = questionBlock ? questionBlock.querySelector('select[name="question-type"]') : null;
+            const typesWithoutAnswers = ['paragraph', 'rating_numbers', 'rating_stars'];
+            if (input.matches('.answer-text-input') && questionTypeSelect && typesWithoutAnswers.includes(questionTypeSelect.value)) {
+                clearValidationError(input);
+                return;
+            }
+
+            if (input.value.trim() === '') {
+                input.classList.add('input-error');
+                const wrapper = input.closest('.admin-form-group') || input.closest('.question-text-group') || input.closest('.answer-input-wrapper');
+                if (wrapper && (!wrapper.nextElementSibling || !wrapper.nextElementSibling.classList.contains('error-message'))) {
+                    const errorSpan = document.createElement('span');
+                    errorSpan.className = 'error-message';
+                    errorSpan.textContent = 'This field cannot be empty.';
+                    wrapper.parentNode.insertBefore(errorSpan, wrapper.nextSibling);
+                }
+            } else {
+                clearValidationError(input);
+            }
+        }
+
+        formContent.addEventListener('focusout', function(e) {
+            if (e.target.matches('#survey-name, input[name="question-text"], .answer-text-input')) {
+                validateInput(e.target);
+            }
+        });
+
+        formContent.addEventListener('input', function(e) {
+            const input = e.target;
+            if (input.matches('#survey-name, input[name="question-text"], .answer-text-input')) {
+                if (input.classList.contains('input-error')) {
+                    clearValidationError(input);
+                }
             }
         });
 
         document.getElementById('save-survey-btn').addEventListener('click', () => {
-    const newSurveyName = document.getElementById('survey-name').value.trim();
-    if (!newSurveyName) {
-        showAlert('Please enter a survey name.');
-        return;
-    }
-    const questions = [];
-    document.querySelectorAll('.admin-question-block').forEach(block => {
-        const questionText = block.querySelector('input[name="question-text"]').value.trim();
-        const questionType = block.querySelector('select[name="question-type"]').value;
-        const answers = [];
-        
-        block.querySelectorAll('.admin-answer-group').forEach(answerGroup => {
-    const answerTextInput = answerGroup.querySelector('input[name="answer-text"]');
-    const answerScoreSelect = answerGroup.querySelector('select[name="answer-score"]');
-    const answerTextfieldSelect = answerGroup.querySelector('select[name="answer-textfield"]');
-    const answerText = answerTextInput.value.trim();
-    const answerScore = answerScoreSelect.value;
-    const answerTextfield = answerTextfieldSelect.value;
+            let hasErrors = false;
+            document.querySelectorAll('#survey-name, input[name="question-text"], .answer-text-input').forEach(input => {
+                validateInput(input);
+                if (input.classList.contains('input-error')) {
+                    hasErrors = true;
+                }
+            });
 
-    if (answerText || answerTextfield === 'enable') {
-        let finalAnswerString = answerText;
-        if (answerScore !== '-') {
-            finalAnswerString += `::score=${answerScore}`;
-        }
-        if (answerTextfield === 'enable') {
-            finalAnswerString += '::textfield=true';
-        }
-        answers.push(finalAnswerString);
-    }
-});
-
-        if (questionText) {
-            questions.push({ question: questionText, type: questionType, options: answers });
-        }
-    });
-    if (questions.length === 0) {
-        showAlert('Please add at least one question.');
-        return;
-    }
-    const data = isEditMode ? { id: surveyData.id, newName: newSurveyName, questions: questions } : { name: newSurveyName, questions: questions };
-    const action = isEditMode ? 'updateSurvey' : 'saveNewSurvey';
-    const spinner = showAdminSpinner();
-
-    const handleSuccess = (message) => {
-        fetchSurveyNamesInPromise().then(newNames => {
-            if (adminDataCache) {
-                adminDataCache.surveyNames = newNames;
+            if (hasErrors) {
+                showAlert('Please fill in all required fields.');
+                const firstError = document.querySelector('.input-error');
+                if (firstError) firstError.focus();
+                return;
             }
-        }).finally(() => {
-            hideAdminSpinner(spinner);
-            showAlert(message);
-            if (isEditMode) {
-                renderSurveyList('edit');
-            } else {
-                renderAdminMainMenu();
+
+            const newSurveyName = document.getElementById('survey-name').value.trim();
+            if (!newSurveyName) {
+                showAlert('Please enter a survey name.');
+                return;
             }
+            const questions = [];
+            document.querySelectorAll('.admin-question-block').forEach(block => {
+                const questionText = block.querySelector('input[name="question-text"]').value.trim();
+                const questionType = block.querySelector('select[name="question-type"]').value;
+                const answers = [];
+                
+                if (questionType !== 'paragraph' && questionType !== 'rating_numbers' && questionType !== 'rating_stars') {
+                    block.querySelectorAll('.admin-answer-group').forEach(answerGroup => {
+                        const answerTextInput = answerGroup.querySelector('input[name="answer-text"]');
+                        const answerScoreSelect = answerGroup.querySelector('select[name="answer-score"]');
+                        const isTextfieldEnabled = answerGroup.querySelector('.textfield-toggle-icon.enabled'); 
+                        
+                        const answerText = answerTextInput.value.trim();
+                        const answerScore = answerScoreSelect.value;
+
+                        if (answerText) {
+                            let finalAnswerString = answerText;
+                            if (answerScore !== '-') {
+                                finalAnswerString += `::score=${answerScore}`;
+                            }
+                            if (isTextfieldEnabled) { 
+                                finalAnswerString += '::textfield=true';
+                            }
+                            answers.push(finalAnswerString);
+                        }
+                    });
+                }
+
+                if (questionText) {
+                    questions.push({ question: questionText, type: questionType, options: answers });
+                }
+            });
+            if (questions.length === 0) {
+                showAlert('Please add at least one question.');
+                return;
+            }
+            const data = isEditMode ? { id: surveyData.id, newName: newSurveyName, questions: questions } : { name: newSurveyName, questions: questions };
+            const action = isEditMode ? 'updateSurvey' : 'saveNewSurvey';
+            const spinner = showAdminSpinner();
+
+            const handleSuccess = (message) => {
+                fetchSurveyNamesInPromise().then(newNames => {
+                    if (adminDataCache) {
+                        adminDataCache.surveyNames = newNames;
+                    }
+                }).finally(() => {
+                    hideAdminSpinner(spinner);
+                    showAlert(message);
+                    if (isEditMode) {
+                        renderSurveyList('edit');
+                    } else {
+                        renderAdminMainMenu();
+                    }
+                });
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: action, data: data }),
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                }
+            }).then(res => res.json()).then(result => {
+                if (result.status === 'success') {
+                    handleSuccess(result.message || 'Survey saved successfully!');
+                } else {
+                    hideAdminSpinner(spinner);
+                    showAlert('Error: ' + (result.message || 'An unknown error occurred on the server.'));
+                }
+            }).catch(err => {
+                if (err instanceof TypeError && err.message === 'Failed to fetch') {
+                    handleSuccess('Survey data sent successfully. The change should be saved.');
+                } else {
+                    hideAdminSpinner(spinner);
+                    showAlert('An unexpected error occurred: ' + err.message);
+                }
+            });
         });
-    };
-
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: action, data: data }),
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8',
-        }
-    }).then(res => res.json()).then(result => {
-        if (result.status === 'success') {
-            handleSuccess(result.message || 'Survey saved successfully!');
-        } else {
-            hideAdminSpinner(spinner);
-            showAlert('Error: ' + (result.message || 'An unknown error occurred on the server.'));
-        }
-    }).catch(err => {
-        if (err instanceof TypeError && err.message === 'Failed to fetch') {
-            handleSuccess('Survey data sent successfully. The change should be saved.');
-        } else {
-            hideAdminSpinner(spinner);
-            showAlert('An unexpected error occurred: ' + err.message);
-        }
-    });
-});
 if (!document.getElementById('custom-tooltip')) {
     const tooltipEl = document.createElement('div');
     tooltipEl.id = 'custom-tooltip';
@@ -3673,8 +4289,7 @@ formContainer.removeEventListener('mouseout', handleMouseOut);
 formContainer.addEventListener('mouseover', handleMouseOver);
 formContainer.addEventListener('mouseout', handleMouseOut);
     }
-    
-    function generateQuestionBlock(index, data = {}, isEditMode = false) {
+function generateQuestionBlock(index, data = {}, isEditMode = false) {
     let answersHtml = '';
     if (data.options && data.options.length > 0) {
         data.options.forEach(opt => {
@@ -3684,22 +4299,25 @@ formContainer.addEventListener('mouseout', handleMouseOut);
         answersHtml = generateAnswerInput('').outerHTML;
     }
 
+    const isParagraph = data.type === 'paragraph';
+    const isRatingNumbers = data.type === 'rating_numbers';
+    const isRatingStars = data.type === 'rating_stars';
+    
+    const answersHiddenClass = (isParagraph || isRatingNumbers || isRatingStars) ? 'hidden' : '';
+    const answersCollapsedClass = isEditMode ? 'collapsed' : '';
+    const paragraphHiddenClass = !isParagraph ? 'hidden' : '';
+    const ratingNumbersHiddenClass = !isRatingNumbers ? 'hidden' : '';
+    const ratingStarsHiddenClass = !isRatingStars ? 'hidden' : '';
+
     const collapsedClass = isEditMode ? 'collapsed' : '';
 
-    let addButtonHtml = '';
-    if (isEditMode) {
-        addButtonHtml = `
-            <button class="add-question-btn-main" style="margin: -10px auto 30px auto;">
-                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
-                Add Question
-            </button>
-        `;
-    }
+    const starSvg = `<svg xmlns="http://www.w.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>`;
 
     return `
         <div class="question-block-wrapper">
             <div class="admin-question-block ${collapsedClass}" data-index="${index}">
                 <div class="question-header">
+                    <img src="https://www.svgrepo.com/show/340221/draggable.svg" class="drag-handle" draggable="true" title="Drag to reorder">
                     <div class="toggle-answers-btn ${collapsedClass}" title="Show/Hide Answers">
                          <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>
                     </div>
@@ -3712,31 +4330,54 @@ formContainer.addEventListener('mouseout', handleMouseOut);
                         <select name="question-type" class="admin-select">
                             <option value="single" ${data.type === 'single' ? 'selected' : ''}>Single Choice</option>
                             <option value="multiple" ${data.type === 'multiple' ? 'selected' : ''}>Multiple Choice</option>
+                            <option value="paragraph" ${isParagraph ? 'selected' : ''}>Paragraph</option>
+                            <option value="rating_numbers" ${isRatingNumbers ? 'selected' : ''}>Rating (1-5)</option>
+                            <option value="rating_stars" ${isRatingStars ? 'selected' : ''}>Rating (&#x2B50;)</option>
                         </select>
                     </div>
                 </div>
-                <div class="question-answers ${collapsedClass}">
+                <div class="question-answers ${answersHiddenClass} ${answersCollapsedClass}">
                     ${answersHtml}
-                    <a href="#" class="add-answer-btn" style="color: #fff; text-decoration: none; margin-top: 15px; display: inline-flex; align-items: center; gap: 5px; font-size: 0.9rem;">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
-                        Add Answer
-                    </a>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-top: 15px;">
+                        <a href="#" class="add-answer-btn" style="color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; font-size: 0.9rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                            Add Answer
+                        </a>
+                        <span style="color: #ccc;">or</span>
+                        <a href="#" class="add-other-btn" style="color: #00aaff; text-decoration: none; font-weight: bold; font-size: 0.9rem;">add "Other"</a>
+                    </div>
+                </div>
+                <div class="paragraph-answer-container ${paragraphHiddenClass} ${answersCollapsedClass}">
+                    <textarea class="admin-textarea" readonly placeholder="Users will enter their answer here. No additional options are needed."></textarea>
+                </div>
+                <div class="rating-preview-container numbers-preview ${ratingNumbersHiddenClass} ${answersCollapsedClass}">
+                    <span class="rating-preview-item">1</span>
+                    <span class="rating-preview-item">2</span>
+                    <span class="rating-preview-item">3</span>
+                    <span class="rating-preview-item">4</span>
+                    <span class="rating-preview-item">5</span>
+                </div>
+                <div class="rating-preview-container stars-preview ${ratingStarsHiddenClass} ${answersCollapsedClass}">
+                    <span class="rating-preview-star">${starSvg}</span>
+                    <span class="rating-preview-star">${starSvg}</span>
+                    <span class="rating-preview-star">${starSvg}</span>
+                    <span class="rating-preview-star">${starSvg}</span>
+                    <span class="rating-preview-star">${starSvg}</span>
                 </div>
             </div>
             <div class="delete-question-btn-wrapper" title="Delete Question">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
             </div>
         </div>
-        ${addButtonHtml}
         `;
 }
     function generateAnswerInput(value = '') {
     let text = value;
     let score = '-';
-    let textfield = 'disable';
+    let isTextfieldEnabled = false;
 
     if (text.includes('::textfield=true')) {
-        textfield = 'enable';
+        isTextfieldEnabled = true;
         text = text.replace('::textfield=true', '');
     }
     if (text.includes('::score=')) {
@@ -3745,6 +4386,10 @@ formContainer.addEventListener('mouseout', handleMouseOut);
         score = parts[1];
     }
 
+    const isOtherField = (text === 'Other' && isTextfieldEnabled);
+    const readonlyAttr = isOtherField ? 'readonly' : '';
+    const permanentIconClass = isOtherField ? 'permanent' : '';
+
     const div = document.createElement('div');
     div.className = 'admin-answer-group';
 
@@ -3752,18 +4397,20 @@ formContainer.addEventListener('mouseout', handleMouseOut);
         `<option value="${s}" ${s === score ? 'selected' : ''}>${s}</option>`
     ).join('');
 
-    const textfieldOptions = `
-        <option value="disable" ${textfield === 'disable' ? 'selected' : ''}>Disable</option>
-        <option value="enable" ${textfield === 'enable' ? 'selected' : ''}>Enable</option>
-    `;
+    const enabledClass = isTextfieldEnabled ? 'enabled' : '';
 
     div.innerHTML = `
-        <input type="text" name="answer-text" class="admin-input answer-text-input" placeholder="Enter answer option" value="${text}">
+        <div class="answer-input-wrapper">
+            <input type="text" name="answer-text" class="admin-input answer-text-input" placeholder="Enter answer option" value="${text}" ${readonlyAttr}>
+            <span class="textfield-toggle-icon ${enabledClass} ${permanentIconClass}">
+             <span class="icon-with-tooltip-wrapper">
+                <img src="https://cdn-icons-png.freepik.com/256/14359/14359891.png?semt=ais_white_label" alt="Enable Text Input">
+                <span class="tooltip">${isOtherField ? "Text input cannot be disabled for the 'Other' option." : (enabledClass ? 'Disable text input for user' : 'Enable text input for user')}</span>
+            </span>
+            </span>
+        </div>
         <select name="answer-score" class="admin-select answer-score-select has-tooltip" data-tooltip="Assign a numerical score (1-5) to this answer for statistical analysis. Leave as '-' for no score.">
             ${scoreOptions}
-        </select>
-        <select name="answer-textfield" class="admin-select answer-textfield-select has-tooltip" data-tooltip="Enable this to allow the user to type their own text in an input field next to this answer.">
-            ${textfieldOptions}
         </select>
         <span class="delete-answer-btn" title="Delete Answer" style="cursor: pointer; color: #ccc; padding: 5px; transition: color 0.2s ease;">
             <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
@@ -3779,7 +4426,7 @@ function renderStatisticsDashboard() {
         showAlert("Data is not available yet. Please wait for the initial load to complete.");
         return;
     }
-
+    let previouslySelectedSurvey = null;
     const statsData = adminDataCache.statsData;
     let currentSingleSurveyView = 'list';
     let activeCharts = [];
@@ -3920,7 +4567,13 @@ function renderStatisticsDashboard() {
     }
 
     function updateDisplay() {
-        const answersFilter = getSelectedValues('answers-filter-container')[0];
+    const newSelectedSurvey = getSelectedValues('survey-select-container')[0];
+    if (previouslySelectedSurvey !== newSelectedSurvey) {
+        currentQuestionIndex = 0;
+    }
+    previouslySelectedSurvey = newSelectedSurvey;
+
+    const answersFilter = getSelectedValues('answers-filter-container')[0];
         const selectedSurvey = getSelectedValues('survey-select-container')[0];
         const selectedCompanies = getSelectedValues('company-filter-container');
         const selectedAges = getSelectedValues('age-filter-container');
@@ -3971,32 +4624,69 @@ function renderStatisticsDashboard() {
             sortedParticipants.forEach(p => {
                 const survey = statsData.surveys.find(s => s.name === p.survey);
                 if (!survey) return;
-                survey.questions.forEach((question) => {
-    const response = p.responses[question.text];
-    if (!response || !question.options || question.options.length <= 1) return;
 
-    const questionText = question.text;
-    if (!questionTotalMap[questionText]) {
-        questionTotalMap[questionText] = 0;
+                survey.questions.forEach((question) => {
+                    const response = p.responses[question.text];
+                    
+                    let q = JSON.parse(JSON.stringify(question));
+
+                    const isRatingBasedOnType = q.type === 'rating_numbers' || q.type === 'rating_stars';
+                    const isRatingBasedOnAnswers = response && (!q.options || q.options.length === 0) && /^[1-5]$/.test(String(response).trim());
+
+                    if (isRatingBasedOnType || isRatingBasedOnAnswers) {
+                        q.options = ['1', '2', '3', '4', '5'];
+                        if (!isRatingBasedOnType) {
+                            q.type = 'rating_numbers'; 
+                        }
+                    }
+
+                    if (!response || !q.options || q.options.length <= 1) return;
+
+                    const questionText = q.text;
+                    if (!questionTotalMap[questionText]) {
+                        questionTotalMap[questionText] = 0;
+                    }
+                    questionTotalMap[questionText]++;
+                    const answers = response.toString().split(', ');
+                    answers.forEach(fullAnswer => {
+    if (!fullAnswer.trim()) return;
+    let answerText = fullAnswer.trim();
+    let score = 'N/A';
+    let displayAnswer = answerText;
+    let keyAnswer = answerText;
+
+    if (answerText.includes('::textfield=true: ')) {
+        const parts = answerText.split('::textfield=true: ');
+        const basePart = parts[0];
+        const userText = parts[1];
+        displayAnswer = `${basePart.replace('::textfield=true', '')}: ${userText}`;
+        
+        const baseOption = q.options.find(opt => opt.startsWith(basePart));
+        if (baseOption) {
+            keyAnswer = baseOption;
+        }
     }
-    questionTotalMap[questionText]++;
-    const answers = response.toString().split(', ');
-    answers.forEach(fullAnswer => {
-        if (!fullAnswer.trim()) return;
-        let answerText = fullAnswer.trim();
-        let score = 'N/A';
-        if (answerText.includes('::score=')) {
-            const parts = answerText.split('::score=');
-            answerText = parts[0];
-            score = parts[1];
+    
+    displayAnswer = displayAnswer.split('::score=')[0];
+   displayAnswer = displayAnswer.replace(/\(please (specify|explain)\)/gi, '').trim();
+
+    const scoreSource = keyAnswer.includes('::score=') ? keyAnswer : answerText;
+    if (scoreSource.includes('::score=')) {
+        score = `${scoreSource.split('::score=')[1].split('::')[0]} / 5`;
+    } else if (q.type === 'rating_numbers' || q.type === 'rating_stars') {
+        if (/^[1-5]$/.test(answerText)) {
+            score = `${answerText} / 5`;
         }
-        const key = `${p.survey}|${questionText}|${answerText}`;
-        if (!frequencyMap[key]) {
-            frequencyMap[key] = { survey: p.survey, question: questionText, answer: answerText, score: score, count: 0 };
-        }
-        frequencyMap[key].count++;
-    });
+    }
+    
+    const questionText = q.text;
+    const key = `${p.survey}|${questionText}|${keyAnswer}`;
+    if (!frequencyMap[key]) {
+        frequencyMap[key] = { survey: p.survey, question: questionText, answer: displayAnswer, score: score, count: 0 };
+    }
+    frequencyMap[key].count++;
 });
+                });
             });
             let rankedAnswers = Object.values(frequencyMap).map(item => {
                 const totalForQuestion = questionTotalMap[item.question] || 0;
@@ -4012,7 +4702,7 @@ function renderStatisticsDashboard() {
                 else if (valA < valB) comparison = -1;
                 return topAnswersSortDirection === 'asc' ? comparison : -comparison;
             });
-            viewContainer.innerHTML = `<div class="top-answers-container"><div class="top-answers-controls"><button class="top-answers-limit-btn" data-limit="all">All</button><button class="top-answers-limit-btn" data-limit="5">Top 5</button><button class="top-answers-limit-btn" data-limit="10">Top 10</button><button class="top-answers-limit-btn" data-limit="20">Top 20</button></div><div class="top-answers-table-wrapper"><table class="top-answers-table"><thead><tr><th><span class="sortable-header" data-sort-by="rank">Rank<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="answer">Answer<i class="sort-icon"></i></span></th><th><div class="th-content-wrapper"><span class="sortable-header" data-sort-by="score">Rate<i class="sort-icon"></i></span><span class="info-icon" data-tooltip="The administrator-assigned score for this answer."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></span></div></th><th><div class="th-content-wrapper"><span class="sortable-header" data-sort-by="count">Total<i class="sort-icon"></i></span><span class="info-icon" data-tooltip="The total number of times this answer was selected across all filtered participants."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></span></div></th><th><div class="th-content-wrapper"><span class="sortable-header" data-sort-by="percentage">%<i class="sort-icon"></i></span><span class="info-icon" data-tooltip="The percentage of times this answer was chosen for its specific question, out of all responses to that question."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></span></div></th></tr></thead><tbody id="top-answers-table-body"></tbody></table></div></div>`;
+            viewContainer.innerHTML = `<div class="top-answers-container"><div class="top-answers-controls"><button class="top-answers-limit-btn" data-limit="all">All</button><button class="top-answers-limit-btn" data-limit="5">Top 5</button><button class="top-answers-limit-btn" data-limit="10">Top 10</button><button class="top-answers-limit-btn" data-limit="20">Top 20</button></div><div class="top-answers-table-wrapper"><table class="top-answers-table"><thead><tr><th><span class="sortable-header" data-sort-by="rank">Rank<i class="sort-icon"></i></span></th><th><span class="sortable-header" data-sort-by="answer">Answer<i class="sort-icon"></i></span></th><th><div class="th-content-wrapper"><span class="sortable-header" data-sort-by="score">Rating<i class="sort-icon"></i></span><span class="info-icon" data-tooltip="The administrator-assigned score for this answer."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></span></div></th><th><div class="th-content-wrapper"><span class="sortable-header" data-sort-by="count">Total<i class="sort-icon"></i></span><span class="info-icon" data-tooltip="The total number of times this answer was selected across all filtered participants."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></span></div></th><th><div class="th-content-wrapper"><span class="sortable-header" data-sort-by="percentage">%<i class="sort-icon"></i></span><span class="info-icon" data-tooltip="The percentage of times this answer was chosen for its specific question, out of all responses to that question."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></span></div></th></tr></thead><tbody id="top-answers-table-body"></tbody></table></div></div>`;
             let currentLimit = 'all';
             const controlsContainer = viewContainer.querySelector('.top-answers-controls');
             const limitButtons = controlsContainer.querySelectorAll('.top-answers-limit-btn');
@@ -4062,10 +4752,28 @@ function renderStatisticsDashboard() {
             sortedParticipants.forEach(p => { if (totals.hasOwnProperty(p.company)) totals[p.company]++; });
             const summaryHtml = `Total Participants: <b>${totals.total}</b>  |  ${statsData.companyNames.map(c => `${c}: <b>${totals[c]}</b>`).join('  |  ')}`;
             if (selectedSurvey === 'all') {
-                viewContainer.innerHTML = `<div class="all-surveys-layout"><div class="text-summary-stats">${summaryHtml}</div><div class="participant-list-container"><input type="text" id="participant-search" class="admin-input" placeholder="Search participants..."><div class="participant-list-header"><span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="rate" style="padding-right: 20px;">RATE<i class="sort-icon"></i></span></div><ul id="all-participants-list" class="participant-list"></ul></div></div>`;
+             viewContainer.innerHTML = `<div class="all-surveys-layout"><div class="text-summary-stats">${summaryHtml}</div><div class="participant-list-container"><input type="text" id="participant-search" class="admin-input" placeholder="Search participants..."><div class="participant-list-header"><span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="rate">Rating<i class="sort-icon"></i></span><span style="text-align: right;">Actions</span></div><ul id="all-participants-list" class="participant-list"></ul></div></div>`;
                 renderAllParticipantsList(sortedParticipants);
             } else {
                 viewContainer.innerHTML = `<div id="single-survey-content-wrapper"><div id="single-survey-content"></div></div>`;
+                const contentAreaContainer = document.getElementById('single-survey-content-wrapper');
+    if (contentAreaContainer) {
+        const newContainer = contentAreaContainer.cloneNode(true);
+        contentAreaContainer.parentNode.replaceChild(newContainer, contentAreaContainer);
+
+        newContainer.addEventListener('click', (e) => {
+            const listBtn = e.target.closest('#icon-list-btn');
+            const dashboardBtn = e.target.closest('#icon-dashboard-btn');
+
+            if (listBtn && currentSingleSurveyView !== 'list') {
+                currentSingleSurveyView = 'list';
+                renderView('list');
+            } else if (dashboardBtn && currentSingleSurveyView !== 'dashboard') {
+                currentSingleSurveyView = 'dashboard';
+                renderView('dashboard');
+            }
+        });
+    }
                 const renderView = (view) => {
     const contentArea = document.getElementById('single-survey-content');
     contentArea.innerHTML = ''; 
@@ -4099,7 +4807,7 @@ function renderStatisticsDashboard() {
             allCombinedOption.remove();
         }
 
-        const listHtml = `<div class="participant-list-container full-width"><input type="text" id="participant-search" class="admin-input" placeholder="Search participants..."><div class="participant-list-header"><span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="rate" style="padding-right: 20px;">RATE<i class="sort-icon"></i></span></div><ul id="all-participants-list" class="participant-list"></ul></div>`;
+        const listHtml = `<div class="participant-list-container full-width"><input type="text" id="participant-search" class="admin-input" placeholder="Search participants..."><div class="participant-list-header"><span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="rate">Rating<i class="sort-icon"></i></span><span style="text-align: right;">Actions</span></div><ul id="all-participants-list" class="participant-list"></ul></div>`;
         contentArea.insertAdjacentHTML('beforeend', listHtml);
         renderAllParticipantsList(sortedParticipants);
     } else {
@@ -4118,15 +4826,6 @@ function renderStatisticsDashboard() {
         }
         displaySingleSurveyDetails(selectedSurvey, selectedCompanies, sortedParticipants);
     }
-
-    document.getElementById('icon-list-btn').addEventListener('click', () => {
-        currentSingleSurveyView = 'list';
-        renderView('list');
-    });
-    document.getElementById('icon-dashboard-btn').addEventListener('click', () => {
-        currentSingleSurveyView = 'dashboard';
-        renderView('dashboard');
-    });
 };
 renderView(currentSingleSurveyView);
 };
@@ -4196,36 +4895,50 @@ contentArea.insertAdjacentHTML('beforeend', dashboardHtml);
         }
 
         function renderQuestion(index) {
-            const q = survey.questions[index];
+            const q = { ...survey.questions[index] };
+            
+            const submittedAnswers = filteredParticipants.map(p => p.responses[q.text]).filter(response => response && String(response).trim() !== '');
+            const isRatingBasedOnType = q.type === 'rating_numbers' || q.type === 'rating_stars';
+
+            if (isRatingBasedOnType) {
+                q.options = ['1', '2', '3', '4', '5'];
+            }
+            
             const questionCardContainer = document.getElementById('question-card-main-wrapper');
             const allCompanyNames = statsData.companyNames;
             const colors = { 'SMJ': 'rgba(217, 48, 37, 0.9)', 'EB Infinity': 'rgba(0, 123, 255, 0.9)', 'AmongUs': 'rgba(255, 255, 255, 0.9)' };
             let answersHtml;
             let legendHtml;
             const companyFilter = getSelectedValues('company-filter-container');
+
             if (!q.options || q.options.length === 0) {
-                const submittedAnswers = filteredParticipants.map(p => p.responses[q.text]).filter(response => response && String(response).trim() !== '');
                 if (submittedAnswers.length > 0) {
-    answersHtml = `<div class="stats-freetext-answers-container">${submittedAnswers.map(answer => `<div class="stats-freetext-answer-item">${String(answer).replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`).join('')}</div>`;
-} else {
+                    answersHtml = `<div class="stats-freetext-answers-container">${submittedAnswers.map(answer => `<div class="stats-freetext-answer-item">${String(answer).replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`).join('')}</div>`;
+                } else {
                     answersHtml = '<div class="stats-freetext-no-answers">No answers submitted for this question.</div>';
                 }
                 legendHtml = '';
             } else if (companyFilter[0] === 'All Combined') {
                  answersHtml = q.options.map(opt => {
-                    const cleanOpt = opt.split('::score=')[0];
+                    let cleanOpt = opt.split('::score=')[0].replace('::textfield=true', '').replace(/\(please (specify|explain)\)/gi, '').trim();
+                    let answerDisplay = cleanOpt;
+
+                    if (q.type === 'rating_stars' && /^[1-5]$/.test(cleanOpt)) {
+                        const starSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16" height="16" style="fill:#fff; margin-right:2px;"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>`;
+                        answerDisplay = starSvg.repeat(parseInt(cleanOpt, 10));
+                    }
                     const count = filteredParticipants.filter(p => {
-                        const answerCell = p.responses[q.text] || '';
-                        const respondentAnswers = answerCell.toString().split(', ');
-                         return respondentAnswers.some(ans => {
-                            let cleanAns = ans.split('::score=')[0];
-                             if (cleanAns.includes(': ')) {
-                                 const baseOpt = q.options.find(o => o.includes(cleanAns.split(': ')[0]));
-                                 cleanAns = baseOpt ? baseOpt.split('::score=')[0] : '';
-                             }
-                             return cleanAns === cleanOpt;
-                        });
-                    }).length;
+    const answerCell = p.responses[q.text] || '';
+    const respondentAnswers = answerCell.toString().split(', ');
+    return respondentAnswers.some(ans => {
+    const currentAnswer = ans.trim();
+    const cleanOptKey = cleanOpt.split('::score=')[0].trim();
+    if (currentAnswer.startsWith(cleanOptKey)) {
+        return true;
+    }
+    return currentAnswer.split('::score=')[0].trim() === cleanOptKey;
+});
+}).length;
                     
                     const totalForQuestion = filteredParticipants.filter(p => p.responses[q.text]).length;
                     const percentage = totalForQuestion > 0 ? (count / totalForQuestion) * 100 : 0;
@@ -4233,13 +4946,13 @@ contentArea.insertAdjacentHTML('beforeend', dashboardHtml);
                     const miniBarHtml = `<div class="stats-mini-bar" style="width: ${percentage}%; background-color: #FFD700;" title="All Combined: ${count} (${percentage.toFixed(1)}%)"></div>`;
                     const breakdownCountsHtml = `<div class="stats-company-count" style="color: #FFD700; min-width: 50px; text-align: right; justify-content: flex-end;"><span>${count}</span></div>`;
 
-                    return `<div class="stats-answer-row" data-answer="${cleanOpt}" style="cursor: pointer;"><div class="stats-answer-item"><span class="stats-answer-text">${cleanOpt}</span><div class="stats-mini-bars-container">${miniBarHtml}</div></div><div class="stats-answer-breakdown-counts">${breakdownCountsHtml}</div></div>`;
+                    return `<div class="stats-answer-row" data-answer="${cleanOpt}" style="cursor: pointer;"><div class="stats-answer-item"><span class="stats-answer-text">${answerDisplay}</span><div class="stats-mini-bars-container">${miniBarHtml}</div></div><div class="stats-answer-breakdown-counts">${breakdownCountsHtml}</div></div>`;
                 }).join('');
                 legendHtml = `<div class="stats-legend-item"><div class="stats-legend-color-box" style="background-color: #FFD700;"></div><span>All Combined</span></div>`;
             } else {
                 const dynamicResults = {};
                 q.options.forEach(opt => {
-                    const cleanOpt = opt.split('::score=')[0];
+                    const cleanOpt = opt.split('::score=')[0].replace('::textfield=true', '').replace(' (Please specify)', '').trim();
                     if (!dynamicResults[cleanOpt]) {
                         dynamicResults[cleanOpt] = {};
                         allCompanyNames.forEach(c => dynamicResults[cleanOpt][c] = 0);
@@ -4250,19 +4963,31 @@ contentArea.insertAdjacentHTML('beforeend', dashboardHtml);
                     const respondentAnswers = answerCell.toString().split(', ');
                     const company = p.company;
                     respondentAnswers.forEach(ans => {
-                        let cleanAns = ans.split('::score=')[0];
-                        if (cleanAns.includes(': ')) {
-                           cleanAns = q.options.find(o => o.includes(cleanAns.split(': ')[0]));
-                           if(cleanAns) cleanAns = cleanAns.split('::score=')[0];
+                        let answerToCount = ans;
+
+                        if (answerToCount.includes(': ')) {
+                            const basePart = answerToCount.split(':')[0];
+                            const originalOption = q.options.find(opt => opt.startsWith(basePart));
+                            if (originalOption) {
+                                answerToCount = originalOption;
+                            }
                         }
-                        if (dynamicResults[cleanAns] && dynamicResults[cleanAns].hasOwnProperty(company)) {
-                            dynamicResults[cleanAns][company]++;
+                        
+                        const cleanKey = answerToCount.split('::score=')[0].replace('::textfield=true', '').replace(/\(please (specify|explain)\)/gi, '').trim();
+
+                        if (dynamicResults[cleanKey] && dynamicResults[cleanKey].hasOwnProperty(company)) {
+                            dynamicResults[cleanKey][company]++;
                         }
                     });
                 });
                 let companiesToDisplay = (companyFilter.includes('all')) ? allCompanyNames : companyFilter;
                 answersHtml = q.options.map(opt => {
-                    const cleanOpt = opt.split('::score=')[0];
+                    const cleanOpt = opt.split('::score=')[0].replace('::textfield=true', '').replace(/\(please (specify|explain)\)/gi, '').trim();
+                     let answerDisplay = cleanOpt;
+                    if (q.type === 'rating_stars' && /^[1-5]$/.test(cleanOpt)) {
+                        const starSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="16" height="16" style="fill:#fff; margin-right:2px;"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>`;
+                        answerDisplay = starSvg.repeat(parseInt(cleanOpt, 10));
+                    }
                     const optionResults = dynamicResults[cleanOpt] || {};
                     const miniBarsHtml = companiesToDisplay.map(name => {
                         const count = optionResults[name] || 0;
@@ -4274,13 +4999,13 @@ contentArea.insertAdjacentHTML('beforeend', dashboardHtml);
                         const count = optionResults[name] || 0;
                         return `<div class="stats-company-count" style="color: ${colors[name]};"><span>•</span><span>${count}</span></div>`;
                     }).join('');
-                    return `<div class="stats-answer-row" data-answer="${cleanOpt}" style="cursor: pointer;"><div class="stats-answer-item"><span class="stats-answer-text">${cleanOpt}</span><div class="stats-mini-bars-container">${miniBarsHtml}</div></div><div class="stats-answer-breakdown-counts">${breakdownCountsHtml}</div></div>`;
+                    return `<div class="stats-answer-row" data-answer="${cleanOpt}" style="cursor: pointer;"><div class="stats-answer-item"><span class="stats-answer-text">${answerDisplay}</span><div class="stats-mini-bars-container">${miniBarsHtml}</div></div><div class="stats-answer-breakdown-counts">${breakdownCountsHtml}</div></div>`;
                 }).join('');
                 legendHtml = allCompanyNames.map(name => `<div class="stats-legend-item"><div class="stats-legend-color-box" style="background-color: ${colors[name]};"></div><span>${name}</span></div>`).join('');
             }
             if (questionCardContainer) {
                 const progressPercentage = ((index + 1) / survey.questions.length) * 100;
-                questionCardContainer.innerHTML = `<div class="stats-question-view"><div id="prev-question" class="stats-nav-button"><svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg></div><div id="question-card-container"><div class="stats-question-card"><div class="timeline-info-icon" data-tooltip="This card displays the survey questions. Next to each answer, the colored lines represent the percentage of responses for that answer, broken down by company. The numbers show the exact count of responses. Click on any answer to see its trend over time in the chart on the right."><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></div><h3 class="stats-question-title">${q.text}</h3><div class="stats-answers-container">${answersHtml}</div><div class="stats-legend"><div class="progress-line-container"><div class="progress-line-fill" style="width: ${progressPercentage}%;"></div></div>${legendHtml}</div></div></div><div id="next-question" class="stats-nav-button"><svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="m304-82-56-57 343-343-343-343 56-57 400 400L304-82Z"/></svg></div></div>`;
+                questionCardContainer.innerHTML = `<div class="stats-question-view"><div id="prev-question" class="stats-nav-button"><svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="M400-80 0-480l400-400 56 57-343 343 343 343-56 57Z"/></svg></div><div id="question-card-container"><div class="stats-question-card"><div class="timeline-info-icon" data-tooltip="This card displays the survey questions. Next to each answer, the colored lines represent the percentage of responses for that answer, broken down by company. The numbers show the exact count of responses. Click on any answer to see its trend over time in the chart on the right."><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></div><h3 class="stats-question-title">${q.text || q.question}</h3><div class="stats-answers-container">${answersHtml}</div><div class="stats-legend"><div class="progress-line-container"><div class="progress-line-fill" style="width: ${progressPercentage}%;"></div></div>${legendHtml}</div></div></div><div id="next-question" class="stats-nav-button"><svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35" fill="currentColor"><path d="m304-82-56-57 343-343-343-343 56-57 400 400L304-82Z"/></svg></div></div>`;
                 
                 const prevBtn = document.getElementById('prev-question');
                 const nextBtn = document.getElementById('next-question');
@@ -4415,8 +5140,21 @@ contentArea.insertAdjacentHTML('beforeend', dashboardHtml);
 
     const selectedAnswerCountInPeriod = participantsForPeriod.filter(p => {
         const response = p.responses[answerInfo.question.text] || '';
-        let participantAnswers = response.toString().split(', ').map(r => r.split('::score=')[0].trim());
-        return participantAnswers.includes(answerInfo.answer);
+        const participantAnswers = response.toString().split(', ');
+        return participantAnswers.some(rawAnswer => {
+    const currentAnswer = rawAnswer.trim();
+    // Proverava da li je odgovor u formatu "Other: neki tekst"
+    if (!currentAnswer.includes('::') && currentAnswer.includes(': ')) {
+        const basePart = currentAnswer.split(': ')[0].trim();
+        return basePart === answerInfo.answer;
+    }
+    // Ako nije, tretira ga kao standardni odgovor (npr. "Yes::score=5") i čisti ga za poređenje
+    const standardBase = currentAnswer.split('::score=')[0]
+        .replace('::textfield=true', '')
+        .replace(/\(please (specify|explain)\)/gi, '')
+        .trim();
+    return standardBase === answerInfo.answer;
+});
     }).length;
 
     if (currentTimelineView === 'count') {
@@ -4429,7 +5167,6 @@ contentArea.insertAdjacentHTML('beforeend', dashboardHtml);
     const currentPercentage = (selectedAnswerCountInPeriod / totalResponsesInPeriod) * 100;
     return currentPercentage;
 };
-
 if (selectedCompanies[0] === 'All Combined') {
      const data = [];
      let lastValidValue = 0;
@@ -4560,6 +5297,49 @@ if (selectedCompanies[0] === 'All Combined') {
             }
         };
         if (!ctx) return;
+        // Pomoćna funkcija za prelamanje teksta
+        function wrapChartTitle(text, maxLength) {
+            const lines = [];
+            const words = text.split(' ');
+            let currentLine = '';
+
+            words.forEach(word => {
+                // Ako je sama reč duža od limita, moramo je slomiti
+                if (word.length > maxLength) {
+                    if (currentLine.length > 0) {
+                        lines.push(currentLine);
+                    }
+                    let tempWord = word;
+                    while (tempWord.length > maxLength) {
+                        lines.push(tempWord.substring(0, maxLength));
+                        tempWord = tempWord.substring(maxLength);
+                    }
+                    currentLine = tempWord;
+                } else {
+                    const testLine = currentLine + (currentLine === '' ? '' : ' ') + word;
+                    if (testLine.length > maxLength && currentLine !== '') {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
+                    }
+                }
+            });
+
+            if (currentLine.length > 0) {
+                lines.push(currentLine);
+            }
+
+            return lines.length > 0 ? lines : [''];
+        }
+        const wrappedAnswer = wrapChartTitle(answerInfo.answer, 50);
+        const finalTitle = [
+            `Trend for: "${wrappedAnswer[0]}${wrappedAnswer.length > 1 ? '' : '"'}`,
+            ...wrappedAnswer.slice(1).map((line, index) => 
+                index === wrappedAnswer.length - 2 ? `${line}"` : line
+            ),
+            `(${currentTimelineView} view, ${grouping})`
+        ];
         timelineChartInstance = new Chart(ctx, {
             type: 'line',
             data: { labels, datasets },
@@ -4606,7 +5386,7 @@ if (selectedCompanies[0] === 'All Combined') {
         },
         title: {
             display: true,
-            text: `Trend for: "${answerInfo.answer}" (${currentTimelineView} view, ${grouping})`,
+           text: finalTitle,
             color: '#fff',
             padding: {
                 top: 5,
@@ -4669,23 +5449,46 @@ if (selectedCompanies[0] === 'All Combined') {
     )}
 
 
-    function calculateAverageScore(responses) {
+    function calculateAverageScore(participant) {
+        if (!participant || !participant.responses) return 'N/A';
+        
+        const survey = adminDataCache.statsData.surveys.find(s => s.name === participant.survey);
+        if (!survey) return 'N/A';
+
         let totalScore = 0;
         let scoredAnswersCount = 0;
-        if(!responses) return 'N/A';
-        Object.values(responses).forEach(response => {
-            if (typeof response === 'string' && response.includes('::score=')) {
+
+        Object.keys(participant.responses).forEach(questionText => {
+            let response = participant.responses[questionText];
+
+            if (response === null || response === undefined) return;
+            if (typeof response !== 'string') {
+                response = String(response);
+            }
+            if (response.trim() === '') return;
+            
+            const questionObj = survey.questions.find(q => q.text === questionText);
+
+            if (response.includes('::score=')) {
                 const parts = response.split('::score=');
                 const score = parseInt(parts[1], 10);
                 if (!isNaN(score)) {
                     totalScore += score;
                     scoredAnswersCount++;
                 }
+            } else if (questionObj && (questionObj.type === 'rating_numbers' || questionObj.type === 'rating_stars') && /^[1-5]$/.test(response.trim())) {
+                const score = parseInt(response.trim(), 10);
+                if (!isNaN(score)) {
+                    totalScore += score;
+                    scoredAnswersCount++;
+                }
             }
         });
+
         if (scoredAnswersCount === 0) {
             return 'N/A';
         }
+        
         const average = totalScore / scoredAnswersCount;
         return `${average.toFixed(1)} / 5`;
     }
@@ -4700,8 +5503,8 @@ if (selectedCompanies[0] === 'All Combined') {
                 valA = new Date(a.date);
                 valB = new Date(b.date);
             } else if (key === 'rate') {
-                valA = parseFloat(calculateAverageScore(a.responses)) || 0;
-                valB = parseFloat(calculateAverageScore(b.responses)) || 0;
+                valA = parseFloat(calculateAverageScore(a)) || 0;
+                valB = parseFloat(calculateAverageScore(b)) || 0;
             } else {
                 valA = (a[key] || '').toString().toLowerCase();
                 valB = (b[key] || '').toString().toLowerCase();
@@ -4726,29 +5529,47 @@ if (selectedCompanies[0] === 'All Combined') {
         }
         let qaHtml = '';
         if (participantData.responses) {
-    Object.keys(participantData.responses).forEach(questionText => {
-        const rawAnswer = participantData.responses[questionText];
+            Object.keys(participantData.responses).forEach(questionText => {
+                const questionObj = survey.questions.find(q => q.text === questionText);
+                const rawAnswer = participantData.responses[questionText];
+                const answerAsString = String(rawAnswer); 
 
-        if (rawAnswer && rawAnswer.trim() !== '') {
-            let finalDisplayHtml;
-            const individualAnswers = rawAnswer.split(', ');
+                if (answerAsString && answerAsString.trim() !== '') {
+                    let finalDisplayHtml;
+                    const individualAnswers = answerAsString.split(', '); 
 
-            finalDisplayHtml = individualAnswers.map(answer => {
-                if (answer.includes('::score=')) {
-                    const parts = answer.split('::score=');
-                    const text = parts[0];
-                    const score = parts[1];
-                    return `${text} <span class="qa-card-score">(Score: ${score}/5)</span>`;
-                }
-                return answer;
-            }).join('<br>');
-
-            qaHtml += `<div class="qa-card"><div class="qa-card-question">${questionText}</div><div class="qa-card-answer">${finalDisplayHtml}</div></div>`;
+                    finalDisplayHtml = individualAnswers.map(answer => {
+    if (questionObj && questionObj.type === 'rating_stars' && /^[1-5]$/.test(answer)) {
+        const starSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="20" height="20" style="fill:#FFD700; margin-right:2px; vertical-align: bottom;"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>`;
+        return starSvg.repeat(parseInt(answer, 10));
+    }
+    let baseAnswer = answer;
+    let userEnteredText = '';
+    if (baseAnswer.includes('::textfield=true: ')) {
+        const parts = baseAnswer.split('::textfield=true: ');
+        baseAnswer = parts[0];
+        userEnteredText = `: ${parts[1]}`;
+    }
+    let scoreSpan = '';
+    if (baseAnswer.includes('::score=')) {
+        const scoreParts = baseAnswer.split('::score=');
+        baseAnswer = scoreParts[0];
+        let score = scoreParts[1];
+        if (score.includes('::textfield=true')) {
+            score = score.split('::textfield=true')[0];
         }
-    });
-}
-        if (!survey.questions || survey.questions.length === 0) {
-            qaHtml = '<p style="text-align: center; opacity: 0.7;">This survey had no questions at the time of submission.</p>'
+        scoreSpan = ` <span class="qa-card-score">(Score: ${score}/5)</span>`;
+    }
+    baseAnswer = baseAnswer.replace('::textfield=true', '').replace(/\(please (specify|explain)\)/gi, '');
+    return `${baseAnswer}${scoreSpan}${userEnteredText}`;
+}).join('<br>');
+
+                    qaHtml += `<div class="qa-card"><div class="qa-card-question">${questionText}</div><div class="qa-card-answer">${finalDisplayHtml}</div></div>`;
+                }
+            });
+        }
+        if (!qaHtml) {
+            qaHtml = '<p style="text-align: center; opacity: 0.7;">This participant did not answer any questions.</p>';
         }
         const modal = document.createElement('div');
         modal.className = 'participant-modal-overlay';
@@ -4769,6 +5590,22 @@ if (selectedCompanies[0] === 'All Combined') {
         const searchInput = document.getElementById('participant-search');
         if (!listElement || !participants) return;
 
+        let totalScoreSum = 0;
+        let scoredParticipantsCount = 0;
+        participants.forEach(p => {
+            const scoreString = calculateAverageScore(p);
+            if (scoreString !== 'N/A') {
+                const scoreValue = parseFloat(scoreString.split(' / ')[0]);
+                if (!isNaN(scoreValue)) {
+                    totalScoreSum += scoreValue;
+                    scoredParticipantsCount++;
+                }
+            }
+        });
+        const averageRating = scoredParticipantsCount > 0
+            ? (totalScoreSum / scoredParticipantsCount).toFixed(1) + ' / 5'
+            : 'N/A';
+
         function displayList(filteredParticipants) {
             listElement.innerHTML = '';
             filteredParticipants.forEach(p => {
@@ -4777,15 +5614,30 @@ if (selectedCompanies[0] === 'All Combined') {
                     year: '2-digit', month: '2-digit', day: '2-digit',
                     hour: '2-digit', minute: '2-digit', hour12: true
                 }) : p.date;
-                const rate = calculateAverageScore(p.responses);
+                const rate = calculateAverageScore(p);
                 const item = document.createElement('li');
                 item.className = 'participant-list-item';
-                item.innerHTML = `<span>${p.survey}</span><span>${p.participant}</span><span>${p.age || 'N/A'}</span><span>${p.company}</span><span>${formattedDate}</span><span style="text-align: right; font-weight: 400; padding-right: 20px;">${rate}</span>`;
+               item.innerHTML = `<span>${p.survey}</span><span>${p.participant}</span><span>${p.age || 'N/A'}</span><span>${p.company}</span><span>${formattedDate}</span><span>${rate}</span><span class="participant-delete-action"><button class="delete-participant-btn" data-timestamp="${p.date}" data-survey="${p.survey}" title="Delete Response"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></button></span>`;
                 item.dataset.participantData = JSON.stringify(p);
                 listElement.appendChild(item);
             });
         }
         displayList(participants);
+
+        const container = listElement.closest('.participant-list-container');
+        if (container) {
+            let avgDisplay = container.querySelector('.average-rating-display');
+            if (avgDisplay) {
+                avgDisplay.remove();
+            }
+            const avgDisplayHtml = `
+                <div class="average-rating-display">
+                    <span>Average Rating:</span> ${averageRating}
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', avgDisplayHtml);
+        }
+
         searchInput.addEventListener('keyup', () => {
             const searchTerm = searchInput.value.toLowerCase();
             const filtered = participants.filter(p =>
@@ -4793,32 +5645,84 @@ if (selectedCompanies[0] === 'All Combined') {
             );
             displayList(filtered);
         });
-        listElement.addEventListener('click', (e) => {
-            const listItem = e.target.closest('.participant-list-item');
-            if (listItem && listItem.dataset.participantData) {
-                const participantData = JSON.parse(listItem.dataset.participantData);
-                showParticipantDetailsModal(participantData);
-            }
-        });
+       listElement.addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('.delete-participant-btn');
+    if (deleteBtn) {
+        e.stopPropagation();
+        const { timestamp, survey } = deleteBtn.dataset;
+        const participantItem = deleteBtn.closest('.participant-list-item');
+        const participantName = participantItem.querySelector('span:nth-child(2)').textContent;
+
+        if (confirm(`Are you sure you want to delete the response from "${participantName}" for the "${survey}" survey?`)) {
+            const spinner = showAdminSpinner();
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'deleteParticipant', surveyName: survey, timestamp: timestamp }),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            })
+            .then(res => res.json())
+            .then(result => {
+                hideAdminSpinner(spinner);
+                if (result.status === 'success') {
+                    participantItem.remove();
+                    if (adminDataCache && adminDataCache.statsData && adminDataCache.statsData.allParticipants) {
+                        adminDataCache.statsData.allParticipants = adminDataCache.statsData.allParticipants.filter(p => p.date !== timestamp);
+                    }
+                    showAlert('Participant response deleted successfully.');
+                } else {
+                    showAlert('Error deleting response: ' + result.message);
+                }
+            })
+            .catch(err => {
+                hideAdminSpinner(spinner);
+                if (err instanceof TypeError && err.message === 'Failed to fetch') {
+                    participantItem.remove();
+                     if (adminDataCache && adminDataCache.statsData && adminDataCache.statsData.allParticipants) {
+                        adminDataCache.statsData.allParticipants = adminDataCache.statsData.allParticipants.filter(p => p.date !== timestamp);
+                    }
+                    showAlert('Participant response deleted successfully.');
+                } else {
+                    showAlert('An unexpected network error occurred: ' + err.message);
+                }
+            });
+        }
+        return;
     }
-    
+
+    const listItem = e.target.closest('.participant-list-item');
+    if (listItem && listItem.dataset.participantData) {
+        const participantData = JSON.parse(listItem.dataset.participantData);
+        showParticipantDetailsModal(participantData);
+    }
+});
+    }
     function renderTopAnswersTable(answers, limit) {
         const tableBody = document.getElementById('top-answers-table-body');
         if (!tableBody) return;
         const answersToShow = limit === 'all' ? answers : answers.slice(0, parseInt(limit));
         tableBody.innerHTML = answersToShow.map((item, index) => {
-            return `
-                <tr class="top-answers-row">
-                    <td class="rank">${index + 1}</td>
-                    <td class="answer-details" data-survey="Survey: ${item.survey}">
-                        <span class="question">${item.question}</span>
-                        <span class="answer">${item.answer}</span>
-                    </td>
-                    <td class="count">${item.score}</td>
-                    <td class="count">${item.count}</td>
-                    <td class="percentage">${item.percentage}</td>
-                </tr>`;
-        }).join('');
+    const surveyForQuestion = adminDataCache.statsData.surveys.find(s => s.name === item.survey);
+    const questionObj = surveyForQuestion ? surveyForQuestion.questions.find(q => q.text === item.question) : null;
+    
+    let answerDisplay = (item.answer || '').split('::')[0];
+    const cleanScore = (item.score || '').split('::')[0];
+    
+    if (questionObj && questionObj.type === 'rating_stars' && /^[1-5]$/.test(answerDisplay)) {
+        const starSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="20" height="20" style="fill:#FFD700; margin-right:2px;"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>`;
+        answerDisplay = starSvg.repeat(parseInt(answerDisplay, 10));
+    }
+    return `
+        <tr class="top-answers-row">
+            <td class="rank">${index + 1}</td>
+            <td class="answer-details" data-survey="Survey: ${item.survey}">
+                <span class="question">${item.question}</span>
+                <span class="answer">${answerDisplay}</span>
+            </td>
+            <td class="count">${cleanScore}</td>
+            <td class="count">${item.count}</td>
+            <td class="percentage">${item.percentage}</td>
+        </tr>`;
+}).join('');
     }
 
     renderUI();
@@ -4953,21 +5857,32 @@ function renderSurveyList(mode) {
             body: JSON.stringify({ action: 'deleteSurvey', sheetId: surveyId }),
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         })
-        .then(res => res.json()).then(result => {
-            if (result.status === 'success') {
-                handleSuccess();
-            } else {
+        
+       .then(res => res.json())
+            .then(result => {
                 hideAdminSpinner(spinner);
-                showAlert('Error: ' + result.message);
-            }
-        }).catch(err => {
-            if (err instanceof TypeError && err.message === 'Failed to fetch') {
-                handleSuccess();
-            } else {
+                if (result.status === 'success') {
+                    participantItem.remove();
+                    if (adminDataCache && adminDataCache.statsData && adminDataCache.statsData.allParticipants) {
+                        adminDataCache.statsData.allParticipants = adminDataCache.statsData.allParticipants.filter(p => p.date !== timestamp);
+                    }
+                    showAlert('Participant response deleted successfully.');
+                } else {
+                    showAlert('Error deleting response: ' + result.message);
+                }
+            })
+            .catch(err => {
                 hideAdminSpinner(spinner);
-                showAlert('An unexpected network error occurred.');
-            }
-        });
+                if (err instanceof TypeError && err.message === 'Failed to fetch') {
+                    participantItem.remove();
+                     if (adminDataCache && adminDataCache.statsData && adminDataCache.statsData.allParticipants) {
+                        adminDataCache.statsData.allParticipants = adminDataCache.statsData.allParticipants.filter(p => p.date !== timestamp);
+                    }
+                    showAlert('Participant response deleted successfully.');
+                } else {
+                    showAlert('An unexpected network error occurred: ' + err.message);
+                }
+            });
     }
 }
     });
@@ -5077,6 +5992,14 @@ function fetchAllAdminDataInPromise() {
         fetchJsonpInPromise(statsUrl),
         fetchJsonpInPromise(namesUrl)
     ]).then(([statsData, surveyNames]) => {
+        if (!statsData || !statsData.surveys || !surveyNames) {
+            return { statsData, surveyNames };
+        }
+
+        const surveyDetailPromises = surveyNames.map(surveyInfo =>
+            fetchJsonpInPromise(`${SCRIPT_URL}?action=getQuestions&sheet=${surveyInfo.id}`)
+        );
+
         return { statsData, surveyNames };
     });
 }
