@@ -870,7 +870,6 @@
 .rating-preview-container {
     transition: all 0.5s ease-in-out;
     max-height: 1000px;
-    overflow: hidden;
 }
 
 .question-answers {
@@ -3014,7 +3013,6 @@
     padding-bottom: 12px;
     cursor: pointer;
 }
-/* Osnovni stil za obaveštenja u anketi (AmongUs tema) */
 .survey-alert {
     background: #f8f9fa;
     border: 1px solid #dee2e6;
@@ -3032,7 +3030,6 @@
     padding: 10px 25px;
 }
 
-/* Poseban stil za SMJ Freight */
 .smj-theme-layout .survey-alert {
     background: #ffffff;
     border: 2px solid var(--accent-color);
@@ -3044,7 +3041,6 @@
     background-color: var(--accent-color);
 }
 
-/* Poseban stil za EB Infinity */
 .eb-theme-layout .survey-alert {
     background: #1c3a59;
     border: 1px solid var(--accent-color);
@@ -3058,26 +3054,24 @@
 }
 .question-block-wrapper {
     position: relative;
-    /* Brišemo padding-left, više nije potreban */
 }
 
 .drag-handle {
     cursor: grab;
-    margin-right: 8px; /* Razmak između ikonice i strelice */
+    margin-right: 8px; 
     opacity: 0.6;
     transition: opacity 0.2s ease;
     width: 24px;
     height: 24px;
-    align-self: center; /* Vertikalno centriranje */
+    align-self: center; 
 }
 
 .drag-handle:hover {
     opacity: 1;
 }
 
-/* Stil za originalnu karticu DOK JE PREVLAČIMO */
 .question-block-wrapper.dragging {
-    opacity: 0.3; /* Postaje skoro nevidljiva da izgleda kao da je nema */
+    opacity: 0.3; 
     background: transparent;
     border-color: rgba(0, 123, 255, 0.5);
     border-style: dashed;
@@ -4337,8 +4331,9 @@ function generateQuestionBlock(index, data = {}, isEditMode = false) {
                     ${answersHtml}
                     <div style="display: flex; align-items: center; gap: 15px; margin-top: 15px;">
                         <a href="#" class="add-answer-btn" style="color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; font-size: 0.9rem;">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
-                            Add Answer
+    <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18" fill="currentColor"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+    add Answer
+</a>
                         </a>
                         <span style="color: #ccc;">or</span>
                         <a href="#" class="add-other-btn" style="color: #00aaff; text-decoration: none; font-weight: bold; font-size: 0.9rem;">add "Other"</a>
@@ -5651,7 +5646,28 @@ if (selectedCompanies[0] === 'All Combined') {
         const participantName = participantItem.querySelector('span:nth-child(2)').textContent;
 
         if (confirm(`Are you sure you want to delete the response from "${participantName}" for the "${survey}" survey?`)) {
+            const participantIndex = adminDataCache.statsData.allParticipants.findIndex(p => p.date === timestamp);
+            if (participantIndex === -1) return;
+            const participantToRemove = adminDataCache.statsData.allParticipants[participantIndex];
+            
+            adminDataCache.statsData.allParticipants.splice(participantIndex, 1);
+            
+            updateDisplay();
+
             const spinner = showAdminSpinner();
+
+            const handleSuccess = () => {
+                hideAdminSpinner(spinner);
+                showAlert('Participant response deleted successfully.');
+            };
+
+            const handleError = (errorMsg) => {
+                hideAdminSpinner(spinner);
+                adminDataCache.statsData.allParticipants.splice(participantIndex, 0, participantToRemove);
+                updateDisplay();
+                showAlert(errorMsg);
+            };
+
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'deleteParticipant', surveyName: survey, timestamp: timestamp }),
@@ -5659,27 +5675,17 @@ if (selectedCompanies[0] === 'All Combined') {
             })
             .then(res => res.json())
             .then(result => {
-                hideAdminSpinner(spinner);
-                if (result.status === 'success') {
-                    participantItem.remove();
-                    if (adminDataCache && adminDataCache.statsData && adminDataCache.statsData.allParticipants) {
-                        adminDataCache.statsData.allParticipants = adminDataCache.statsData.allParticipants.filter(p => p.date !== timestamp);
-                    }
-                    showAlert('Participant response deleted successfully.');
+                if (result && result.status === 'success') {
+                    handleSuccess();
                 } else {
-                    showAlert('Error deleting response: ' + result.message);
+                    handleError('Error deleting response: ' + (result ? result.message : 'Unknown error'));
                 }
             })
             .catch(err => {
-                hideAdminSpinner(spinner);
                 if (err instanceof TypeError && err.message === 'Failed to fetch') {
-                    participantItem.remove();
-                     if (adminDataCache && adminDataCache.statsData && adminDataCache.statsData.allParticipants) {
-                        adminDataCache.statsData.allParticipants = adminDataCache.statsData.allParticipants.filter(p => p.date !== timestamp);
-                    }
-                    showAlert('Participant response deleted successfully.');
+                    handleSuccess(); 
                 } else {
-                    showAlert('An unexpected network error occurred: ' + err.message);
+                    handleError('An unexpected network error occurred: ' + err.message);
                 }
             });
         }
@@ -5838,10 +5844,10 @@ function renderSurveyList(mode) {
         } else if (button.classList.contains('delete-btn')) {
     if (confirm(`Are you sure you want to delete the survey "${listItem.dataset.name}"? This action cannot be undone.`)) {
         const spinner = showAdminSpinner();
-        
+
         const handleSuccess = () => {
             hideAdminSpinner(spinner);
-            showAlert('Survey deleted.');
+            showAlert('Survey deleted successfully.');
             if (adminDataCache && adminDataCache.surveyNames) {
                 adminDataCache.surveyNames = adminDataCache.surveyNames.filter(s => s.id !== surveyId);
             }
@@ -5854,32 +5860,23 @@ function renderSurveyList(mode) {
             body: JSON.stringify({ action: 'deleteSurvey', sheetId: surveyId }),
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         })
-        
-       .then(res => res.json())
-            .then(result => {
+        .then(res => res.json())
+        .then(result => {
+            if (result && result.status === 'success') {
+                handleSuccess();
+            } else {
                 hideAdminSpinner(spinner);
-                if (result.status === 'success') {
-                    participantItem.remove();
-                    if (adminDataCache && adminDataCache.statsData && adminDataCache.statsData.allParticipants) {
-                        adminDataCache.statsData.allParticipants = adminDataCache.statsData.allParticipants.filter(p => p.date !== timestamp);
-                    }
-                    showAlert('Participant response deleted successfully.');
-                } else {
-                    showAlert('Error deleting response: ' + result.message);
-                }
-            })
-            .catch(err => {
+                showAlert('Error deleting survey: ' + (result ? result.message : 'Unknown error'));
+            }
+        })
+        .catch(err => {
+            if (err instanceof TypeError && err.message === 'Failed to fetch') {
+                handleSuccess();
+            } else {
                 hideAdminSpinner(spinner);
-                if (err instanceof TypeError && err.message === 'Failed to fetch') {
-                    participantItem.remove();
-                     if (adminDataCache && adminDataCache.statsData && adminDataCache.statsData.allParticipants) {
-                        adminDataCache.statsData.allParticipants = adminDataCache.statsData.allParticipants.filter(p => p.date !== timestamp);
-                    }
-                    showAlert('Participant response deleted successfully.');
-                } else {
-                    showAlert('An unexpected network error occurred: ' + err.message);
-                }
-            });
+                showAlert('An unexpected error occurred: ' + err.message);
+            }
+        });
     }
 }
     });
