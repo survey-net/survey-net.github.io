@@ -1432,8 +1432,9 @@
 }
 .participant-list-header {
     display: grid;
-    grid-template-columns: 1.2fr 1.5fr 0.5fr 1fr 1.5fr 0.8fr 0.5fr;
-    gap: 10px;
+    /* SURVEY | PARTICIPANT | GAP | AGE | COMPANY | DATE | RATING | DUPLICATE | ACTIONS */
+    grid-template-columns: 1.2fr 1.5fr 0.3fr 0.5fr 1fr 1.5fr 0.4fr 0.5fr 0.3fr;
+    gap: 5px;
     padding: 0 10px 10px;
     font-weight: bold;
     color: #ccc;
@@ -1450,8 +1451,9 @@
 }
 .participant-list-item {
     display: grid;
-    grid-template-columns: 1.2fr 1.5fr 0.5fr 1fr 1.5fr 0.8fr 0.5fr;
-    gap: 10px;
+    /* SURVEY | PARTICIPANT | GAP | AGE | COMPANY | DATE | RATING | DUPLICATE | ACTIONS */
+    grid-template-columns: 1.2fr 1.5fr 0.3fr 0.5fr 1fr 1.5fr 0.4fr 0.5fr 0.3fr;
+    gap: 5px;
     padding: 12px 10px;
     font-size: 0.9rem;
     border-bottom: 1px solid rgba(0, 123, 255, 0.2);
@@ -3076,7 +3078,19 @@
     border-color: rgba(0, 123, 255, 0.5);
     border-style: dashed;
 }
-
+.duplicate-label {
+    color: red;
+    border: 1px solid red;
+    padding: 2px 3px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: left;
+    font-size: 0.7rem;
+}
+.participant-list-header > span:nth-child(2),
+.participant-list-item > span:nth-child(2) {
+    padding-left: 18px;
+}
 
     </style>
 </head>
@@ -3092,7 +3106,7 @@
     <div class="container" id="main-content">
     </div>
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHdkWKDgNHJc21lNjjGskJxnf1zJTOnLAG_VFGJSiTZcnNPykEEH6gGnvD7E86LO-33g/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXGeX2hvM2Q-242S2oTLePth5kiYIRmOtWUoaHw-9kzSyWSIt6LA28EInRexCMxnAgYg/exec';
     let companyConfig = {};
     let adminDataCache = null;
     let surveyListSortKey = 'lastModified';
@@ -4641,43 +4655,35 @@ function renderStatisticsDashboard() {
                     questionTotalMap[questionText]++;
                     const answers = response.toString().split(', ');
                     answers.forEach(fullAnswer => {
-    if (!fullAnswer.trim()) return;
-    let answerText = fullAnswer.trim();
-    let score = 'N/A';
-    let displayAnswer = answerText;
-    let keyAnswer = answerText;
+                        if (!fullAnswer.trim()) return;
 
-    if (answerText.includes('::textfield=true: ')) {
-        const parts = answerText.split('::textfield=true: ');
-        const basePart = parts[0];
-        const userText = parts[1];
-        displayAnswer = `${basePart.replace('::textfield=true', '')}: ${userText}`;
-        
-        const baseOption = q.options.find(opt => opt.startsWith(basePart));
-        if (baseOption) {
-            keyAnswer = baseOption;
-        }
-    }
-    
-    displayAnswer = displayAnswer.split('::score=')[0];
-   displayAnswer = displayAnswer.replace(/\(please (specify|explain)\)/gi, '').trim();
+                        let baseAnswer = fullAnswer.split('::score=')[0].replace('::textfield=true', '').trim();
+                        let userText = '';
+                        if (fullAnswer.includes(': ')) {
+                           const parts = fullAnswer.split(': ');
+                           if(q.options.some(opt => opt.startsWith(parts[0]))) {
+                               baseAnswer = parts[0].split('::score=')[0].replace('::textfield=true', '').trim();
+                               userText = `: ${parts.slice(1).join(': ')}`;
+                           }
+                        }
 
-    const scoreSource = keyAnswer.includes('::score=') ? keyAnswer : answerText;
-    if (scoreSource.includes('::score=')) {
-        score = `${scoreSource.split('::score=')[1].split('::')[0]} / 5`;
-    } else if (q.type === 'rating_numbers' || q.type === 'rating_stars') {
-        if (/^[1-5]$/.test(answerText)) {
-            score = `${answerText} / 5`;
-        }
-    }
-    
-    const questionText = q.text;
-    const key = `${p.survey}|${questionText}|${keyAnswer}`;
-    if (!frequencyMap[key]) {
-        frequencyMap[key] = { survey: p.survey, question: questionText, answer: displayAnswer, score: score, count: 0 };
-    }
-    frequencyMap[key].count++;
-});
+                        const matchingOption = q.options.find(opt => opt.split('::score=')[0].replace('::textfield=true', '').trim() === baseAnswer);
+                        
+                        let score = 'N/A';
+                        if (matchingOption && matchingOption.includes('::score=')) {
+                            score = `${matchingOption.split('::score=')[1].split('::')[0]} / 5`;
+                        } else if (isRatingBasedOnType && /^[1-5]$/.test(baseAnswer)) {
+                             score = `${baseAnswer} / 5`;
+                        }
+
+                        const displayAnswer = `${baseAnswer}${userText}`;
+                        const key = `${p.survey}|${questionText}|${displayAnswer}`;
+
+                        if (!frequencyMap[key]) {
+                            frequencyMap[key] = { survey: p.survey, question: questionText, answer: displayAnswer, score: score, count: 0 };
+                        }
+                        frequencyMap[key].count++;
+                    });
                 });
             });
             let rankedAnswers = Object.values(frequencyMap).map(item => {
@@ -4744,7 +4750,7 @@ function renderStatisticsDashboard() {
             sortedParticipants.forEach(p => { if (totals.hasOwnProperty(p.company)) totals[p.company]++; });
             const summaryHtml = `Total Participants: <b>${totals.total}</b>  |  ${statsData.companyNames.map(c => `${c}: <b>${totals[c]}</b>`).join('  |  ')}`;
             if (selectedSurvey === 'all') {
-             viewContainer.innerHTML = `<div class="all-surveys-layout"><div class="text-summary-stats">${summaryHtml}</div><div class="participant-list-container"><input type="text" id="participant-search" class="admin-input" placeholder="Search participants..."><div class="participant-list-header"><span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="rate">Rating<i class="sort-icon"></i></span><span style="text-align: right;">Actions</span></div><ul id="all-participants-list" class="participant-list"></ul></div></div>`;
+                viewContainer.innerHTML = `<div class="all-surveys-layout"><div class="text-summary-stats">${summaryHtml}</div><div class="participant-list-container"><input type="text" id="participant-search" class="admin-input" placeholder="Search participants..."><div class="participant-list-header"><span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span><span></span><span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="rate">Rating<i class="sort-icon"></i></span><span></span><span style="text-align: right;">Actions</span></div><ul id="all-participants-list" class="participant-list"></ul></div></div>`;
                 renderAllParticipantsList(sortedParticipants);
             } else {
                 viewContainer.innerHTML = `<div id="single-survey-content-wrapper"><div id="single-survey-content"></div></div>`;
@@ -4799,7 +4805,7 @@ function renderStatisticsDashboard() {
             allCombinedOption.remove();
         }
 
-        const listHtml = `<div class="participant-list-container full-width"><input type="text" id="participant-search" class="admin-input" placeholder="Search participants..."><div class="participant-list-header"><span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="rate">Rating<i class="sort-icon"></i></span><span style="text-align: right;">Actions</span></div><ul id="all-participants-list" class="participant-list"></ul></div>`;
+        const listHtml = `<div class="participant-list-container full-width"><input type="text" id="participant-search" class="admin-input" placeholder="Search participants..."><div class="participant-list-header"><span class="sortable-header" data-sort-by="survey">SURVEY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="participant">PARTICIPANT<i class="sort-icon"></i></span><span></span><span class="sortable-header" data-sort-by="age">AGE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="company">COMPANY<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="date">DATE<i class="sort-icon"></i></span><span class="sortable-header" data-sort-by="rate">Rating<i class="sort-icon"></i></span><span></span><span style="text-align: right;">Actions</span></div><ul id="all-participants-list" class="participant-list"></ul></div>`;
         contentArea.insertAdjacentHTML('beforeend', listHtml);
         renderAllParticipantsList(sortedParticipants);
     } else {
@@ -5127,37 +5133,56 @@ contentArea.insertAdjacentHTML('beforeend', dashboardHtml);
         const selectedCompanies = getSelectedValues('company-filter-container');
         
         const processData = (participantsForPeriod) => {
-    const totalResponsesInPeriod = participantsForPeriod.length;
-    if (totalResponsesInPeriod === 0) return null;
+    if (participantsForPeriod.length === 0) return null;
+
+    const currentQuestion = answerInfo.question;
 
     const selectedAnswerCountInPeriod = participantsForPeriod.filter(p => {
-        const response = p.responses[answerInfo.question.text] || '';
+        const response = p.responses[currentQuestion.text] || '';
         const participantAnswers = response.toString().split(', ');
         return participantAnswers.some(rawAnswer => {
-    const currentAnswer = rawAnswer.trim();
-    // Proverava da li je odgovor u formatu "Other: neki tekst"
-    if (!currentAnswer.includes('::') && currentAnswer.includes(': ')) {
-        const basePart = currentAnswer.split(': ')[0].trim();
-        return basePart === answerInfo.answer;
-    }
-    // Ako nije, tretira ga kao standardni odgovor (npr. "Yes::score=5") i čisti ga za poređenje
-    const standardBase = currentAnswer.split('::score=')[0]
-        .replace('::textfield=true', '')
-        .replace(/\(please (specify|explain)\)/gi, '')
-        .trim();
-    return standardBase === answerInfo.answer;
-});
+            const basePart = rawAnswer.split(':')[0].split('::score=')[0].replace('::textfield=true', '').replace(/\(please (specify|explain)\)/gi, '').trim();
+            return basePart === answerInfo.answer;
+        });
     }).length;
 
     if (currentTimelineView === 'count') {
         return selectedAnswerCountInPeriod;
     }
-    if (currentTimelineView === 'percentage') {
-        return (selectedAnswerCountInPeriod / totalResponsesInPeriod) * 100;
+
+    let validOptions;
+    if (currentQuestion.type === 'rating_numbers' || currentQuestion.type === 'rating_stars') {
+        validOptions = ['1', '2', '3', '4', '5'];
+    } else if (currentQuestion.type === 'paragraph') {
+        validOptions = null;
+    } else {
+        validOptions = (currentQuestion.options || []).map(opt =>
+            opt.split('::score=')[0].replace('::textfield=true', '').replace(/\(please (specify|explain)\)/gi, '').trim()
+        );
     }
-    // Weighted average logic (default)
-    const currentPercentage = (selectedAnswerCountInPeriod / totalResponsesInPeriod) * 100;
-    return currentPercentage;
+
+    const totalResponsesForQuestionInPeriod = participantsForPeriod.filter(p => {
+        const response = p.responses[currentQuestion.text];
+        if (!response || String(response).trim() === '') return false;
+
+        if (validOptions === null) {
+            return true;
+        }
+        
+        const participantAnswers = String(response).split(', ');
+        return participantAnswers.some(pAnswer => {
+            const basePAnswer = pAnswer.split(':')[0].split('::score=')[0].replace('::textfield=true', '').replace(/\(please (specify|explain)\)/gi, '').trim();
+            return validOptions.includes(basePAnswer);
+        });
+    }).length;
+
+    if (totalResponsesForQuestionInPeriod === 0) {
+        return 0;
+    }
+    
+    const percentage = (selectedAnswerCountInPeriod / totalResponsesForQuestionInPeriod) * 100;
+    
+    return percentage;
 };
 if (selectedCompanies[0] === 'All Combined') {
      const data = [];
@@ -5442,7 +5467,7 @@ if (selectedCompanies[0] === 'All Combined') {
 
 
     function calculateAverageScore(participant) {
-        if (!participant || !participant.responses) return 'N/A';
+        if (!participant || !participant.responses || !adminDataCache || !adminDataCache.statsData) return 'N/A';
         
         const survey = adminDataCache.statsData.surveys.find(s => s.name === participant.survey);
         if (!survey) return 'N/A';
@@ -5451,30 +5476,42 @@ if (selectedCompanies[0] === 'All Combined') {
         let scoredAnswersCount = 0;
 
         Object.keys(participant.responses).forEach(questionText => {
-            let response = participant.responses[questionText];
+            let participantResponse = participant.responses[questionText];
+            if (participantResponse === null || participantResponse === undefined) return;
 
-            if (response === null || response === undefined) return;
-            if (typeof response !== 'string') {
-                response = String(response);
-            }
-            if (response.trim() === '') return;
-            
+            const responseStr = String(participantResponse).trim();
+            if (responseStr === '') return;
+
             const questionObj = survey.questions.find(q => q.text === questionText);
+            if (!questionObj) return;
 
-            if (response.includes('::score=')) {
-                const parts = response.split('::score=');
-                const score = parseInt(parts[1], 10);
-                if (!isNaN(score)) {
-                    totalScore += score;
-                    scoredAnswersCount++;
+            const participantAnswers = responseStr.split(', ');
+
+            participantAnswers.forEach(singleAnswer => {
+                const baseAnswer = singleAnswer.split('::score=')[0].replace('::textfield=true', '').trim();
+                
+                if (questionObj.options && questionObj.options.length > 0) {
+                    const matchingOption = questionObj.options.find(opt => {
+                        const optionBase = opt.split('::score=')[0].replace('::textfield=true', '').trim();
+                        return optionBase === baseAnswer;
+                    });
+
+                    if (matchingOption && matchingOption.includes('::score=')) {
+                        const scorePart = matchingOption.split('::score=')[1];
+                        const score = parseInt(scorePart, 10);
+                        if (!isNaN(score)) {
+                            totalScore += score;
+                            scoredAnswersCount++;
+                        }
+                    }
+                } else if ((questionObj.type === 'rating_numbers' || questionObj.type === 'rating_stars') && /^[1-5]$/.test(baseAnswer)) {
+                    const score = parseInt(baseAnswer, 10);
+                    if (!isNaN(score)) {
+                        totalScore += score;
+                        scoredAnswersCount++;
+                    }
                 }
-            } else if (questionObj && (questionObj.type === 'rating_numbers' || questionObj.type === 'rating_stars') && /^[1-5]$/.test(response.trim())) {
-                const score = parseInt(response.trim(), 10);
-                if (!isNaN(score)) {
-                    totalScore += score;
-                    scoredAnswersCount++;
-                }
-            }
+            });
         });
 
         if (scoredAnswersCount === 0) {
@@ -5531,31 +5568,39 @@ if (selectedCompanies[0] === 'All Combined') {
                     const individualAnswers = answerAsString.split(', '); 
 
                     finalDisplayHtml = individualAnswers.map(answer => {
-    if (questionObj && questionObj.type === 'rating_stars' && /^[1-5]$/.test(answer)) {
-        const starSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="20" height="20" style="fill:#FFD700; margin-right:2px; vertical-align: bottom;"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>`;
-        return starSvg.repeat(parseInt(answer, 10));
-    }
-    let baseAnswer = answer;
-    let userEnteredText = '';
-    if (baseAnswer.includes('::textfield=true: ')) {
-        const parts = baseAnswer.split('::textfield=true: ');
-        baseAnswer = parts[0];
-        userEnteredText = `: ${parts[1]}`;
-    }
-    let scoreSpan = '';
-    if (baseAnswer.includes('::score=')) {
-        const scoreParts = baseAnswer.split('::score=');
-        baseAnswer = scoreParts[0];
-        let score = scoreParts[1];
-        if (score.includes('::textfield=true')) {
-            score = score.split('::textfield=true')[0];
-        }
-        scoreSpan = ` <span class="qa-card-score">(Score: ${score}/5)</span>`;
-    }
-    baseAnswer = baseAnswer.replace('::textfield=true', '').replace(/\(please (specify|explain)\)/gi, '');
-    return `${baseAnswer}${scoreSpan}${userEnteredText}`;
-}).join('<br>');
+                        if (questionObj && questionObj.type === 'rating_stars' && /^[1-5]$/.test(answer)) {
+                            const starSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="20" height="20" style="fill:#FFD700; margin-right:2px; vertical-align: bottom;"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>`;
+                            return starSvg.repeat(parseInt(answer, 10));
+                        }
+                        
+                        let baseAnswerRaw = answer.split('::score=')[0].replace('::textfield=true', '').trim();
+                        let userEnteredText = '';
 
+                        if(answer.includes(': ')){
+                             const parts = answer.split(': ');
+                             if(questionObj && questionObj.options.some(opt => opt.startsWith(parts[0]))) {
+                                baseAnswerRaw = parts[0].split('::score=')[0].replace('::textfield=true', '').trim();
+                                userEnteredText = `: ${parts.slice(1).join(': ')}`;
+                             }
+                        }
+                        
+                        let scoreSpan = '';
+                        if (questionObj) {
+                            if (questionObj.options && questionObj.options.length > 0) {
+                                const matchingOption = questionObj.options.find(opt => opt.startsWith(baseAnswerRaw));
+                                if (matchingOption && matchingOption.includes('::score=')) {
+                                    const score = matchingOption.split('::score=')[1].split('::')[0];
+                                    scoreSpan = ` <span class="qa-card-score">(Score: ${score}/5)</span>`;
+                                }
+                            } else if ((questionObj.type === 'rating_numbers') && /^[1-5]$/.test(baseAnswerRaw)) {
+                                scoreSpan = ` <span class="qa-card-score">(Score: ${baseAnswerRaw}/5)</span>`;
+                            }
+                        }
+
+                        let displayText = baseAnswerRaw.replace(/\(please (specify|explain)\)/gi, '').trim();
+                        return `${displayText}${scoreSpan}${userEnteredText}`;
+
+                    }).join('<br>');
                     qaHtml += `<div class="qa-card"><div class="qa-card-question">${questionText}</div><div class="qa-card-answer">${finalDisplayHtml}</div></div>`;
                 }
             });
@@ -5577,128 +5622,161 @@ if (selectedCompanies[0] === 'All Combined') {
         });
     }
 
+    function findDuplicates(participants) {
+    const sortedParticipants = [...participants].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const duplicates = new Set();
+    const FORTY_MINUTES = 40 * 60 * 1000;
+
+    for (let i = 0; i < sortedParticipants.length; i++) {
+        for (let j = i + 1; j < sortedParticipants.length; j++) {
+            const p1 = sortedParticipants[i];
+            const p2 = sortedParticipants[j];
+
+            const timeDiff = new Date(p2.date) - new Date(p1.date);
+
+            if (timeDiff > FORTY_MINUTES) {
+                break;
+            }
+
+            if (p1.participant === p2.participant &&
+                p1.age === p2.age &&
+                p1.company === p2.company &&
+                p1.survey === p2.survey &&
+                JSON.stringify(p1.responses) === JSON.stringify(p2.responses)) {
+                duplicates.add(p2.date);
+            }
+        }
+    }
+    return duplicates;
+}
     function renderAllParticipantsList(participants) {
-        const listElement = document.getElementById('all-participants-list');
-        const searchInput = document.getElementById('participant-search');
-        if (!listElement || !participants) return;
+    const duplicateTimestamps = findDuplicates(participants);
+    const listElement = document.getElementById('all-participants-list');
+    const searchInput = document.getElementById('participant-search');
+    if (!listElement || !participants) return;
 
-        let totalScoreSum = 0;
-        let scoredParticipantsCount = 0;
-        participants.forEach(p => {
-            const scoreString = calculateAverageScore(p);
-            if (scoreString !== 'N/A') {
-                const scoreValue = parseFloat(scoreString.split(' / ')[0]);
-                if (!isNaN(scoreValue)) {
-                    totalScoreSum += scoreValue;
-                    scoredParticipantsCount++;
-                }
+    let totalScoreSum = 0;
+    let scoredParticipantsCount = 0;
+    participants.forEach(p => {
+        const scoreString = calculateAverageScore(p);
+        if (scoreString !== 'N/A') {
+            const scoreValue = parseFloat(scoreString.split(' / ')[0]);
+            if (!isNaN(scoreValue)) {
+                totalScoreSum += scoreValue;
+                scoredParticipantsCount++;
             }
-        });
-        const averageRating = scoredParticipantsCount > 0
-            ? (totalScoreSum / scoredParticipantsCount).toFixed(1) + ' / 5'
-            : 'N/A';
-
-        function displayList(filteredParticipants) {
-            listElement.innerHTML = '';
-            filteredParticipants.forEach(p => {
-                const date = new Date(p.date);
-                const formattedDate = date.toLocaleString ? date.toLocaleString('en-US', {
-                    year: '2-digit', month: '2-digit', day: '2-digit',
-                    hour: '2-digit', minute: '2-digit', hour12: true
-                }) : p.date;
-                const rate = calculateAverageScore(p);
-                const item = document.createElement('li');
-                item.className = 'participant-list-item';
-               item.innerHTML = `<span>${p.survey}</span><span>${p.participant}</span><span>${p.age || 'N/A'}</span><span>${p.company}</span><span>${formattedDate}</span><span>${rate}</span><span class="participant-delete-action"><button class="delete-participant-btn" data-timestamp="${p.date}" data-survey="${p.survey}" title="Delete Response"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></button></span>`;
-                item.dataset.participantData = JSON.stringify(p);
-                listElement.appendChild(item);
-            });
         }
-        displayList(participants);
+    });
+    const averageRating = scoredParticipantsCount > 0
+        ? (totalScoreSum / scoredParticipantsCount).toFixed(1) + ' / 5'
+        : 'N/A';
 
-        const container = listElement.closest('.participant-list-container');
-        if (container) {
-            let avgDisplay = container.querySelector('.average-rating-display');
-            if (avgDisplay) {
-                avgDisplay.remove();
-            }
-            const avgDisplayHtml = `
-                <div class="average-rating-display">
-                    <span>Average Rating:</span> ${averageRating}
-                </div>
-            `;
-            container.insertAdjacentHTML('beforeend', avgDisplayHtml);
-        }
+    function displayList(filteredParticipants) {
+        listElement.innerHTML = '';
+        filteredParticipants.forEach(p => {
+            const date = new Date(p.date);
+            const formattedDate = date.toLocaleString ? date.toLocaleString('en-US', {
+                year: '2-digit', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', hour12: true
+            }) : p.date;
+            const rate = calculateAverageScore(p);
+            const item = document.createElement('li');
+            item.className = 'participant-list-item';
+           const isDuplicate = duplicateTimestamps.has(p.date);
+            const duplicateHtml = isDuplicate ? '<span><span class="duplicate-label">DUPLICATE</span></span>' : '<span></span>';
+            
+            // ISPRAVLJENA LINIJA JE OVDE:
+            item.innerHTML = `<span>${p.survey}</span><span>${p.participant}</span><span></span><span>${p.age || 'N/A'}</span><span>${p.company}</span><span>${formattedDate}</span><span>${rate}</span>${duplicateHtml}<span class="participant-delete-action"><button class="delete-participant-btn" data-timestamp="${p.date}" data-survey="${p.survey}" title="Delete Response"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></button></span>`;
 
-        searchInput.addEventListener('keyup', () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            const filtered = participants.filter(p =>
-                p.participant.trim().toLowerCase().startsWith(searchTerm)
-            );
-            displayList(filtered);
+            item.dataset.participantData = JSON.stringify(p);
+            listElement.appendChild(item);
         });
-       listElement.addEventListener('click', (e) => {
-    const deleteBtn = e.target.closest('.delete-participant-btn');
-    if (deleteBtn) {
-        e.stopPropagation();
-        const { timestamp, survey } = deleteBtn.dataset;
-        const participantItem = deleteBtn.closest('.participant-list-item');
-        const participantName = participantItem.querySelector('span:nth-child(2)').textContent;
+    }
+    displayList(participants);
 
-        if (confirm(`Are you sure you want to delete the response from "${participantName}" for the "${survey}" survey?`)) {
-            const participantIndex = adminDataCache.statsData.allParticipants.findIndex(p => p.date === timestamp);
-            if (participantIndex === -1) return;
-            const participantToRemove = adminDataCache.statsData.allParticipants[participantIndex];
-            
-            adminDataCache.statsData.allParticipants.splice(participantIndex, 1);
-            
-            updateDisplay();
+    const container = listElement.closest('.participant-list-container');
+    if (container) {
+        let avgDisplay = container.querySelector('.average-rating-display');
+        if (avgDisplay) {
+            avgDisplay.remove();
+        }
+        const avgDisplayHtml = `
+            <div class="average-rating-display">
+                <span>Average Rating:</span> ${averageRating}
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', avgDisplayHtml);
+    }
 
-            const spinner = showAdminSpinner();
+    searchInput.addEventListener('keyup', () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filtered = participants.filter(p =>
+            p.participant.trim().toLowerCase().startsWith(searchTerm)
+        );
+        displayList(filtered);
+    });
+   listElement.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-participant-btn');
+        if (deleteBtn) {
+            e.stopPropagation();
+            const { timestamp, survey } = deleteBtn.dataset;
+            const participantItem = deleteBtn.closest('.participant-list-item');
+            const participantName = participantItem.querySelector('span:nth-child(2)').textContent;
 
-            const handleSuccess = () => {
-                hideAdminSpinner(spinner);
-                showAlert('Participant response deleted successfully.');
-            };
-
-            const handleError = (errorMsg) => {
-                hideAdminSpinner(spinner);
-                adminDataCache.statsData.allParticipants.splice(participantIndex, 0, participantToRemove);
+            if (confirm(`Are you sure you want to delete the response from "${participantName}" for the "${survey}" survey?`)) {
+                const participantIndex = adminDataCache.statsData.allParticipants.findIndex(p => p.date === timestamp);
+                if (participantIndex === -1) return;
+                const participantToRemove = adminDataCache.statsData.allParticipants[participantIndex];
+                
+                adminDataCache.statsData.allParticipants.splice(participantIndex, 1);
+                
                 updateDisplay();
-                showAlert(errorMsg);
-            };
 
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'deleteParticipant', surveyName: survey, timestamp: timestamp }),
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-            })
-            .then(res => res.json())
-            .then(result => {
-                if (result && result.status === 'success') {
-                    handleSuccess();
-                } else {
-                    handleError('Error deleting response: ' + (result ? result.message : 'Unknown error'));
-                }
-            })
-            .catch(err => {
-                if (err instanceof TypeError && err.message === 'Failed to fetch') {
-                    handleSuccess(); 
-                } else {
-                    handleError('An unexpected network error occurred: ' + err.message);
-                }
-            });
+                const spinner = showAdminSpinner();
+
+                const handleSuccess = () => {
+                    hideAdminSpinner(spinner);
+                    showAlert('Participant response deleted successfully.');
+                };
+
+                const handleError = (errorMsg) => {
+                    hideAdminSpinner(spinner);
+                    adminDataCache.statsData.allParticipants.splice(participantIndex, 0, participantToRemove);
+                    updateDisplay();
+                    showAlert(errorMsg);
+                };
+
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'deleteParticipant', surveyName: survey, timestamp: timestamp }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                })
+                .then(res => res.json())
+                .then(result => {
+                    if (result && result.status === 'success') {
+                        handleSuccess();
+                    } else {
+                        handleError('Error deleting response: ' + (result ? result.message : 'Unknown error'));
+                    }
+                })
+                .catch(err => {
+                    if (err instanceof TypeError && err.message === 'Failed to fetch') {
+                        handleSuccess(); 
+                    } else {
+                        handleError('An unexpected network error occurred: ' + err.message);
+                    }
+                });
+            }
+            return;
         }
-        return;
-    }
 
-    const listItem = e.target.closest('.participant-list-item');
-    if (listItem && listItem.dataset.participantData) {
-        const participantData = JSON.parse(listItem.dataset.participantData);
-        showParticipantDetailsModal(participantData);
-    }
-});
-    }
+        const listItem = e.target.closest('.participant-list-item');
+        if (listItem && listItem.dataset.participantData) {
+            const participantData = JSON.parse(listItem.dataset.participantData);
+            showParticipantDetailsModal(participantData);
+        }
+    });
+}
     function renderTopAnswersTable(answers, limit) {
         const tableBody = document.getElementById('top-answers-table-body');
         if (!tableBody) return;
