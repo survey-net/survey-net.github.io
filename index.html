@@ -3553,7 +3553,7 @@ function setupQuestionListeners() {
                 return;
             }
 
-            const answerValue = finalAnswers.join(', ');
+            const answerValue = finalAnswers.join('|||');
 
             userAnswers[`question-${currentQuestionIndex}`] = answerValue.trim();
             currentQuestionIndex++;
@@ -3583,7 +3583,8 @@ function setupQuestionListeners() {
                 participant: userAnswers.name,
                 age: userAnswers.age,
                 company: companyName,
-                responses: responses
+                responses: responses,
+                timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
             }
         };
 
@@ -4612,15 +4613,29 @@ function renderStatisticsDashboard() {
                 });
             });
         }
-        if (dateFrom) {
-            const fromDate = new Date(dateFrom);
-            fromDate.setHours(0, 0, 0, 0);
-            filteredParticipants = filteredParticipants.filter(p => new Date(p.date) >= fromDate);
+       if (dateFrom) {
+            filteredParticipants = filteredParticipants.filter(p => {
+                if (!p.date) return false;
+                const participantDateObj = new Date(p.date);
+                if (isNaN(participantDateObj.getTime())) return false;
+                const pY = participantDateObj.getFullYear();
+                const pM = String(participantDateObj.getMonth() + 1).padStart(2, '0');
+                const pD = String(participantDateObj.getDate()).padStart(2, '0');
+                const participantDateString = `${pY}-${pM}-${pD}`;
+                return participantDateString >= dateFrom;
+            });
         }
         if (dateTo) {
-            const toDate = new Date(dateTo);
-            toDate.setHours(23, 59, 59, 999);
-            filteredParticipants = filteredParticipants.filter(p => new Date(p.date) <= toDate);
+            filteredParticipants = filteredParticipants.filter(p => {
+                if (!p.date) return false;
+                const participantDateObj = new Date(p.date);
+                if (isNaN(participantDateObj.getTime())) return false;
+                const pY = participantDateObj.getFullYear();
+                const pM = String(participantDateObj.getMonth() + 1).padStart(2, '0');
+                const pD = String(participantDateObj.getDate()).padStart(2, '0');
+                const participantDateString = `${pY}-${pM}-${pD}`;
+                return participantDateString <= dateTo;
+            });
         }
 
         const sortedParticipants = sortParticipants(filteredParticipants, currentSortKey, currentSortDirection);
@@ -5485,7 +5500,7 @@ if (selectedCompanies[0] === 'All Combined') {
             const questionObj = survey.questions.find(q => q.text === questionText);
             if (!questionObj) return;
 
-            const participantAnswers = responseStr.split(', ');
+            const participantAnswers = responseStr.split('|||');
 
             participantAnswers.forEach(singleAnswer => {
                 const baseAnswer = singleAnswer.split('::score=')[0].replace('::textfield=true', '').trim();
@@ -6204,7 +6219,6 @@ function showLiveToastNotification(messages) {
 </script>
 </body>
 </html>
-
 
 
 
