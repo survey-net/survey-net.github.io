@@ -3091,7 +3091,33 @@
 .participant-list-item > span:nth-child(2) {
     padding-left: 18px;
 }
+.alert-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
 
+.alert-modal-actions button {
+    margin-top: 0; 
+}
+
+.alert-modal-actions .delete-all-btn {
+    background: #dc3545;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+.alert-modal-actions .delete-all-btn:hover {
+    background: #c82333;
+    box-shadow: 0 7px 20px rgba(220, 53, 69, 0.4);
+}
+.alert-modal-actions .cancel-btn {
+    background: #6c757d;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+.alert-modal-actions .cancel-btn:hover {
+    background: #5a6268;
+    box-shadow: 0 7px 20px rgba(108, 117, 125, 0.4);
+}
     </style>
 </head>
 <body>
@@ -3106,13 +3132,14 @@
     <div class="container" id="main-content">
     </div>
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHdkWKDgNHJc21lNjjGskJxnf1zJTOnLAG_VFGJSiTZcnNPykEEH6gGnvD7E86LO-33g/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJANh96cvAV8ZDQPmI5KFtaKTnTdqwfRETRW6AfGwWwfPPbU6ny9upUSCJUQSgMiIjVg/exec';
     let companyConfig = {};
     let adminDataCache = null;
     let surveyListSortKey = 'lastModified';
     let surveyListSortDirection = 'desc';
     let cacheIntervalId = null;
     let timelineChartInstance = null;
+    let refreshAdminStatsView = () => {};
     document.addEventListener('DOMContentLoaded', () => {
     
     const mainContent = document.getElementById('main-content');
@@ -3425,7 +3452,7 @@ sessionStorage.setItem('surveyUserName', userAnswers.name);
                 <h3 class="survey-title">${q.question}</h3>
                 ${questionSpecificHtml}
                 <div class="navigation-buttons">
-                   <button class="next-btn">Next Question</button>
+                   <button class="next-btn">${currentQuestionIndex === surveyQuestions.length - 1 ? 'Submit' : 'Next Question'}</button>
                    ${backButtonHtml}
                 </div>
                 ${progressBarHtml}
@@ -3658,7 +3685,157 @@ const userAgeForLink = encodeURIComponent(finalUserAge);
         alertModal.remove();
     });
 }
+function showDeleteConfirmationModal(message, onConfirmSingle, onConfirmAll) {
+    const existingModal = document.querySelector('.alert-modal');
+    if(existingModal) existingModal.remove();
 
+    const alertModal = document.createElement('div');
+    alertModal.classList.add('alert-modal');
+
+    alertModal.innerHTML = `
+        <p>${message}</p>
+        <div class="alert-modal-actions">
+            <button id="confirm-single-btn">Delete Just This One</button>
+            <button id="confirm-all-btn" class="delete-all-btn">Delete All Duplicates</button>
+            <button id="cancel-btn" class="cancel-btn">Cancel</button>
+        </div>
+    `;
+
+    document.body.appendChild(alertModal);
+
+    const close = () => alertModal.remove();
+
+    alertModal.querySelector('#confirm-single-btn').addEventListener('click', () => {
+        close();
+        onConfirmSingle();
+    });
+
+    alertModal.querySelector('#confirm-all-btn').addEventListener('click', () => {
+        close();
+        onConfirmAll();
+    });
+
+    alertModal.querySelector('#cancel-btn').addEventListener('click', () => {
+        close();
+    });
+}
+
+function deleteSingleParticipant(timestamp, survey, participantName) {
+    const participantIndex = adminDataCache.statsData.allParticipants.findIndex(p => p.date === timestamp && p.survey === survey);
+    if (participantIndex === -1) return;
+
+    const participantToRemove = adminDataCache.statsData.allParticipants[participantIndex];
+    adminDataCache.statsData.allParticipants.splice(participantIndex, 1);
+    refreshAdminStatsView(); // ISPRAVKA
+
+    const spinner = showAdminSpinner();
+
+    const handleSuccess = () => {
+        hideAdminSpinner(spinner);
+        showAlert('Participant response deleted successfully.');
+    };
+
+    const handleError = (errorMsg) => {
+        hideAdminSpinner(spinner);
+        adminDataCache.statsData.allParticipants.splice(participantIndex, 0, participantToRemove);
+        refreshAdminStatsView(); // ISPRAVKA
+        showAlert(errorMsg);
+    };
+
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'deleteParticipant', surveyName: survey, timestamp: timestamp }),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+    })
+    .then(res => res.json())
+    .then(result => {
+        if (result && result.status === 'success') handleSuccess();
+        else handleError('Error deleting response: ' + (result ? result.message : 'Unknown error'));
+    })
+    .catch(err => {
+        if (err instanceof TypeError && err.message === 'Failed to fetch') handleSuccess(); 
+        else handleError('An unexpected network error occurred: ' + err.message);
+    });
+}
+
+function deleteAllDuplicates(baseTimestamp, surveyName) {
+    // 1. Pronalazi SVE unose koji su označeni kao duplikati u celokupnom setu podataka
+    const duplicateTimestamps = findDuplicates(adminDataCache.statsData.allParticipants);
+
+    if (duplicateTimestamps.size === 0) {
+        showAlert('No entries are currently marked as duplicates.');
+        return;
+    }
+
+    // 2. Kreira listu svih objekata koje treba obrisati
+    const duplicatesToDelete = adminDataCache.statsData.allParticipants.filter(p => duplicateTimestamps.has(p.date));
+    
+    const originalCache = [...adminDataCache.statsData.allParticipants];
+    const timestampsToDelete = Array.from(duplicateTimestamps);
+    
+    // 3. Ažurira prikaz na stranici
+    adminDataCache.statsData.allParticipants = adminDataCache.statsData.allParticipants.filter(p => !timestampsToDelete.includes(p.date));
+    refreshAdminStatsView();
+
+    const spinner = showAdminSpinner();
+    // 4. Priprema podatke za slanje Google Script-u
+    const deletePayload = duplicatesToDelete.map(p => ({ surveyName: p.survey, timestamp: p.date }));
+
+    const handleSuccess = () => {
+        hideAdminSpinner(spinner);
+       showAlert(`${deletePayload.length} marked duplicate(s) deleted successfully.`);
+    };
+
+    const handleError = (errorMsg) => {
+        hideAdminSpinner(spinner);
+        adminDataCache.statsData.allParticipants = originalCache; // Vraća na staro
+        refreshAdminStatsView();
+        showAlert(errorMsg);
+    };
+    
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'deleteMultipleParticipants', data: deletePayload }),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+    })
+    .then(res => res.json())
+    .then(result => {
+        if (result && result.status === 'success') handleSuccess();
+        else handleError('Error deleting duplicates: ' + (result ? result.message : 'Unknown error'));
+    })
+    .catch(err => {
+        if (err instanceof TypeError && err.message === 'Failed to fetch') handleSuccess();
+        else handleError('An unexpected network error occurred: ' + err.message);
+    });
+}
+
+function findDuplicates(participants) {
+        const sortedParticipants = [...participants].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const duplicates = new Set();
+        const FORTY_MINUTES = 40 * 60 * 1000;
+
+        for (let i = 0; i < sortedParticipants.length; i++) {
+            for (let j = i + 1; j < sortedParticipants.length; j++) {
+                const p1 = sortedParticipants[i];
+                const p2 = sortedParticipants[j];
+
+                const timeDiff = new Date(p2.date) - new Date(p1.date);
+
+                if (timeDiff > FORTY_MINUTES) {
+                    break;
+                }
+
+                if (p1.participant === p2.participant &&
+                    p1.age === p2.age &&
+                    p1.company === p2.company &&
+                    p1.survey === p2.survey &&
+                    JSON.stringify(p1.responses) === JSON.stringify(p2.responses)) {
+                    duplicates.add(p2.date);
+                }
+            }
+        }
+        return duplicates;
+    }
     function showSpinner(text = 'Please wait...') {
     const spinner = document.createElement('div');
 
@@ -4552,6 +4729,7 @@ function renderStatisticsDashboard() {
             </div>
             <div class="clear-filters-wrapper"><button id="clear-filters-btn" class="clear-filters-btn">Clear all filters</button></div>
             <div id="stats-view-container"></div>`;
+            refreshAdminStatsView = updateDisplay;
         
         initCustomSelects();
 
@@ -5480,62 +5658,67 @@ if (selectedCompanies[0] === 'All Combined') {
 }
     )}
 
+function calculateAverageScore(participant) {
+    if (!participant || !participant.responses || !adminDataCache || !adminDataCache.statsData) return 'N/A';
+    
+    const survey = adminDataCache.statsData.surveys.find(s => s.name === participant.survey);
+    if (!survey) return 'N/A';
 
-    function calculateAverageScore(participant) {
-        if (!participant || !participant.responses || !adminDataCache || !adminDataCache.statsData) return 'N/A';
-        
-        const survey = adminDataCache.statsData.surveys.find(s => s.name === participant.survey);
-        if (!survey) return 'N/A';
+    let totalScore = 0;
+    let scoredAnswersCount = 0;
 
-        let totalScore = 0;
-        let scoredAnswersCount = 0;
+    Object.keys(participant.responses).forEach(questionText => {
+        let participantResponse = participant.responses[questionText];
+        if (participantResponse === null || participantResponse === undefined) return;
 
-        Object.keys(participant.responses).forEach(questionText => {
-            let participantResponse = participant.responses[questionText];
-            if (participantResponse === null || participantResponse === undefined) return;
+        const responseStr = String(participantResponse).trim();
+        if (responseStr === '') return;
 
-            const responseStr = String(participantResponse).trim();
-            if (responseStr === '') return;
+        const questionObj = survey.questions.find(q => q.text === questionText);
+        if (!questionObj) return;
 
-            const questionObj = survey.questions.find(q => q.text === questionText);
-            if (!questionObj) return;
+        const participantAnswers = responseStr.split('|||');
 
-            const participantAnswers = responseStr.split('|||');
+        participantAnswers.forEach(singleAnswer => {
+            const baseAnswer = singleAnswer.split('::score=')[0].replace('::textfield=true', '').trim();
 
-            participantAnswers.forEach(singleAnswer => {
-                const baseAnswer = singleAnswer.split('::score=')[0].replace('::textfield=true', '').trim();
-                
-                if (questionObj.options && questionObj.options.length > 0) {
-                    const matchingOption = questionObj.options.find(opt => {
-                        const optionBase = opt.split('::score=')[0].replace('::textfield=true', '').trim();
-                        return optionBase === baseAnswer;
-                    });
-
-                    if (matchingOption && matchingOption.includes('::score=')) {
-                        const scorePart = matchingOption.split('::score=')[1];
-                        const score = parseInt(scorePart, 10);
-                        if (!isNaN(score)) {
-                            totalScore += score;
-                            scoredAnswersCount++;
-                        }
-                    }
-                } else if ((questionObj.type === 'rating_numbers' || questionObj.type === 'rating_stars') && /^[1-5]$/.test(baseAnswer)) {
+            // ISPRAVKA: Eksplicitno proveravamo rejting pitanja PRVO
+            if ((questionObj.type === 'rating_numbers' || questionObj.type === 'rating_stars')) {
+                // Proveravamo da li je odgovor broj između 1 i 5
+                if (/^[1-5]$/.test(baseAnswer)) {
                     const score = parseInt(baseAnswer, 10);
                     if (!isNaN(score)) {
                         totalScore += score;
                         scoredAnswersCount++;
                     }
                 }
-            });
-        });
+            }
+            // Zatim proveravamo ostala pitanja koja mogu imati definisan skor
+            else if (questionObj.options && questionObj.options.length > 0) {
+                const matchingOption = questionObj.options.find(opt => {
+                    const optionBase = opt.split('::score=')[0].replace('::textfield=true', '').trim();
+                    return optionBase === baseAnswer;
+                });
 
-        if (scoredAnswersCount === 0) {
-            return 'N/A';
-        }
-        
-        const average = totalScore / scoredAnswersCount;
-        return `${average.toFixed(1)} / 5`;
+                if (matchingOption && matchingOption.includes('::score=')) {
+                    const scorePart = matchingOption.split('::score=')[1];
+                    const score = parseInt(scorePart, 10);
+                    if (!isNaN(score)) {
+                        totalScore += score;
+                        scoredAnswersCount++;
+                    }
+                }
+            }
+        });
+    });
+
+    if (scoredAnswersCount === 0) {
+        return 'N/A';
     }
+    
+    const average = totalScore / scoredAnswersCount;
+    return `${average.toFixed(1)} / 5`;
+}
 
     function sortParticipants(participants, key, direction) {
         return [...participants].sort((a, b) => {
@@ -5637,33 +5820,7 @@ if (selectedCompanies[0] === 'All Combined') {
         });
     }
 
-    function findDuplicates(participants) {
-    const sortedParticipants = [...participants].sort((a, b) => new Date(a.date) - new Date(b.date));
-    const duplicates = new Set();
-    const FORTY_MINUTES = 40 * 60 * 1000;
 
-    for (let i = 0; i < sortedParticipants.length; i++) {
-        for (let j = i + 1; j < sortedParticipants.length; j++) {
-            const p1 = sortedParticipants[i];
-            const p2 = sortedParticipants[j];
-
-            const timeDiff = new Date(p2.date) - new Date(p1.date);
-
-            if (timeDiff > FORTY_MINUTES) {
-                break;
-            }
-
-            if (p1.participant === p2.participant &&
-                p1.age === p2.age &&
-                p1.company === p2.company &&
-                p1.survey === p2.survey &&
-                JSON.stringify(p1.responses) === JSON.stringify(p2.responses)) {
-                duplicates.add(p2.date);
-            }
-        }
-    }
-    return duplicates;
-}
     function renderAllParticipantsList(participants) {
     const duplicateTimestamps = findDuplicates(participants);
     const listElement = document.getElementById('all-participants-list');
@@ -5737,50 +5894,22 @@ if (selectedCompanies[0] === 'All Combined') {
             const { timestamp, survey } = deleteBtn.dataset;
             const participantItem = deleteBtn.closest('.participant-list-item');
             const participantName = participantItem.querySelector('span:nth-child(2)').textContent;
+            const isDuplicate = participantItem.querySelector('.duplicate-label');
 
-            if (confirm(`Are you sure you want to delete the response from "${participantName}" for the "${survey}" survey?`)) {
-                const participantIndex = adminDataCache.statsData.allParticipants.findIndex(p => p.date === timestamp);
-                if (participantIndex === -1) return;
-                const participantToRemove = adminDataCache.statsData.allParticipants[participantIndex];
-                
-                adminDataCache.statsData.allParticipants.splice(participantIndex, 1);
-                
-                updateDisplay();
-
-                const spinner = showAdminSpinner();
-
-                const handleSuccess = () => {
-                    hideAdminSpinner(spinner);
-                    showAlert('Participant response deleted successfully.');
-                };
-
-                const handleError = (errorMsg) => {
-                    hideAdminSpinner(spinner);
-                    adminDataCache.statsData.allParticipants.splice(participantIndex, 0, participantToRemove);
-                    updateDisplay();
-                    showAlert(errorMsg);
-                };
-
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'deleteParticipant', surveyName: survey, timestamp: timestamp }),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-                })
-                .then(res => res.json())
-                .then(result => {
-                    if (result && result.status === 'success') {
-                        handleSuccess();
-                    } else {
-                        handleError('Error deleting response: ' + (result ? result.message : 'Unknown error'));
+            if (isDuplicate) {
+                showDeleteConfirmationModal(
+                    `This entry for "${participantName}" is marked as a duplicate. How would you like to proceed?`,
+                    () => { // onConfirmSingle
+                        deleteSingleParticipant(timestamp, survey, participantName);
+                    },
+                    () => { // onConfirmAll
+                        deleteAllDuplicates(timestamp, survey);
                     }
-                })
-                .catch(err => {
-                    if (err instanceof TypeError && err.message === 'Failed to fetch') {
-                        handleSuccess(); 
-                    } else {
-                        handleError('An unexpected network error occurred: ' + err.message);
-                    }
-                });
+                );
+            } else {
+                if (confirm(`Are you sure you want to delete the response from "${participantName}" for the "${survey}" survey?`)) {
+                    deleteSingleParticipant(timestamp, survey, participantName);
+                }
             }
             return;
         }
@@ -6219,6 +6348,5 @@ function showLiveToastNotification(messages) {
 </script>
 </body>
 </html>
-
 
 
