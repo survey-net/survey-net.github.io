@@ -6186,7 +6186,7 @@ function fetchJsonpInPromise(url) {
             resolve(data);
         };
         const script = document.createElement('script');
-        script.src = `${url}&callback=${callbackName}&v=${new Date().getTime()}`;
+script.src = `${url}&callback=${callbackName}`;
         script.onerror = () => {
             delete window[callbackName];
             document.body.removeChild(script);
@@ -6203,21 +6203,20 @@ function fetchSurveyNamesInPromise() {
 function fetchAllAdminDataInPromise() {
     const statsUrl = `${SCRIPT_URL}?action=getStatisticsData`;
     const namesUrl = `${SCRIPT_URL}?action=getSurveyNames`;
+    let surveyNamesData; // Kreiramo promenljivu gde ćemo čuvati podatke iz prvog poziva
 
-    return Promise.all([
-        fetchJsonpInPromise(statsUrl),
-        fetchJsonpInPromise(namesUrl)
-    ]).then(([statsData, surveyNames]) => {
-        if (!statsData || !statsData.surveys || !surveyNames) {
-            return { statsData, surveyNames };
-        }
-
-        const surveyDetailPromises = surveyNames.map(surveyInfo =>
-            fetchJsonpInPromise(`${SCRIPT_URL}?action=getQuestions&sheet=${surveyInfo.id}`)
-        );
-
-        return { statsData, surveyNames };
-    });
+    // Prvo pozivamo samo imena anketa
+    return fetchJsonpInPromise(namesUrl)
+        .then(surveyNames => {
+            surveyNamesData = surveyNames; // Čuvamo dobijene podatke
+            // Tek kada je prvi poziv uspeo, pravimo drugi poziv za statistiku
+            return fetchJsonpInPromise(statsUrl);
+        })
+        .then(statsData => {
+            // Kada i drugi poziv uspe, imamo sve podatke
+            // Vraćamo objekat u istom formatu kao i pre
+            return { statsData: statsData, surveyNames: surveyNamesData };
+        });
 }
 
 function startBackgroundRefresh() {
