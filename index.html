@@ -6186,7 +6186,8 @@ function fetchJsonpInPromise(url) {
             resolve(data);
         };
         const script = document.createElement('script');
-script.src = `${url}&callback=${callbackName}`;
+        const timestamp = new Date().getTime(); // <-- DODAJ OVU LINIJU
+        script.src = `${url}&callback=${callbackName}&_=${timestamp}`; // <-- IZMENI OVU LINIJU
         script.onerror = () => {
             delete window[callbackName];
             document.body.removeChild(script);
