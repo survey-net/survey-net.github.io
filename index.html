@@ -6186,7 +6186,7 @@ function fetchJsonpInPromise(url) {
             resolve(data);
         };
         const script = document.createElement('script');
-        script.src = `${url}&callback=${callbackName}`;
+        script.src = `${url}&callback=${callbackName}&v=${new Date().getTime()}`;
         script.onerror = () => {
             delete window[callbackName];
             document.body.removeChild(script);
@@ -6348,5 +6348,4 @@ function showLiveToastNotification(messages) {
 </script>
 </body>
 </html>
-
 
