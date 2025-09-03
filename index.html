@@ -3606,7 +3606,7 @@ function setupQuestionListeners() {
                 age: userAnswers.age,
                 company: companyName,
                 responses: responses,
-                timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' })
+                timestamp: new Date().toISOString()
             }
         };
 
@@ -6337,6 +6337,7 @@ function showLiveToastNotification(messages) {
 </script>
 </body>
 </html>
+
 
 
 
