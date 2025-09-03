@@ -5980,7 +5980,8 @@ function renderSurveyList(mode) {
         if (dateString) {
             const date = new Date(dateString);
             const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true };
-            formattedDateTime = new Intl.DateTimeFormat('en-us', options).format(date).replace(',', '');
+            formattedDateTime = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).format(date);
+
         }
         return `<li class="admin-list-item" data-id="${s.id}" data-name="${s.name}">
             <div class="admin-list-item-info"><span class="name">${s.name}</span></div>
@@ -6328,6 +6329,7 @@ function showLiveToastNotification(messages) {
 </script>
 </body>
 </html>
+
 
 
 
