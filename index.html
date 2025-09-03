@@ -3132,7 +3132,7 @@
     <div class="container" id="main-content">
     </div>
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzS1flUiJ1s3vU7wTBpMN8TQ1d_TOPCtE7CRY1glxY5OFvyhEHjyMa0nQLLewU73caxjQ/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz0xkEddWMijTMMnD0ZPIXetHLfb7xyis3lP0LdzbBE11OtSrj4Ms6iJ5ZiSZfrlJjXgQ/exec';
     let companyConfig = {};
     let adminDataCache = null;
     let surveyListSortKey = 'lastModified';
@@ -5842,16 +5842,7 @@ function calculateAverageScore(participant) {
     function displayList(filteredParticipants) {
         listElement.innerHTML = '';
         filteredParticipants.forEach(p => {
-            const date = new Date(p.date);
-const formattedDate = p.date ? date.toLocaleString('en-US', {
-    year: '2-digit',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'America/Chicago'
-}) : '';
+            const formattedDate = p.displayDate;
             const rate = calculateAverageScore(p);
             const item = document.createElement('li');
             item.className = 'participant-list-item';
@@ -6337,6 +6328,7 @@ function showLiveToastNotification(messages) {
 </script>
 </body>
 </html>
+
 
 
 
