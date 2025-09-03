@@ -3132,7 +3132,7 @@
     <div class="container" id="main-content">
     </div>
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-guFip3i5N9ndqEyJpKD6I4STNFi9gWuUxORVtTyg1uWVXsJFtxzIwAfrO5_RmsNCpw/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWe1vUolb20OFSh5J8UWrFOWevp755WjipHUTYVsd8THcIG7tToWdWmxF9AstJLh5yBg/exec';
     let companyConfig = {};
     let adminDataCache = null;
     let surveyListSortKey = 'lastModified';
@@ -5843,17 +5843,14 @@ function calculateAverageScore(participant) {
         listElement.innerHTML = '';
         filteredParticipants.forEach(p => {
             const date = new Date(p.date);
-            const formattedDate = date.toLocaleString ? date.toLocaleString('en-US', {
-                year: '2-digit', month: '2-digit', day: '2-digit',
-                hour: '2-digit', minute: '2-digit', hour12: true
-            }) : p.date;
+const options = { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true };
+const formattedDate = date.toLocaleString ? date.toLocaleString('en-US', options) : p.date;
             const rate = calculateAverageScore(p);
             const item = document.createElement('li');
             item.className = 'participant-list-item';
            const isDuplicate = duplicateTimestamps.has(p.date);
             const duplicateHtml = isDuplicate ? '<span><span class="duplicate-label">DUPLICATE</span></span>' : '<span></span>';
             
-            // ISPRAVLJENA LINIJA JE OVDE:
             item.innerHTML = `<span>${p.survey}</span><span>${p.participant}</span><span></span><span>${p.age || 'N/A'}</span><span>${p.company}</span><span>${formattedDate}</span><span>${rate}</span>${duplicateHtml}<span class="participant-delete-action"><button class="delete-participant-btn" data-timestamp="${p.date}" data-survey="${p.survey}" title="Delete Response"><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg></button></span>`;
 
             item.dataset.participantData = JSON.stringify(p);
