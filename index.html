@@ -5976,13 +5976,23 @@ function renderSurveyList(mode) {
     const title = mode === 'edit' ? 'Edit Surveys' : 'View Statistics';
     let listHtml = surveys.map(s => {
         const dateString = s.lastModified;
-        let formattedDateTime = 'N/A';
-        if (dateString) {
-            const date = new Date(dateString);
-           const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true };
-formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(date);
+let formattedDateTime = 'N/A';
+if (dateString) {
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = date.getFullYear();
+        const timeString = date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
 
-        }
+        // Sastavljamo finalni string u željenom formatu
+        formattedDateTime = `${month} ${day} ${year} ${timeString}`;
+    }
+}
         return `<li class="admin-list-item" data-id="${s.id}" data-name="${s.name}">
             <div class="admin-list-item-info"><span class="name">${s.name}</span></div>
             <div class="admin-list-item-url"><button class="url-btn" title="Get Survey Links"><svg xmlns="http://www.w3.org/2000/svg" height="22" viewBox="0 -960 960 960" width="22" fill="currentColor"><path d="M440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm120 160v-80h160q50 0 85-35t35-85q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 83-58.5 141.5T680-280H520Z"/></svg></button></div>
@@ -6329,6 +6339,7 @@ function showLiveToastNotification(messages) {
 </script>
 </body>
 </html>
+
 
 
 
