@@ -3132,7 +3132,7 @@
     <div class="container" id="main-content">
     </div>
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJANh96cvAV8ZDQPmI5KFtaKTnTdqwfRETRW6AfGwWwfPPbU6ny9upUSCJUQSgMiIjVg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx9Nat3CnOybxZOokkfYVJaZWX0Wm7C_ctXg8GxONFTKyQz4vQmCNwug9e0ByogTSQPUA/exec';
     let companyConfig = {};
     let adminDataCache = null;
     let surveyListSortKey = 'lastModified';
@@ -3248,7 +3248,7 @@
     let currentSortKey = 'date';
     let currentSortDirection = 'desc';
 
-    function initializeSurvey() {
+    async function initializeSurvey() {
         document.querySelector('.background-container').style.display = 'block';
         document.querySelector('.main-header').style.display = 'flex';
         mainContent.style.display = 'flex';
@@ -3276,8 +3276,13 @@
 
         if (surveyId) {
             mainContent.innerHTML = '<p class="welcome-text loading-animation">Loading survey</p>';
+            
+            try {
+                const data = await fetchApiData({ action: 'getInitialData', sheet: surveyId });
 
-            window.handleSurveyData = (data) => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
                 if (data.questions.error) {
                     mainContent.innerHTML = `<p class="welcome-text">Error: ${data.questions.error}. Please check the survey ID.</p>`;
                     return;
@@ -3286,6 +3291,7 @@
                     mainContent.innerHTML = `<p class="welcome-text">This survey currently has no questions.</p>`;
                     return;
                 }
+                
                 surveyQuestions = data.questions;
                 allSurveys = data.surveyNames;
 
@@ -3298,20 +3304,9 @@
                 } else {
                     renderWelcomePage();
                 }
-
-                document.getElementById('jsonp-init-script').remove();
-                delete window.handleSurveyData;
-            };
-
-            const script = document.createElement('script');
-            script.id = 'jsonp-init-script';
-            script.src = `${SCRIPT_URL}?action=getInitialData&sheet=${surveyId}&callback=handleSurveyData`;
-            script.onerror = () => {
-                mainContent.innerHTML = `<p class="welcome-text">Could not load survey. Please try again later.</p>`;
-                delete window.handleSurveyData;
-            };
-            document.body.appendChild(script);
-
+            } catch (error) {
+                mainContent.innerHTML = `<p class="welcome-text">Could not load survey: ${error.message}. Please try again later.</p>`;
+            }
         } else {
             mainContent.innerHTML = `<p class="welcome-text">No survey specified. Please use a valid survey link.</p>`;
         }
@@ -3930,7 +3925,7 @@ function checkAdminAccess() {
     
     fetchAllAdminDataInPromise().then(newData => {
         
-       
+        console.log('SURVEYS RECEIVED FROM SERVER:', newData.surveyNames);
         const oldDataString = localStorage.getItem('adminLastKnownState');
         const oldData = oldDataString ? JSON.parse(oldDataString) : null;
 
@@ -4386,11 +4381,11 @@ questionsContainer.addEventListener('drop', (e) => {
             const spinner = showAdminSpinner();
 
             const handleSuccess = (message) => {
-                fetchSurveyNamesInPromise().then(newNames => {
-                    if (adminDataCache) {
-                        adminDataCache.surveyNames = newNames;
-                    }
-                }).finally(() => {
+    fetchApiData({ action: 'getSurveyNames' }).then(newNames => { 
+        if (adminDataCache) {
+            adminDataCache.surveyNames = newNames;
+        }
+    }).finally(() => {
                     hideAdminSpinner(spinner);
                     showAlert(message);
                     if (isEditMode) {
@@ -4852,6 +4847,7 @@ function renderStatisticsDashboard() {
 
                         let baseAnswer = fullAnswer.split('::score=')[0].replace('::textfield=true', '').trim();
                         let userText = '';
+                        baseAnswer = baseAnswer.replace(/\(please specify\)/gi, '').trim();
                         if (fullAnswer.includes(': ')) {
                            const parts = fullAnswer.split(': ');
                            if(q.options.some(opt => opt.startsWith(parts[0]))) {
@@ -6043,26 +6039,29 @@ function renderSurveyList(mode) {
         });
     }
 
-    document.querySelector('.admin-list').addEventListener('click', e => {
+    document.querySelector('.admin-list').addEventListener('click', async e => {
         const button = e.target.closest('button');
         if (!button) return;
         const listItem = button.closest('.admin-list-item');
         const surveyId = listItem.dataset.id;
         const surveyName = listItem.dataset.name;
+
+        console.log('CLICKED SURVEY ID:', surveyId);
         if (button.classList.contains('url-btn')) { showUrlModal(surveyId, surveyName); return; }
         if (button.classList.contains('edit-btn')) {
             const spinner = showAdminSpinner();
-            window.handleSurveyQuestions = (questions) => {
-                hideAdminSpinner(spinner);
-                if (questions.error) { showAlert(questions.error); return; }
+            try {
+                const questions = await fetchApiData({ action: 'getQuestions', sheet: surveyId });
+                if (questions.error) {
+                    showAlert(questions.error);
+                    return;
+                }
                 renderAddOrEditSurveyForm({ name: listItem.dataset.name, id: surveyId, questions: questions });
-                document.getElementById('jsonp-script-questions').remove();
-                delete window.handleSurveyQuestions;
-            };
-            const script = document.createElement('script');
-            script.id = 'jsonp-script-questions';
-            script.src = `${SCRIPT_URL}?action=getQuestions&sheet=${surveyId}&callback=handleSurveyQuestions`;
-            document.body.appendChild(script);
+            } catch (error) {
+                showAlert(`Failed to load questions: ${error.message}`);
+            } finally {
+                hideAdminSpinner(spinner);
+            }
         } else if (button.classList.contains('delete-btn')) {
     if (confirm(`Are you sure you want to delete the survey "${listItem.dataset.name}"? This action cannot be undone.`)) {
         const spinner = showAdminSpinner();
@@ -6177,47 +6176,32 @@ function renderSurveyList(mode) {
         initializeSurvey();
     }
 });
-function fetchJsonpInPromise(url) {
-    return new Promise((resolve, reject) => {
-        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-        window[callbackName] = (data) => {
-            delete window[callbackName];
-            document.body.removeChild(script);
-            resolve(data);
-        };
-        const script = document.createElement('script');
-        const timestamp = new Date().getTime(); // <-- DODAJ OVU LINIJU
-        script.src = `${url}&callback=${callbackName}&_=${timestamp}`; // <-- IZMENI OVU LINIJU
-        script.onerror = () => {
-            delete window[callbackName];
-            document.body.removeChild(script);
-            reject('Failed to load script for ' + url);
-        };
-        document.body.appendChild(script);
-    });
-}
-function fetchSurveyNamesInPromise() {
-    const namesUrl = `${SCRIPT_URL}?action=getSurveyNames`;
-    return fetchJsonpInPromise(namesUrl);
+// This new function uses the modern fetch API, which is more reliable.
+async function fetchApiData(params) {
+    const url = new URL(SCRIPT_URL);
+    for (const key in params) {
+        url.searchParams.append(key, params[key]);
+    }
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Fetch API Error:", error);
+        // Re-throw the error to be caught by the calling function
+        throw new Error(`Failed to load data for action: ${params.action}. ${error.message}`);
+    }
 }
 
-function fetchAllAdminDataInPromise() {
-    const statsUrl = `${SCRIPT_URL}?action=getStatisticsData`;
-    const namesUrl = `${SCRIPT_URL}?action=getSurveyNames`;
-    let surveyNamesData; // Kreiramo promenljivu gde ćemo čuvati podatke iz prvog poziva
-
-    // Prvo pozivamo samo imena anketa
-    return fetchJsonpInPromise(namesUrl)
-        .then(surveyNames => {
-            surveyNamesData = surveyNames; // Čuvamo dobijene podatke
-            // Tek kada je prvi poziv uspeo, pravimo drugi poziv za statistiku
-            return fetchJsonpInPromise(statsUrl);
-        })
-        .then(statsData => {
-            // Kada i drugi poziv uspe, imamo sve podatke
-            // Vraćamo objekat u istom formatu kao i pre
-            return { statsData: statsData, surveyNames: surveyNamesData };
-        });
+async function fetchAllAdminDataInPromise() {
+    // We now use our new fetch function and Promise.all for parallel requests
+    const [statsData, surveyNames] = await Promise.all([
+        fetchApiData({ action: 'getStatisticsData' }),
+        fetchApiData({ action: 'getSurveyNames' })
+    ]);
+    return { statsData, surveyNames };
 }
 
 function startBackgroundRefresh() {
